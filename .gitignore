@@ -1,0 +1,36 @@
+# Dependencies and generated files
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+.vite-temp/
+*.tsbuildinfo
+
+# Local data, archives, screenshots and working notes
+data/
+资料库/
+qa/
+preview-*.png
+qa-*.png
+AGENTS.md
+DOT-HANDOFF.md
+design-qa.md
+
+# Credentials and machine-local configuration
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+.codex/
+.claude/
+
+# Editor, OS and log files
+.DS_Store
+.idea/
+.vscode/
+*.log
+npm-debug.log*
