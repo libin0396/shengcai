@@ -1,9 +1,13 @@
 import test, {after, before} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp, mkdir, rm, symlink, writeFile} from 'node:fs/promises';
+import {copyFile, mkdtemp, mkdir, rm, symlink, writeFile} from 'node:fs/promises';
 import {request} from 'node:http';
+import {createServer as createNetServer} from 'node:net';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
 import os from 'node:os';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {createProductionServer} from '../server/production.mjs';
 
 let dir, server, base, port;
@@ -12,6 +16,14 @@ before(async () => {
   const client = path.join(dir, 'dist', 'client');
   await mkdir(path.join(client, 'assets'), {recursive:true});
   await mkdir(path.join(dir, 'data'), {recursive:true});
+  await mkdir(path.join(dir, 'server'), {recursive:true});
+  await mkdir(path.join(dir, 'src'), {recursive:true});
+  const project = fileURLToPath(new URL('../', import.meta.url));
+  for (const file of ['server/production.mjs', 'server/feed-api.mjs', 'server/feed-store.mjs', 'src/sync-schedule.js']) {
+    await copyFile(path.join(project, file), path.join(dir, file));
+  }
+  await writeFile(path.join(dir, 'package.json'), '{"type":"module"}');
+  await symlink(dir, path.join(dir, 'current'), 'dir');
   await writeFile(path.join(client, 'index.html'), '<main>AINPE</main>');
   await writeFile(path.join(client, 'assets', 'app.js'), 'export default 1');
   await writeFile(path.join(dir, 'private.txt'), 'private');
@@ -82,4 +94,35 @@ test('rejects traversal, hidden paths and symlinks outside the asset directory',
   assert.equal(await raw('/.env'), 400);
   assert.equal(await raw('/assets/outside.txt'), 404);
   assert.equal(await raw('/%'), 400);
+});
+
+test('CLI starts via both a real release path and a current symlink', async () => {
+  for (const entry of [path.join(dir, 'server', 'production.mjs'), path.join(dir, 'current', 'server', 'production.mjs')]) {
+    const reservation = createNetServer();
+    reservation.listen(0, '127.0.0.1');
+    await once(reservation, 'listening');
+    const selectedPort = reservation.address().port;
+    await new Promise(resolve => reservation.close(resolve));
+
+    const child = spawn(process.execPath, [entry], {
+      env:{...process.env, AINPE_HOST:'127.0.0.1', AINPE_PORT:String(selectedPort)},
+      stdio:['ignore', 'pipe', 'pipe'],
+    });
+    const exited = once(child, 'exit');
+    let timer;
+    try {
+      await Promise.race([
+        once(child.stdout, 'data'),
+        exited.then(([code]) => { throw new Error(`server exited before listening (code ${code})`); }),
+        new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('server startup timed out')), 5000); }),
+      ]);
+      const response = await fetch(`http://127.0.0.1:${selectedPort}/api/feed/status`);
+      assert.equal(response.status, 200);
+      assert.equal((await response.json()).counts.articles, 1);
+    } finally {
+      clearTimeout(timer);
+      if (child.exitCode === null && child.signalCode === null) child.kill('SIGTERM');
+      await exited;
+    }
+  }
 });

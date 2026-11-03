@@ -1,4 +1,5 @@
 import {createServer} from 'node:http';
+import {realpathSync} from 'node:fs';
 import {readFile, realpath, stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
@@ -88,7 +89,13 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
   });
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+function isMainModule() {
+  if (!process.argv[1]) return false;
+  try { return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url)); }
+  catch { return false; }
+}
+
+if (isMainModule()) {
   const host = process.env.AINPE_HOST || '127.0.0.1';
   const port = Number(process.env.AINPE_PORT || '4175');
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
