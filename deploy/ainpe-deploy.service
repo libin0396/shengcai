@@ -1,0 +1,11 @@
+[Unit]
+Description=Check AINPE main for a verified built release
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 /opt/ainpe/deployer/poll_release.py
+NoNewPrivileges=true
+PrivateTmp=true

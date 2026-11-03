@@ -30,6 +30,13 @@ function send(res, status, body, method, headers = {}) {
 export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client')} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
+  // Capture the release identity at startup, so a symlink swap cannot make an
+  // older process report the new release's identity.
+  let sourceCommit = null;
+  try {
+    const manifest = JSON.parse(await readFile(path.join(root, 'release.json'), 'utf8'));
+    if (typeof manifest.sourceCommit === 'string' && /^[0-9a-f]{40}$/.test(manifest.sourceCommit)) sourceCommit = manifest.sourceCommit;
+  } catch { /* Local development does not require a release manifest. */ }
 
   async function staticRequest(req, res) {
     if (!['GET', 'HEAD'].includes(req.method)) {
@@ -78,6 +85,11 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
 
   return createServer((req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    if ((req.url || '').split('?')[0] === '/api/health') {
+      if (!['GET', 'HEAD'].includes(req.method)) return send(res, 405, 'Method Not Allowed', req.method, {Allow:'GET, HEAD'});
+      return send(res, 200, JSON.stringify({status:'ok', sourceCommit}), req.method,
+        {'Content-Type':'application/json; charset=utf-8', 'Cache-Control':'no-store'});
+    }
     const fallback = () => { void staticRequest(req, res).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();

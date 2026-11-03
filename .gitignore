@@ -1,4 +1,4 @@
-# Dependencies and generated files
+# Dependencies and build output
 node_modules/
 dist/
 build/
@@ -7,30 +7,36 @@ coverage/
 .vite-temp/
 *.tsbuildinfo
 
-# Local data, archives, screenshots and working notes
+# Local feed snapshots and intermediate sync data
 data/
 资料库/
+sync/RUNBOOK.md
+
+# Local preview and QA artifacts
 qa/
-preview-*.png
 qa-*.png
+preview-*.png
 AGENTS.md
 DOT-HANDOFF.md
 design-qa.md
 
-# Credentials and machine-local configuration
+# Local secrets and machine-specific files
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *.p12
 *.pfx
+*.cred
+oauth-state.enc
+sync/mcp-runtime/.state/
+aliyun-*.png
+security-group-remove-preview.png
+*.log
 .aws/
 .codex/
 .claude/
-
-# Editor, OS and log files
-.DS_Store
 .idea/
 .vscode/
-*.log
-npm-debug.log*
+.DS_Store

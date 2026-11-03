@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodically check for a new AINPE release
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=10min
+Unit=ainpe-deploy.service
+
+[Install]
+WantedBy=timers.target

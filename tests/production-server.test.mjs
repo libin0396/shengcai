@@ -23,6 +23,7 @@ before(async () => {
     await copyFile(path.join(project, file), path.join(dir, file));
   }
   await writeFile(path.join(dir, 'package.json'), '{"type":"module"}');
+  await writeFile(path.join(dir, 'release.json'), JSON.stringify({sourceCommit:'a'.repeat(40)}));
   await symlink(dir, path.join(dir, 'current'), 'dir');
   await writeFile(path.join(client, 'index.html'), '<main>AINPE</main>');
   await writeFile(path.join(client, 'assets', 'app.js'), 'export default 1');
@@ -65,6 +66,10 @@ test('serves the SPA and assets with correct types, without hiding missing files
 });
 
 test('serves only validated read-only feed endpoints', async () => {
+  let health = await fetch(base + '/api/health');
+  assert.deepEqual(await health.json(), {status:'ok', sourceCommit:'a'.repeat(40)});
+  assert.equal(health.headers.get('cache-control'), 'no-store');
+  assert.equal((await fetch(base + '/api/health', {method:'POST'})).status, 405);
   let response = await fetch(base + '/api/feed');
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('cache-control'), 'no-store');
