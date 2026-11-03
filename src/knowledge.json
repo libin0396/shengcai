@@ -1,0 +1,1086 @@
+{
+  "updatedAt": "2026-11-02",
+  "articles": [
+    {
+      "id": "82258452244481412",
+      "entityType": "xq_topic",
+      "title": "零基础入门AI Agent的实用教程，本地可跑还能拆解主流Agent",
+      "summary": "这个课不错 有空的圈友可以自学下。 零基础入门 AI Agent 的基础教程。不只是教程，也是一个能在本地跑起来的 Agent：读写文件、执行命令、MCP、长期记忆，自带网页端看清每一步。从 100",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258452244481412",
+      "publishedAt": 1793624622,
+      "isDigested": false,
+      "likeCount": 153,
+      "commentCount": 7,
+      "topics": [
+        "agent"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "14425125888851412",
+      "entityType": "xq_topic",
+      "title": "7条视频2000万播放，单月收入1万+，我是如何制作高质量ai视频并变现的",
+      "summary": "大家好，我是亦笙，目前担任深海圈中的国内ai视频答疑教练。 今年6月份加入深海圈，9月中旬开始做国内ai视频，仅仅两个星期，7条视频，其中3条视频在抖音上破700万播放，在其他平台上也取得了不错的成绩",
+      "author": "承诺",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FpKVLtZ9TceJzr5GKdIw1ry2UDtK",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14425125888851412",
+      "publishedAt": 1793524215,
+      "isDigested": false,
+      "likeCount": 67,
+      "commentCount": 8,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "教程",
+      "overview": "这篇创作复盘从早期视频效果不佳谈起，记录了选题、故事情绪、角色形象、镜头制作与平台画幅的迭代。标题中的播放与收入是作者自述的阶段结果；更值得拆开看的是对标分析、制作流程，以及收到反馈后如何调整内容。"
+    },
+    {
+      "id": "22258212425811581",
+      "entityType": "xq_topic",
+      "title": "不懂代码做实体AI获客：搭工作台，2个月跑通20个B端询盘",
+      "summary": "10月我在东莞组了一场AI＋实体行业获客的线下局，这篇来复盘制造业AI获客的案例，是我们服务的一家设备工厂：2 个月拿到 20 个 B 端询盘。 因为涉及合作商家，本文不会展开具体服务项目，只分享其中",
+      "author": "些些怡",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FsWGQ0vv478m5TwUUlN5eT5kdJJZ",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22258212425811581",
+      "publishedAt": 1793255070,
+      "isDigested": false,
+      "likeCount": 26,
+      "commentCount": 4,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "14425484458252512",
+      "entityType": "xq_topic",
+      "title": "佛山的圈友们，这周六下午我们在南海组了个小局，聊聊 AI 获客和实际落地。",
+      "summary": "思行会分享个人流量经验：小程序不投流如何做到一万+用户，以及本地 AI 培训的获客打法。我会分享在物业和制造业做 FDE（深入企业业务现场，推进 AI 落地）的经验和踩过的坑。 周六有空的朋友欢迎来坐",
+      "author": "I.V.",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FpMIXt_o0ocV9qSH7IwHwlBxymJx",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14425484458252512",
+      "publishedAt": 1793202849,
+      "isDigested": false,
+      "likeCount": 8,
+      "commentCount": 1,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "55521581428185844",
+      "entityType": "xq_topic",
+      "title": "11月北京FDE航海家大会：7位嘉宾+20场夜话，全流程讲透FDE实操",
+      "summary": "FDE 可以说是最近几个月 AI 领域最热门的话题之一，好多圈友一直问生财有没有 FDE 相关的活动？这不就来了。 11 月初的航海家大会 FDE 专场，基本市面上 FDE 做得好的实践者和分析者都邀",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521581428185844",
+      "publishedAt": 1793103766,
+      "isDigested": true,
+      "likeCount": 98,
+      "commentCount": 12,
+      "topics": [
+        "fde"
+      ],
+      "kind": "动态",
+      "overview": "这则北京 FDE 活动预告把讨论重点放在真实业务：如何谈单、完成交付、对齐预期，以及应对客户组织里的阻力。文中介绍了 7 位主嘉宾、20 场主题夜话和次日下午交流，覆盖流量、拿单、转化到能力成长，可据此判断议题是否适合自己。"
+    },
+    {
+      "id": "22258218811851541",
+      "entityType": "xq_topic",
+      "title": "AI 视频情报站开放 MCP 了，接上 Claude、Codex，每天替你找新选题",
+      "summary": "上一篇把 AI 情报站放出来以后，反馈比我预想的好，x上已经20k的浏览了。 有朋友问，能不能像卡子的 AIhot 那样做个 MCP，让自己的 Agent 直接接进来查。我我觉得没毛，反正也是 AI",
+      "author": "Gary曹淦丨AI内容出海🚢",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fr47VJPVSgumVHBVcoXyHPFM9_2g",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22258218811851541",
+      "publishedAt": 1793035976,
+      "isDigested": false,
+      "likeCount": 54,
+      "commentCount": 3,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "动态",
+      "overview": "作者介绍了一个按日整理 AI 视频选题的情报站，以及向 Agent 开放查询的 MCP 入口。内容涉及新出现与持续升温的话题、模型和工具动态，也说明了选题来源和历史数据范围。可用于理解选题收集流程，进一步回到原始来源核验。"
+    },
+    {
+      "id": "14425482422541852",
+      "entityType": "xq_topic",
+      "title": "为了解决选题难，我搭了个聚焦 AI 视频的免费高质量情报站",
+      "summary": "大家好，我是 Gary 曹淦，AI 视频深海圈总教练。 跟大家一起做 AI 视频和出海这两年，我们一直在做风向标，从大家投稿和自己刷到的视频里挑值得做的赛道和对标，做久了有个越来越明显的感受：一个题材",
+      "author": "Gary曹淦丨AI内容出海🚢",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fr47VJPVSgumVHBVcoXyHPFM9_2g",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14425482422541852",
+      "publishedAt": 1792834559,
+      "isDigested": false,
+      "likeCount": 84,
+      "commentCount": 0,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "22258215525112441",
+      "entityType": "xq_topic",
+      "title": "教育行业AI获客，1500元成本，自然流撬动12万签单，我用AI skills带团队小红书获客全流程复盘",
+      "summary": "大家好，我是汐米。 从23年开始，我一直在做高客单业务的获客板块，也一直用 AI改造高客单的获客业务。 现在带教育团队获客，10个新手运营能有7个在 1-2 个月内跑通引流成交闭环，成交单子接连不断。",
+      "author": "汐米",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FtvAxcJI9nnu_83b5jryH6CGaIgd",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22258215525112441",
+      "publishedAt": 1792759881,
+      "isDigested": false,
+      "likeCount": 57,
+      "commentCount": 8,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "55521548884488244",
+      "entityType": "xq_topic",
+      "title": "拿下 AI 落地最值钱的一公里 | 11月7日 北京【航海家 | FDE大会】来啦！",
+      "summary": "FDE不是新概念，亦仁FDE超级标也发了有半年，到底有没有圈友赚到钱？ 聊了一圈，说实话结果我是有点眼红的。先下场的那批人，有的赚到百万，有的已经做到千万了。 有7个月没办航海家大会了，这次我们聊FD",
+      "author": "坤汀",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FgmX__ICmNEWuyoMskLUue_DWYdY",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521548884488244",
+      "publishedAt": 1792729640,
+      "isDigested": true,
+      "likeCount": 101,
+      "commentCount": 4,
+      "topics": [
+        "fde"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "82258221528851222",
+      "entityType": "xq_topic",
+      "title": "【FDE系列28】FDE项目还没开始，为什么要先想好怎么退出？",
+      "summary": "最近在持续整理企业 AI 落地和 FDE 实战中的一些经验，这是第 28 篇。 FDE项目开始时，就应该想清楚：完成交付以后，客户怎么自己运转，遇到问题由谁来处理。 这里说的退出，是从日常介入中逐步退",
+      "author": "赵鹤",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn1g6Z6nONYrV2oWgtZaiuAIX59b",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258221528851222",
+      "publishedAt": 1792141325,
+      "isDigested": false,
+      "likeCount": 11,
+      "commentCount": 0,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "45548558122581818",
+      "entityType": "xq_topic",
+      "title": "从免费到100万客单，服务100+企业客户｜“从0开始做FDE”说人话SOP",
+      "summary": "大家好！我是一登，多次生财AI航海教练，坐标厦门，产品经理出身，创业十来年，四年前入局AI，做过AI绘画小程序，累计5万用户和2000+付费用户，后来转做ToB服务，接触过100+家企业，深度服务了1",
+      "author": "一登Eden",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Ft7nZ2jaRtB6Jj2zDjdLkNK1rumt",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548558122581818",
+      "publishedAt": 1791742932,
+      "isDigested": true,
+      "likeCount": 76,
+      "commentCount": 9,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "82258281841185552",
+      "entityType": "xq_topic",
+      "title": "【FDE系列21】你的工作是 FDE 还是外包？",
+      "summary": "最近在持续整理企业 AI 落地和 FDE 实战中的一些经验，这是第 21 篇。 FDE 的全称是 Forward Deployed Engineer。我觉得这里最值得琢磨的词是 Forward。一个人",
+      "author": "赵鹤",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn1g6Z6nONYrV2oWgtZaiuAIX59b",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258281841185552",
+      "publishedAt": 1790876950,
+      "isDigested": false,
+      "likeCount": 7,
+      "commentCount": 1,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "82258285241224212",
+      "entityType": "xq_topic",
+      "title": "做FDE，如何让老板交出关键信息：用情绪价值转动服务飞轮，带来转介绍",
+      "summary": "👋 大家好，我是袁欣 之前写过一篇帖子，介绍了我在做的 FDE 产品「CEO 外脑」 从今年 3 月开始，5 个多月时间，我们为 16 家企业提供了定制化的 AI 服务，累计营收超过 50 万元 这",
+      "author": "袁欣就是圆心",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FhbuA-RmRVa2ehVDISjaMb4LuuAC",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258285241224212",
+      "publishedAt": 1790690490,
+      "isDigested": true,
+      "likeCount": 32,
+      "commentCount": 5,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "45548541884252448",
+      "entityType": "xq_topic",
+      "title": "万字长文：见到最真实的现状后，我决定放弃FDE",
+      "summary": "两个月靠FDE赚了20万，自有平台储备了超500个FDE，见了超过60个真实项目，走访了多家真正赚钱的FDE公司，我想我应该有资格也有必要站出来说一下这行业最真实的现状。期望能帮圈友们尽量少踩一些坑。",
+      "author": "苍述",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FsLEpvxcIOAyvdKBBN9oMF4mgiWP",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548541884252448",
+      "publishedAt": 1790234319,
+      "isDigested": true,
+      "likeCount": 74,
+      "commentCount": 11,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论",
+      "overview": "作者从接单、团队交付和客户数据底座复盘 FDE 业务，提醒读者大单金额不等于项目利润，需求边界、历史系统和数据治理可能消耗大量交付成本。适合与成功案例对照阅读，先判断项目能否做、如何验收，再考虑扩张。"
+    },
+    {
+      "id": "22258254121825581",
+      "entityType": "xq_topic",
+      "title": "掌媒发布权威GEO(Agent Ready)白皮书，AI获客从被搜索变被引用",
+      "summary": "掌媒科技有限公司正式发布《权威 GEO (Agent Ready) 白皮书》，以可复算、可审计的数学模型，界定数字资产在 AI 时代的就绪标准。 白皮书系统建立： Agent Ready 五层 24",
+      "author": "静水流深",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fkpf8Xsf-p_H2uOvzqK4A0sxLRQV",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22258254121825581",
+      "publishedAt": 1790209278,
+      "isDigested": false,
+      "likeCount": 5,
+      "commentCount": 1,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "55521524284482554",
+      "entityType": "xq_topic",
+      "title": "开源 fde 手册，内有 5 个 fde 案例，圈友可自取。",
+      "summary": "内容详情见 github:",
+      "author": "黄小木",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FqzzTJAhbIqE4gs3KqkkJ8eOOFCL",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521524284482554",
+      "publishedAt": 1790046284,
+      "isDigested": false,
+      "likeCount": 11,
+      "commentCount": 4,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "55521525252258854",
+      "entityType": "xq_topic",
+      "title": "我给自己开的工厂当了回 FDE：3 个软件 + 一个 AI 智能体的完整从 0 到 1",
+      "summary": "我开了一家烫画厂（白墨烫画，往 T 恤、帆布袋上印图案那种），日常管理交给表哥，但工厂是我的。硅谷有个爆火岗位叫 FDE——前沿部署工程师，蹲进客户现场，挖需求、做系统、负责到用起来为止。我发现自己干",
+      "author": "袁锐钦",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FtYEMdnL09TcXN0MS0-nZR54HA8_",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521525252258854",
+      "publishedAt": 1789794901,
+      "isDigested": true,
+      "likeCount": 87,
+      "commentCount": 13,
+      "topics": [
+        "fde"
+      ],
+      "kind": "案例",
+      "overview": "一位烫画厂经营者记录了用 AI 编程解决自家工厂问题的过程：先到现场找需求，再收紧范围、做最小闭环，最后观察是否被持续使用。文章也复盘了初版功能过多、员工不用的经历，强调录单、收款和看欠款等真实工作习惯。"
+    },
+    {
+      "id": "45548545482518158",
+      "entityType": "xq_topic",
+      "title": "生财是否会推出 FDE 的深海圈|深圳FDE岗位-求职参考",
+      "summary": "这篇文章由这个匿名提问引起，于是昨晚我就把在BOSS上深圳区关于FDE的相关岗位进行了爬取 我想爬取更多的数据分析，IP被封了，如下图所示： 我对数据做了一个汇总 更好的阅读体验见飞书文档 深圳FDE",
+      "author": "书情小跟班",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn6rxhllIUJnv6g0mAIH1R1mppNn",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548545482518158",
+      "publishedAt": 1789783789,
+      "isDigested": false,
+      "likeCount": 12,
+      "commentCount": 2,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "45548548858244848",
+      "entityType": "xq_topic",
+      "title": "FDE深海圈和就业机会的事儿，我还在琢磨",
+      "summary": "最近好多人问我，我想想看怎么搞",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548548858244848",
+      "publishedAt": 1789741286,
+      "isDigested": false,
+      "likeCount": 75,
+      "commentCount": 28,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "82258815148528882",
+      "entityType": "xq_topic",
+      "title": "扫完 234 篇 AI 视频帖，我发现真正的门槛不是模型，是 Skill",
+      "summary": "扫完 234 篇 AI 视频帖，我发现真正的门槛不是模型，是 Skill 说明：本文是一份扫描型整理报告。所有案例与数据均来自生财圈友的公开帖子，原帖链接附在对应位置。我做的是检索、归类、对照和补充判",
+      "author": "吕德鑫",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fq6em_7gDBmikaw3G0AGRQRd_0Gf",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258815148528882",
+      "publishedAt": 1789189173,
+      "isDigested": false,
+      "likeCount": 55,
+      "commentCount": 3,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "55521144558145414",
+      "entityType": "xq_topic",
+      "title": "新手怎么入行FDE，怎么用AI做副业",
+      "summary": "【小白零基础教程】20分钟教会你普通人到底怎么拿AI接单赚钱 前几天看到亦仁大佬和圈友的讨论，有很多疑惑只会AI但是没有项目怎么赚钱？ 但实际上，AI就是最大的项目。 这个时代真正的风口，不是AIGC",
+      "author": "苍述",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FsLEpvxcIOAyvdKBBN9oMF4mgiWP",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521144558145414",
+      "publishedAt": 1788685085,
+      "isDigested": false,
+      "likeCount": 46,
+      "commentCount": 11,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "14425514122482882",
+      "entityType": "xq_topic",
+      "title": "【FDE系列6】大厂招聘FDE：为什么要有技术背景？",
+      "summary": "最近在持续整理企业 AI 落地和 FDE 实战中的一些经验，这是第 6 篇。 大厂招聘 FDE 时经常强调技术背景，因为 FDE 不只是理解业务、沟通需求和推动项目，还必须具备把方案推进到真实环境的工",
+      "author": "赵鹤",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn1g6Z6nONYrV2oWgtZaiuAIX59b",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14425514122482882",
+      "publishedAt": 1788431528,
+      "isDigested": false,
+      "likeCount": 11,
+      "commentCount": 0,
+      "topics": [
+        "fde"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "55521145258184824",
+      "entityType": "xq_topic",
+      "title": "如何加速AI视频变现与放大&AI视频深海圈第七期报名启动",
+      "summary": "大家好，我是Gary曹淦，和波妮一起担任生财AI 视频深海圈总教练。 目前咱的社群圈友 1200+，YPP频道500+，银奖频道100+、金牌频道10+，总播放量超过400亿，过去一年应该是国内在Yo",
+      "author": "Gary曹淦丨AI内容出海🚢",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fr47VJPVSgumVHBVcoXyHPFM9_2g",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521145258184824",
+      "publishedAt": 1788345215,
+      "isDigested": false,
+      "likeCount": 38,
+      "commentCount": 1,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "82258848184821882",
+      "entityType": "xq_topic",
+      "title": "没想到退伍后折腾AI一年，8月最后一个项目刚交付完，花了7天做了个私人订制的AI获客系统，2.2w。",
+      "summary": "今天9月1号，想起来去年今天刚退伍。 这一年就是摸着石头过河。一开始真不知道AI能干嘛，到处看帖子、加群、试工具。接过几千块的小单子，也接过大几十万的项目，搞砸的也不少。最难的时候真想过算了。 还好进",
+      "author": "若宇",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FtbKj83XCzoIeoIUl6nlobzFW7wu",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258848184821882",
+      "publishedAt": 1788262986,
+      "isDigested": false,
+      "likeCount": 7,
+      "commentCount": 6,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "案例"
+    },
+    {
+      "id": "45548858482452858",
+      "entityType": "xq_topic",
+      "title": "旅游获客怎么做？试试这套自动化AI获客系统",
+      "summary": "旅游怎么获客？ 一套AI获客系统，可自动寻找目标客户，自动建联，全程自动化，无需人工干预，7*24小时帮你获客。有需要的老板找我。",
+      "author": "孟繁国",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fvv2eXrNaV8rZD5Q17svFOgytZCa",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548858482452858",
+      "publishedAt": 1787745926,
+      "isDigested": false,
+      "likeCount": 4,
+      "commentCount": 2,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "82258825454528882",
+      "entityType": "xq_topic",
+      "title": "300人点赞投锚，月入7w后，我的Agent员工军团搭建流程全公开。（38000字实操版）",
+      "summary": "300人点赞投锚，月入7w后，我的Agent员工军团搭建流程全公开。（38000字实操版） 自2026年6月7日参加广东航海家大会后， 至今2个多月的时间，我用codex烧了近300亿的Token，",
+      "author": "枕棠",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FglUQDifEG0_lGUlhPLBFK7oii57",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258825454528882",
+      "publishedAt": 1787688969,
+      "isDigested": true,
+      "likeCount": 301,
+      "commentCount": 26,
+      "topics": [
+        "agent"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "22258881142551151",
+      "entityType": "xq_topic",
+      "title": "生财FDE方向招人爆收几百份简历，我在非洲，面试9月启动",
+      "summary": "这几天“爆单”了，收到了几百份简历，从来没有一次招人感受到这么大的热情，感谢大家对生财的信任和对 FDE 这个方向的认可。 不过这几天到 8 月底，我正和今年生财 418 销冠团的 top 10 伙伴",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22258881142551151",
+      "publishedAt": 1787549558,
+      "isDigested": true,
+      "likeCount": 122,
+      "commentCount": 19,
+      "topics": [
+        "fde"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "22255154882458281",
+      "entityType": "xq_topic",
+      "title": "【从0起步2个月赚超20万】:如何入局FDE，以及FDE的未来",
+      "summary": "今天正好是我创业的第二个月，收入也突破20万，而在第一个月的时候这个数字还是4万。 也感谢生财提供的视野和信息，这些东西成了我敢辞职投入FDE事业的勇气。 介绍一下我自己，生财5篇精华帖作者，北京深循",
+      "author": "苍述",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FsLEpvxcIOAyvdKBBN9oMF4mgiWP",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255154882458281",
+      "publishedAt": 1787142159,
+      "isDigested": true,
+      "likeCount": 394,
+      "commentCount": 28,
+      "topics": [
+        "fde"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "22255152441224441",
+      "entityType": "xq_topic",
+      "title": "生财有术 FDE 招聘",
+      "summary": "今天发一条招聘消息。 我想找一批新的伙伴，加入生财团队，和我们一起做接下来几年的事。 但这次招聘，和生财以往的每一次都不太一样—— FDE 是我们对一类人的称呼： 一个 FDE 的工作方式是这样的：",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255152441224441",
+      "publishedAt": 1787048438,
+      "isDigested": true,
+      "likeCount": 387,
+      "commentCount": 82,
+      "topics": [
+        "fde"
+      ],
+      "kind": "动态"
+    },
+    {
+      "id": "22255158144215451",
+      "entityType": "xq_topic",
+      "title": "如何将【安卓手机+飞书】搭建24小时在线AI agent员工",
+      "summary": "你好，我是 馆主；小白口中的大佬，半年连续中标100+风向标的圈友！ 我相信大部分小白在电脑端Codex搭建好agent后，发现电脑一关机你的AI agent员工就罢工，焦虑去问AI、问别人；发现别人",
+      "author": "馆主",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fs9at58_nDeRty4CxtSpmT0LyaQn",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255158144215451",
+      "publishedAt": 1786878983,
+      "isDigested": false,
+      "likeCount": 91,
+      "commentCount": 11,
+      "topics": [
+        "agent"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "55522444182255514",
+      "entityType": "xq_topic",
+      "title": "花12万找FDE踩坑失败经验，用AI自研系统，分享真实甲方的需求变现路径——完整复盘（万字长文）",
+      "summary": "大家好，我是富二蛋，团队 29 人，22年加入生财。 这次分享适合用Ai搭应用，准备找外包开发，正在做系统的人，包括正准备进去FDE领域的人。 我会复盘∶12万FDE项目为什么没跑通，甲方需求是怎么一",
+      "author": "Egg2rich",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FnDoBncaX3upbQhtF4xBaXIrlHil",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55522444182255514",
+      "publishedAt": 1785725438,
+      "isDigested": true,
+      "likeCount": 112,
+      "commentCount": 27,
+      "topics": [
+        "fde"
+      ],
+      "kind": "案例"
+    },
+    {
+      "id": "14422114455242422",
+      "entityType": "xq_topic",
+      "title": "如何把你的业务流程做成 AI Agent 员工",
+      "summary": "大家好，我是鹿书野，00 后，目前是 B 站好物深海圈教练以及马上的AI Agent架构师航海教练。 去年考上在职研究生后，我开始加入生财接触 B 站好物项目，完成了从 0 到 1；今年又和 Dust",
+      "author": "鹿书野",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FlgG0aeei56BkulEumD3dGY8eiM8",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14422114455242422",
+      "publishedAt": 1785466737,
+      "isDigested": true,
+      "likeCount": 462,
+      "commentCount": 28,
+      "topics": [
+        "agent"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "22255445882452841",
+      "entityType": "xq_topic",
+      "title": "从真实现场到 10+ 家付费内测｜一个行业人跑通 FDE 产品化的完整过程",
+      "summary": "过去半年，我在 AI 上烧了400多 亿 Token，验证了一个反常识的判断： 在 AI 时代，最深的护城河可能不再是技术，而是对行业“脏活累活”的深度理解。 一个不懂代码、但真正懂行业的人，能不能从",
+      "author": "李可",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FpQ50_7od0cGxbpcdaejl5c4zEQ4",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255445882452841",
+      "publishedAt": 1784969923,
+      "isDigested": true,
+      "likeCount": 111,
+      "commentCount": 21,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "82255445541184442",
+      "entityType": "xq_topic",
+      "title": "Token烧掉百亿后，我用Agent拆解短视频IP，做出了个人IP单视频百万播放！",
+      "summary": "这篇文章，我主要分享了这些内容： 我为什么从手动拆解开始用 AI 拆解小红书、视频号和抖音内容 不同社交媒体平台分别应该看什么，哪些内容可以迁移，哪些不能照搬 我怎样把重复的内容拆解流程做成 Agen",
+      "author": "A",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FmFOBIQ4wTp9ILVLrQsgrI6sN-z2",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82255445541184442",
+      "publishedAt": 1784893154,
+      "isDigested": true,
+      "likeCount": 204,
+      "commentCount": 9,
+      "topics": [
+        "agent"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "14422112215281442",
+      "entityType": "xq_topic",
+      "title": "Agent 时代做生意的 100 条反常识",
+      "summary": "fable5 太牛了，内容创作上无敌存在。这篇文章我收获了非常多的新认知，我认识的人里面没有一个人能写出同等水平文章。",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14422112215281442",
+      "publishedAt": 1784879692,
+      "isDigested": true,
+      "likeCount": 271,
+      "commentCount": 7,
+      "topics": [
+        "agent"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "14422158455881222",
+      "entityType": "xq_topic",
+      "title": "【保姆级教程】109元 一年的服务器，搭建亦仁同款agent（社媒兼容版）",
+      "summary": "这篇讲我怎么在一台 109 元/年的服务器上，搭一个亦仁分享的「小D」音视频转录整理 agent ——在转录整理之外，加上了小红书、抖音、微信公众号、视频号四个平台的内容搜索和采集，把「随手收藏」变成",
+      "author": "陈钟琦",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fm6eZnA7IpvjjuUrotDX79okC0Z4",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14422158455881222",
+      "publishedAt": 1784438069,
+      "isDigested": true,
+      "likeCount": 326,
+      "commentCount": 38,
+      "topics": [
+        "agent"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "55522414484184224",
+      "entityType": "xq_topic",
+      "title": "我最近几个月关于 Agent 和 FDE 的实践与观察，以及对未来的判断",
+      "summary": "昨晚，我和坤汀在视频号直播间给大家做了一次将近 4 小时的分享，很多人听完后跟我说收获特别大，觉得方向清晰了很多。 为什么选择在这个时间，我要选择主动出来给大家进行一场直播？ 这几个月 Agent 的",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55522414484184224",
+      "publishedAt": 1784200448,
+      "isDigested": true,
+      "likeCount": 632,
+      "commentCount": 39,
+      "topics": [
+        "fde",
+        "agent"
+      ],
+      "kind": "案例"
+    },
+    {
+      "id": "82255458844828822",
+      "entityType": "xq_topic",
+      "title": "生财圈友谁在做 AI 获客系统",
+      "summary": "",
+      "author": "灯火阑珊",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FnYVIJ7rQCHLM-vlIhAYlTkxhyuF",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82255458844828822",
+      "publishedAt": 1783330999,
+      "isDigested": false,
+      "likeCount": 2,
+      "commentCount": 1,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "22255211218158421",
+      "entityType": "xq_topic",
+      "title": "分享个抖音电脑版AI获客系统，各行业低成本精准获客",
+      "summary": "全国各地，各行各业需要获客，线上线下可做 抖音电脑版-AI获客系统 适合全国各行业：软件里 输入你的行业词，产品词，关键词，客户群体 系统自动去同行的抖y视频下方，获取评论区留言用户，公开的信息、包含",
+      "author": "twg",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FlXLpIEa7k-AMz8GACC1MbP4ng2B",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255211218158421",
+      "publishedAt": 1782928473,
+      "isDigested": false,
+      "likeCount": 2,
+      "commentCount": 6,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "22255212241128221",
+      "entityType": "xq_topic",
+      "title": "SCBI 第二十六期：这个质量的 AI 视频，谁不爱看？",
+      "summary": "最近刷抖音，大家有没有注意到含 AI 量越来越高了。我不完全统计了一下 10 条视频至少 7 条。 以前大家看 AI 视频，多少会带着一点挑刺的心态：手有没有崩，嘴型对不对，人物像不像，镜头稳不稳。但",
+      "author": "杨爽@生财有术",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fr5kgRMZBRtbdKvVK_N_Ki4cN77i",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255212241128221",
+      "publishedAt": 1782477308,
+      "isDigested": true,
+      "likeCount": 160,
+      "commentCount": 26,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "45544522454884258",
+      "entityType": "xq_topic",
+      "title": "通过3月航海，每天约3小时，我靠AI视频定制做到月收入 5000+ 的项目复盘",
+      "summary": "圈友们好，我是003，生财一年级新生，在校学生一位。 这次受邀，和大家分享我通过【3月ai定制服务航海】从0到1跑项目的经历，以及新人路上大概率会踩的坑。 这篇只讲三件事：新人怎么在2天内快速跑通0-",
+      "author": "003",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FqWoilusNR3edY-PmoseenTDmpm_",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45544522454884258",
+      "publishedAt": 1782223155,
+      "isDigested": true,
+      "likeCount": 203,
+      "commentCount": 33,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "案例",
+      "overview": "作者复盘了 AI 视频定制服务的获客、沟通、制作和交付流程。具体做法包括先确认时长、风格与画幅，再确认脚本、分镜及首段效果；接单前评估价格、时间和修改次数。适合对照客户需求与工具成本，建立自己的交付边界。"
+    },
+    {
+      "id": "22255248558228281",
+      "entityType": "xq_topic",
+      "title": "抖音电脑版AI获客系统：全行业低成本精准获客",
+      "summary": "全国各地，各行各业需要获客，线上线下可做 [庆祝]抖音电脑版-AI获客系统 [庆祝]适合全国各行业：软件里 输入你的行业词，产品词，关键词，客户群体 [强]系统自动去同行的抖y视频下方，获取评论区留言",
+      "author": "twg",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FlXLpIEa7k-AMz8GACC1MbP4ng2B",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255248558228281",
+      "publishedAt": 1781715237,
+      "isDigested": false,
+      "likeCount": 0,
+      "commentCount": 8,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "14422412141558582",
+      "entityType": "xq_topic",
+      "title": "YouTube月入万刀、视频号百万GMV，通过AI视频拿到结果的圈友都做对了什么",
+      "summary": "大家好，我是Gary曹淦，和波妮一起担任生财YouTube AI 视频深海圈总教练，嗯，现在我们的深海圈已经正式更名叫AI视频深海圈了。 5月，我们带了一小批深海圈过去做YouTube的高手，从0开始",
+      "author": "Gary曹淦丨AI内容出海🚢",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fr47VJPVSgumVHBVcoXyHPFM9_2g",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14422412141558582",
+      "publishedAt": 1781688385,
+      "isDigested": true,
+      "likeCount": 101,
+      "commentCount": 8,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "14422455514455412",
+      "entityType": "xq_topic",
+      "title": "生财圈友必看：AI Agent时代，未来只需要Agent架构师和IP",
+      "summary": "昨天生财周会，我在团队内部做了一个分享，想了想，觉得不应该只在内部讲，今天也跟星球的圈友们延伸聊一下。 我认为未来的生财团队只会剩下两种人—— 和 。 Agent 架构师，是能从0到1把 Agent",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14422455514455412",
+      "publishedAt": 1780383100,
+      "isDigested": true,
+      "likeCount": 603,
+      "commentCount": 32,
+      "topics": [
+        "agent"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "22255811148841241",
+      "entityType": "xq_topic",
+      "title": "万字解析｜为啥企业AI落地这么难？（附《2026中国FDE人才白皮书》）",
+      "summary": "这篇文章2.5万字，我写了3天，总算是把“企业AI落地”这件事，盘清楚了。 因为我的很多企业客户，都有非常严重的AI焦虑，，抓不到方向，也不知道AI来了该怎么办 我出这个内容，主要是给我的客户们缓解一",
+      "author": "曲率出逃",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fo22tW5pywpcPYY7c3JS4mmYAuwi",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255811148841241",
+      "publishedAt": 1779709928,
+      "isDigested": true,
+      "likeCount": 67,
+      "commentCount": 9,
+      "topics": [
+        "fde"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "55522184842441514",
+      "entityType": "xq_topic",
+      "title": "从 AI+ 到 AI Native：Agent 时代已经到了",
+      "summary": "最近我在广深待了快 20 天，和大量 AI 高手进行了深度交流。认知又发生了一些变化——Agent 自动化的时代已经提前到来。一个月前我还认为半自动化比全自动化是更好的模式。 生财最近也在发生巨大的变",
+      "author": "坤汀",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FgmX__ICmNEWuyoMskLUue_DWYdY",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55522184842441514",
+      "publishedAt": 1779447648,
+      "isDigested": true,
+      "likeCount": 244,
+      "commentCount": 31,
+      "topics": [
+        "agent"
+      ],
+      "kind": "讨论"
+    },
+    {
+      "id": "22811428254242421",
+      "entityType": "xq_topic",
+      "title": "2026年 如何用AI视频带货+IP，打造被动现金流系统 ！",
+      "summary": "大家好，我是亦恒，图书赛道3年从业者，也是26年3月份的AI短视频图书带货航海教练，今天这篇帖子和大家聊聊2026年关于AI视频图书带货和IP方面的经验与思考。 在各大平台不断的更新对AI生产内容质量",
+      "author": "亦恒",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FjGdtUYOvpyKTf-r4KhQz9vlufmW",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22811428254242421",
+      "publishedAt": 1773976183,
+      "isDigested": true,
+      "likeCount": 182,
+      "commentCount": 10,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "14588128422212882",
+      "entityType": "xq_topic",
+      "title": "实体店如何用AI获客？以美容院为例，如何用1万条真实评论沉淀出获客内容，并做出一个拓客skill",
+      "summary": "我是李可，从事美容行业15年。 自己经营3家门店，帮别人做线上代运营，有20几家门店。 加入生财已经7年时间，接触Ai也有4年时间。 算是实体行业里，比较懂Ai的那一批人了。 2021 年在生财的大航",
+      "author": "李可",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/FpQ50_7od0cGxbpcdaejl5c4zEQ4",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/14588128422212882",
+      "publishedAt": 1773058159,
+      "isDigested": true,
+      "likeCount": 273,
+      "commentCount": 25,
+      "topics": [
+        "ai-growth"
+      ],
+      "kind": "教程"
+    },
+    {
+      "id": "5121542448454444",
+      "entityType": "xq_topic",
+      "title": "【超级标02】AI视频",
+      "summary": "02 来了，今天发布第二条超级标，请坐稳扶牢，发车！ 本次超级标是：通过 AI 生成的各种视频，上传到Youtube和shorts，获取广告分成，空间无限大，以下我来说明理由： 1/ 这是一个超级巨大",
+      "author": "亦仁",
+      "avatar": "https://search01.shengcaiyoushu.com/upload/avatar/Fn3NQqCN8nuGF86yZPXSbEsl0mb3",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/5121542448454444",
+      "publishedAt": 1729738585,
+      "isDigested": true,
+      "likeCount": 1093,
+      "commentCount": 166,
+      "topics": [
+        "ai-video"
+      ],
+      "kind": "讨论"
+    }
+  ],
+  "comments": [
+    {
+      "id": "17919703987082",
+      "articleId": "45548541884252448",
+      "articleTitle": "万字长文：见到最真实的现状后，我决定放弃FDE",
+      "author": "一方小居",
+      "text": "请问陪跑一般是怎么定义完成的怎么样？内训可以定义一场多少钱，用场次来核算，智能体也有成熟的交付物，一个多少钱，这个陪跑要怎么定义比较好呢？",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1791970398,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548541884252448",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "17907737713669",
+      "articleId": "45548541884252448",
+      "articleTitle": "万字长文：见到最真实的现状后，我决定放弃FDE",
+      "author": "yanlin.w",
+      "text": "在前司以前就是干tob的企业定制化数据平台，你以为在做一个高大上的前沿的东西，实际上真正交付的时候前期要花大量人力物力干各种脏活累活然后企业还各种不满意或者提各种需求",
+      "viewpoint": "实践经验",
+      "publishedAt": 1790773771,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548541884252448",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "17903100626241",
+      "articleId": "45548541884252448",
+      "articleTitle": "万字长文：见到最真实的现状后，我决定放弃FDE",
+      "author": "法恒",
+      "text": "关键还是要界定服务的边界",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1790310062,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548541884252448",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "17902618020008",
+      "articleId": "45548541884252448",
+      "articleTitle": "万字长文：见到最真实的现状后，我决定放弃FDE",
+      "author": "双鱼",
+      "text": "如果tob，跟以前做项目一样的啊，大项目难交付，就把大项目拆成小项目去交付。",
+      "viewpoint": "交流观点",
+      "publishedAt": 1790261802,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548541884252448",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "5124242281441114",
+      "articleId": "22255154882458281",
+      "articleTitle": "【从0起步2个月赚超20万】:如何入局FDE，以及FDE的未来",
+      "author": "嘉应岛主",
+      "text": "我很认同，现有案例，哪怕免费帮人做，其次就是要去做自媒体，最后就是经常参加活动获得资源与介绍。",
+      "viewpoint": "交流观点",
+      "publishedAt": 1788509141,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255154882458281",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "17876420977959",
+      "articleId": "22255154882458281",
+      "articleTitle": "【从0起步2个月赚超20万】:如何入局FDE，以及FDE的未来",
+      "author": "铁角马",
+      "text": "toB的定制化是避不开的问题，现在 coding agent 可以 cover 一部分定制，但最终本质上还是一份卖自己时间的工作。如果都是定制，为什么不把时间放在解决自己的问题上呢？",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1787642097,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255154882458281",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "17872083270896",
+      "articleId": "22255154882458281",
+      "articleTitle": "【从0起步2个月赚超20万】:如何入局FDE，以及FDE的未来",
+      "author": "路知遥",
+      "text": "期待后续博主的实例分享👏👏👏",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1787208327,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255154882458281",
+      "topic": "fde",
+      "excerpt": true
+    },
+    {
+      "id": "8852114845488122",
+      "articleId": "22255212241128221",
+      "articleTitle": "SCBI 第二十六期：这个质量的 AI 视频，谁不爱看？",
+      "author": "Ashley      ༽",
+      "text": "Ai剧情视频，决定能不能跑的还是在于内容（剧本），其他都比较次要。像使用的生成视频工具都大差不差，哪个成本低用哪个，剪辑我就是能拼凑流畅就好，不下重功夫😂。",
+      "viewpoint": "实践经验",
+      "publishedAt": 1782910252,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255212241128221",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "17826537800298",
+      "articleId": "22255212241128221",
+      "articleTitle": "SCBI 第二十六期：这个质量的 AI 视频，谁不爱看？",
+      "author": "篮子🍀",
+      "text": "高质感 AI 视频不是提示词项目，它更像一个小型内容工厂，get了",
+      "viewpoint": "交流观点",
+      "publishedAt": 1782653780,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255212241128221",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "5125885815445254",
+      "articleId": "22255212241128221",
+      "articleTitle": "SCBI 第二十六期：这个质量的 AI 视频，谁不爱看？",
+      "author": "Jack",
+      "text": "这个时候，编导的价值就上来了，剧情、视听语言、调色、光影、节奏都需要很久才能学会用好",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1782747693,
+      "likeCount": 1,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255212241128221",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "2852112814814141",
+      "articleId": "22255212241128221",
+      "articleTitle": "SCBI 第二十六期：这个质量的 AI 视频，谁不爱看？",
+      "author": "我爱我家",
+      "text": "最近抖音有个做天庭三大反骨仔山海经的。真滴精品，非常好奇怎么做出来的",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1782477782,
+      "likeCount": 1,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/22255212241128221",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "1524885114844822",
+      "articleId": "45544522454884258",
+      "articleTitle": "通过3月航海，每天约3小时，我靠AI视频定制做到月收入 5000+ 的项目复盘",
+      "author": "景清",
+      "text": "制作ai视频对质量的保障是要对内容脚本进行理解，过于追求效率让ai生成文字内容可能效果不一定理想（面对花大钱的客户细节还是要自己处理，这样对方才愿意长期跟你合作），其次就是字幕要对应相应画面把握切换节奏",
+      "viewpoint": "实践经验",
+      "publishedAt": 1782242879,
+      "likeCount": 8,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45544522454884258",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "17824628533592",
+      "articleId": "45544522454884258",
+      "articleTitle": "通过3月航海，每天约3小时，我靠AI视频定制做到月收入 5000+ 的项目复盘",
+      "author": "陌蒂莫西",
+      "text": "但是当你的单量上来的时候，不能只靠豆包了，更多是要用即梦的 Seedance，这里的成本就会比较高了吧，但同时又比较担心没有足够的一个单子进来，然后担心亏本。",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1782462853,
+      "likeCount": 1,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45544522454884258",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "17823669083549",
+      "articleId": "45544522454884258",
+      "articleTitle": "通过3月航海，每天约3小时，我靠AI视频定制做到月收入 5000+ 的项目复盘",
+      "author": "酷乐猫",
+      "text": "从客服沟通到制作交付全流程有没可能弄成自动化？ 有卡点吗",
+      "viewpoint": "提醒与疑问",
+      "publishedAt": 1782366908,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45544522454884258",
+      "topic": "ai-video",
+      "excerpt": true
+    },
+    {
+      "id": "17824892249967",
+      "articleId": "45544522454884258",
+      "articleTitle": "通过3月航海，每天约3小时，我靠AI视频定制做到月收入 5000+ 的项目复盘",
+      "author": "高现",
+      "text": "感谢分享，我之前也想做ai视频定制，但是不知道为什么找了几家淘店，加进去之后都是剪辑类的，很少ai视频代做的",
+      "viewpoint": "实践经验",
+      "publishedAt": 1782489224,
+      "likeCount": 0,
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45544522454884258",
+      "topic": "ai-video",
+      "excerpt": true
+    }
+  ],
+  "topicGuides": {
+    "fde": {
+      "intro": "FDE 关注把 AI 用到真实业务里。这里把接单、交付与经营案例放在一起，也保留定制成本、需求边界和数据底座的不同看法，帮助你判断适合做什么、需要补什么能力。",
+      "activityTakeaways": [
+        {
+          "title": "看清从流量到拿单的路径",
+          "description": "预告包含流量、拿单与转化等环节的实战分享，可带着自己的获客问题对照讨论。",
+          "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521581428185844"
+        },
+        {
+          "title": "提前理解交付里的难题",
+          "description": "议题涉及如何交付、对齐客户预期，以及应对被服务组织的阻力，适合已有项目困惑的实践者。",
+          "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521581428185844"
+        },
+        {
+          "title": "对照不同人的实战经验",
+          "description": "预告列出 7 位主嘉宾、20 场主题夜话和次日下午交流；具体安排与参加条件以报名页为准。",
+          "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521581428185844"
+        }
+      ],
+      "audience": [
+        "想了解 FDE 接单与交付流程的人",
+        "正在做企业 AI 落地、需要对照实际项目的人",
+        "带着获客、预期对齐或组织协作问题来交流的人"
+      ],
+      "readingPath": [
+        "先理解 FDE 在做什么",
+        "再看具体交付与接单案例",
+        "对照失败复盘和圈友疑问",
+        "结合议题判断是否参加线下交流"
+      ],
+      "officialRegistrationUrl": "https://scys.com/form/z27Vz1Dq",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521581428185844"
+    },
+    "ai-video": {
+      "intro": "从选题、制作到分发与变现，集中看 AI 视频的实操案例和圈友讨论。既看拿到结果的过程，也看成本、质量和持续更新的难题。",
+      "readingPath": [
+        "先确定内容形式和平台",
+        "拆解可复用的制作流程",
+        "核对成本与结果口径",
+        "从一个小选题开始验证"
+      ]
+    }
+  }
+}

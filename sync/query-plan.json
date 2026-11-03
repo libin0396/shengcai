@@ -1,0 +1,12 @@
+{
+  "intervalMinutes": 1440,
+  "lookbackDays": 30,
+  "articlePages": 3,
+  "pageSize": 10,
+  "topicPages": 2,
+  "maximumActivityPages": 20,
+  "menus": {"AI": "2488550", "AI视频": "2882664"},
+  "menuSource": "2026-11-02 已授权生财 MCP listMenu；每次同步重新按名称核对，缺少时用明确关键词回退。",
+  "featurePriority": "有效且尚可报名的 10533 优先；过期后按 AI 关联性与开始时间选择新活动。",
+  "topicRanking": "只统计本轮近30天AI热门帖子样本中实际命中的主题；不是全站热度排名。"
+}

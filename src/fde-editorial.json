@@ -1,0 +1,41 @@
+{
+  "heroEyebrow": "本期推荐 / FDE · 企业 AI 落地",
+  "observation": {
+    "quote": "市场需求远远大于供给",
+    "author": "坤汀",
+    "date": "2026.10.23",
+    "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521548884488244",
+    "context": "来自北京 FDE 大会公告中的作者观察。先看真实案例，再判断适合自己的机会。"
+  },
+  "cases": [
+    {
+      "id": "55521525252258854",
+      "label": "业务小系统",
+      "title": "从一家工厂的真实小问题开始",
+      "summary": "录单、收款、看欠款。用小工具解决具体问题，再看它有没有被持续使用。",
+      "author": "袁锐钦",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521525252258854"
+    },
+    {
+      "id": "82258285241224212",
+      "label": "企业 AI 服务",
+      "title": "把智能体放进企业的业务流程",
+      "summary": "从理解老板的业务，到定制 AI 服务。看看一线服务者如何获取关键信息、推进交付。",
+      "author": "袁欣就是圆心",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/82258285241224212"
+    },
+    {
+      "id": "45548248528525488",
+      "label": "内容与品牌交付",
+      "title": "用 AI 工作流做可交付的商业视频",
+      "summary": "一位品牌团队内部 FDE 的项目复盘：围绕实际内容需求，把制作流程跑起来。",
+      "author": "陳陳",
+      "sourceUrl": "https://scys.com/articleDetail/xq_topic/45548248528525488"
+    }
+  ],
+  "conference": {
+    "eventId": "10533",
+    "program": "7 位主嘉宾 · 20 多场主题夜话",
+    "sourceUrl": "https://scys.com/articleDetail/xq_topic/55521548884488244"
+  }
+}
