@@ -6,6 +6,8 @@ coverage/
 .vite/
 .vite-temp/
 *.tsbuildinfo
+__pycache__/
+*.py[cod]
 
 # Local feed snapshots and intermediate sync data
 data/

@@ -7,5 +7,6 @@ Wants=network-online.target
 Type=oneshot
 User=root
 ExecStart=/usr/bin/python3 /opt/ainpe/deployer/poll_release.py
+TimeoutStartSec=20min
 NoNewPrivileges=true
 PrivateTmp=true

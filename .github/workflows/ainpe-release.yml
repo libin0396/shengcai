@@ -26,6 +26,7 @@ jobs:
       - run: python3 tests/deploy-release.test.py
       - run: python3 tests/deploy-pipeline.test.py
       - run: python3 tests/deploy-attestation.test.py
+      - run: python3 tests/deploy-download.test.py
       - run: python3 deploy/build_artifact.py "$GITHUB_SHA" "$RUNNER_TEMP/ainpe-release"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

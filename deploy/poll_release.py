@@ -22,6 +22,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 from release_switch import activate, prepare_or_resume, recover_pending
 from verify_attestation import verify
 from trusted_paths import require_trusted, require_trusted_fd
+from asset_download import download_bounded as download_asset
 
 REPOSITORY = 'libin0396/shengcai'
 CURRENT = Path('/opt/ainpe/current')
@@ -31,7 +32,7 @@ ARCHIVE = Path('/var/lib/ainpe/archive')
 STATE = Path('/var/lib/ainpe-deployer')
 LOCK = STATE / 'deploy.lock'
 JOURNAL = STATE / 'deploy-journal.json'
-ALLOWED_HOSTS = {'api.github.com', 'github.com', 'release-assets.githubusercontent.com', 'objects.githubusercontent.com'}
+ALLOWED_HOSTS = {'api.github.com'}
 SHA = re.compile(r'^[0-9a-f]{40}$')
 
 def allowed(url):
@@ -57,13 +58,12 @@ def fetch(url, limit):
     return data
 
 def main_head():
-    result = subprocess.run(['git', 'ls-remote', '--heads', f'https://github.com/{REPOSITORY}.git', 'refs/heads/main'],
-                            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                            text=True, timeout=45, check=True, env={**os.environ, 'GIT_TERMINAL_PROMPT':'0'})
-    fields = result.stdout.split()
-    if len(fields) != 2 or not SHA.fullmatch(fields[0]) or fields[1] != 'refs/heads/main':
+    result = json.loads(fetch(f'https://api.github.com/repos/{REPOSITORY}/git/ref/heads/main', 65536))
+    obj = result.get('object', {})
+    revision = obj.get('sha')
+    if result.get('ref') != 'refs/heads/main' or obj.get('type') != 'commit' or not isinstance(revision, str) or not SHA.fullmatch(revision):
         raise ValueError('unexpected main reference')
-    return fields[0]
+    return revision
 
 def release_assets(revision):
     tag = 'ainpe-deploy-' + revision
@@ -75,13 +75,15 @@ def release_assets(revision):
         raise
     if release.get('draft') or release.get('tag_name') != tag:
         raise ValueError('unexpected release')
-    assets = {item['name']:item['browser_download_url'] for item in release.get('assets', []) if item.get('state') == 'uploaded'}
+    assets = {}
+    for item in release.get('assets', []):
+        if item.get('state') != 'uploaded': continue
+        name = item.get('name')
+        if name in assets: raise ValueError('duplicate asset')
+        assets[name] = {'id':item.get('id'), 'size':item.get('size'), 'digest':item.get('digest')}
     names = ('ainpe-runtime.tar.gz', 'ainpe-runtime.sha256')
     if not all(name in assets for name in names):
         return None
-    expected = f'https://github.com/{REPOSITORY}/releases/download/{tag}/'
-    if any(assets[name] != expected + name for name in names):
-        raise ValueError('unexpected artifact location')
     return assets
 
 def health(port, revision):
@@ -171,11 +173,15 @@ def deploy_once():
     assets = release_assets(revision)
     if assets is None:
         return 'build-not-ready'
-    checksum = fetch(assets['ainpe-runtime.sha256'], 512).decode('ascii')
+    if assets['ainpe-runtime.sha256'].get('size', 0) > 512:
+        raise ValueError('invalid checksum size')
+    checksum = download_asset(assets['ainpe-runtime.sha256']).decode('ascii')
     match = re.fullmatch(r'([0-9a-f]{64})  ainpe-runtime\.tar\.gz\n', checksum)
     if not match:
         raise ValueError('invalid checksum file')
-    blob = fetch(assets['ainpe-runtime.tar.gz'], 20 * 1024 * 1024)
+    blob = download_asset(assets['ainpe-runtime.tar.gz'])
+    if hashlib.sha256(blob).hexdigest() != match.group(1):
+        raise ValueError('checksum mismatch')
     if main_head() != revision:
         return 'main-changed'
     with tempfile.TemporaryDirectory(prefix='ainpe-download-') as temporary:

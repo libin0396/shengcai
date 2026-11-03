@@ -32,11 +32,11 @@ class PipelineTest(unittest.TestCase):
         self.revision = 'a' * 40
         self.artifact = build_artifact.build(self.revision, root / 'artifact').read_bytes()
         self.checksum = (hashlib.sha256(self.artifact).hexdigest() + '  ainpe-runtime.tar.gz\n').encode()
-        self.assets = {'ainpe-runtime.sha256':'checksum', 'ainpe-runtime.tar.gz':'artifact'}
+        self.assets = {'ainpe-runtime.sha256':{'size':len(self.checksum)}, 'ainpe-runtime.tar.gz':{'size':len(self.artifact)}}
         for name, value in [('RELEASES',self.releases),('CURRENT',self.current),('DATA',self.data),('ARCHIVE',self.archive),('JOURNAL',root / 'journal.json')]:
             p = patch.object(poll_release, name, value); p.start(); self.addCleanup(p.stop)
         for name, value in [('main_head',lambda:self.revision), ('release_assets',lambda _:self.assets),
-                            ('fetch',lambda url, limit:self.checksum if url == 'checksum' else self.artifact),
+                            ('download_asset',lambda asset:self.checksum if asset is self.assets['ainpe-runtime.sha256'] else self.artifact),
                             ('staged_health',lambda *args:True), ('wait_health',lambda *args:True),
                             ('previous_health',lambda *args:True), ('restart',lambda:True),
                             ('verify_provenance',lambda *args:None)]:
@@ -51,7 +51,9 @@ class PipelineTest(unittest.TestCase):
 
     def test_bad_digest_does_not_switch(self):
         self.checksum = ('0' * 64 + '  ainpe-runtime.tar.gz\n').encode()
-        with self.assertRaises(ValueError): poll_release.deploy_once()
+        with patch.object(poll_release, 'verify_provenance') as verify:
+            with self.assertRaises(ValueError): poll_release.deploy_once()
+            verify.assert_not_called()
         self.assertEqual(self.current.resolve().name, 'b' * 40)
         self.assertFalse((self.releases / self.revision).exists())
 
@@ -79,7 +81,8 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue(orphan.exists())
 
     def test_untrusted_redirect_hosts_are_rejected(self):
-        self.assertTrue(poll_release.allowed('https://github.com/libin0396/shengcai'))
+        self.assertTrue(poll_release.allowed('https://api.github.com/repos/libin0396/shengcai'))
+        self.assertFalse(poll_release.allowed('https://github.com/libin0396/shengcai'))
         self.assertFalse(poll_release.allowed('https://github.com.evil.example/file'))
         self.assertFalse(poll_release.allowed('http://github.com/file'))
 
