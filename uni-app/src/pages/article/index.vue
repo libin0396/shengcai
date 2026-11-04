@@ -6,9 +6,10 @@
       <view v-if="article" class="article-layout">
         <view class="main-column">
           <view class="article-header"><view class="source-label">● 来源：生财有术 <text>{{ article.isDigested ? '精华文章' : '圈友分享' }}</text></view><view class="headline">{{ article.title }}</view><view class="byline">{{ article.author || '生财圈友' }} · {{ formatDate(article.publishedAt) }} · {{ article.kind || '分享' }}</view></view>
-          <view class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">已收录摘要</view><view class="intro-body">{{ article.overview || article.summary || '当前暂无可展示的摘要。' }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
+          <view class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">已收录摘要</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
           <view v-if="isAiArticle(article)" class="practice"><view class="camp-kicker">从看到做到 · 模拟体验</view><view class="practice-title">先体验一个 AI 项目</view><view class="practice-copy">情境与反馈为模拟，可以先动手尝试，再判断下一步。</view><view class="camp-link" @click="openSimulation">查看模拟项目 ↗</view></view>
-          <view class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? `已有 ${reservationCount} 条预约记录（同一浏览器仅计一次，不收联系方式，也不会自动通知）。` : '预约统计暂不可用，请稍后再试。' }}</view></view>
+          <view v-if="isProjectArticle" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? `已有 ${reservationCount} 条预约记录（同一浏览器仅计一次，不收联系方式，也不会自动通知）。` : '预约统计暂不可用，请稍后再试。' }}</view></view>
+          <view v-else-if="isEventArticle" class="reservation"><view class="section-heading">想了解线下活动？</view><view class="section-hint">在站内浏览已收录的活动信息和参与方式。</view><button class="reserve-button" @click="openEvents">查看线下活动</button></view>
           <view class="actions"><button class="save" @click="toggleSaved">{{ saved ? '★ 已收藏' : '☆ 收藏' }}</button><button class="source" @click="openSource">加入生财，查看完整文章 ↗</button></view>
           <view class="camp" @click="openCamp"><image :src="campaign.posterUrl" mode="aspectFit" class="camp-image"/><view><view class="camp-kicker">下一步 · 动手试试</view><view class="camp-title">把读过的，变成亲手做过的。</view><view class="camp-copy">想开始实践？了解 AI 成万事 · 三天体验营，具体安排以入口说明为准。</view><view class="camp-link">了解体验营 ↗</view></view></view>
           <view v-if="related.length" class="related"><view class="related-label">KEEP EXPLORING</view><view class="section-heading">接着看看相关案例</view><view class="section-hint">根据共同话题推荐</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
@@ -16,15 +17,17 @@
         </view>
         <view class="side-column"><view class="side-card"><view class="side-eyebrow">FROM READING TO ACTION</view><view class="side-title">看见机会，<br/>也试着迈出一步。</view><view class="side-copy">从案例中了解做法，再根据自己的情况判断下一步。</view><view class="side-link" @click="openCamp">了解三天体验营 ↗</view></view></view>
       </view>
+      <view v-else-if="feedMeta.loading || !feedMeta.loadAttempted" class="not-found"><view>正在加载文章…</view><text>请稍候。</text></view>
+      <view v-else-if="feedMeta.loadFailed" class="not-found"><view>暂时无法加载文章</view><text>请检查网络连接后重试。</text><button @click="refreshFeed">重新加载</button></view>
       <view v-else class="not-found"><view>暂未找到这篇文章</view><text>它可能不在当前已收录的资料中。</text><button @click="goBack">返回文章列表</button></view>
     </view>
   </view>
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {onLoad, onShow} from '@dcloudio/uni-app';
-import {articles, campaign, isAiArticle} from '../../data/content.js';
+import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';
 import summaries from '../../data/article-summaries.json';
 import SiteHeader from '../../components/SiteHeader.vue';
 
@@ -34,6 +37,9 @@ const article=computed(()=>(Array.isArray(articles)?articles:[]).find(item=>Stri
 const storageKey=computed(()=>`article:${id.value}`);
 const saved=computed(()=>savedIds.value.includes(storageKey.value));
 const expandedSummary=computed(()=>summaries[id.value]||null);
+const displaySummary=computed(()=>{const s=String(article.value?.overview||article.value?.summary||'').trim();return s ? /[。！？.!?…]$/.test(s)?s:`${s}…` : '当前暂无可展示的摘要。';});
+const isEventArticle=computed(()=>/(线下|聚会|组局|大会|沙龙|夜话)/i.test(String(article.value?.title||'')));
+const isProjectArticle=computed(()=>!!article.value && isAiArticle(article.value) && !isEventArticle.value && (article.value.kind==='案例'||/(项目|副业|变现|获客|带货|接单|营收|收入|小程序|工具|工作流|智能体|开发|搭建|视频制作|创作)/i.test(`${article.value.title||''} ${article.value.summary||''}`)));
 const reserveLoading=ref(false), reserved=ref(false), reservationCount=ref(0), reservationAvailable=ref(false);
 let reservationEnabled=false;
 // #ifdef H5
@@ -51,9 +57,15 @@ const related=computed(()=>{
 function loadLocal(){try{const ids=uni.getStorageSync('ainpe:saved');savedIds.value=Array.isArray(ids)?ids:[];}catch{savedIds.value=[];}}
 onLoad(options=>{id.value=String(options?.id||'');loadLocal();loadReservation();});
 onShow(()=>{if(id.value){loadLocal();loadReservation();}});
+// #ifdef H5
+function syncArticleFromHash(){const hash=window.location.hash;const q=hash.indexOf('?');if(q<0||hash.slice(0,q)!=='#/pages/article/index')return;const next=new URLSearchParams(hash.slice(q+1)).get('id')||'';if(next!==id.value){id.value=next;loadLocal();if(next)loadReservation();}}
+onMounted(()=>window.addEventListener('hashchange',syncArticleFromHash));
+onUnmounted(()=>window.removeEventListener('hashchange',syncArticleFromHash));
+// #endif
 function toggleSaved(){const next=saved.value?savedIds.value.filter(key=>key!==storageKey.value):[...savedIds.value,storageKey.value];try{uni.setStorageSync('ainpe:saved',next);savedIds.value=next;uni.showToast({title:saved.value?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
 function goBack(){const pages=getCurrentPages();if(pages.length>1)uni.navigateBack();else uni.reLaunch({url:'/pages/discover/index'});}
 function openCamp(){uni.navigateTo({url:'/pages/camp/index'});}
+function openEvents(){uni.navigateTo({url:'/pages/events/index'});}
 function openSimulation(){uni.navigateTo({url:'/pages/simulate/index'});}
 function openSource(){const source=String(article.value?.sourceUrl||'');uni.navigateTo({url:`/pages/camp/index?source=${encodeURIComponent(source)}`});}
 function openArticle(item){try{uni.setStorageSync('ainpe:last-article',{id:String(item.id),openedAt:Date.now()});}catch{}uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(String(item.id))}`});}

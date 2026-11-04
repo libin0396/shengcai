@@ -12,7 +12,7 @@ class CuratedContentTest(unittest.TestCase):
         for name in EXPECTED:
             with self.subTest(name=name):
                 value=validate(name,(root/'uni-app/src/data'/name).read_text(encoding='utf-8'))
-                self.assertEqual(len(value),18 if name=='article-summaries.json' else 2)
+                self.assertEqual(len(value),19 if name=='article-summaries.json' else 2)
 
     def test_changed_material_must_be_reviewed(self):
         name='article-summaries.json'

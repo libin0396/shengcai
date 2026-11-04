@@ -9,7 +9,7 @@ import re
 from urllib.parse import parse_qs, urlsplit
 
 EXPECTED = {
-    'article-summaries.json':'e894b2d5b83cb2b8634e9f10014e631bfece1dbb1fa8a7c80e113c5cc49894a0',
+    'article-summaries.json':'a3479ea99b666c7c7c240d4f8786c7a863efccaf41dcfa8f6d2135c31509d3a1',
     'verified-offline-events.json':'b99ce4e1f11b6fbbf8f5bb42b57069c0bb6cf4f7863a8dfd136406aba73be351',
     'event-reviews.json':'655fee60a423172dde417ce182f4cc64359b366b6fc6b731da0bac87d2845df1',
 }
@@ -18,7 +18,8 @@ SUMMARY_IDS={'55521424552448144','45548242582124888','82258454581421112',
              '14425125182185282','14425125428118152','14425125888851412',
              '22258212425811581','22258458144525221','22258458845288281',
              '45548248528525488','55521425512154214','82258452222182222',
-             '82258452224185212','82258452244481412','82258452254141182'}
+             '82258452224185212','82258452244481412','82258452254141182',
+             '55521424552484884'}
 EVENT_IDS={'10157','8925'}
 SECRET=re.compile(r'(?:sk-proj-[A-Za-z0-9_-]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)',re.I)
 

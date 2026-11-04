@@ -33,7 +33,7 @@
       <view class="library">
         <scroll-view class="category-scroll" scroll-x><view class="categories"><view v-for="category in categories" :key="category.id" class="category" :class="{selected: category.id === selectedCategory}" @click="selectCategory(category.id)">{{ category.label }}<text v-if="category.id === 'all'"> {{ aiTotal }}</text></view></view></scroll-view>
         <view class="toolbar"><view class="filter-buttons"><text class="filter-button" :class="{active:!onlySaved}" @click="onlySaved=false;limit=20">全部</text><text class="filter-button" :class="{active:onlySaved}" @click="onlySaved=true;limit=20">只看收藏</text></view><input class="search" v-model="query" placeholder="搜索标题、作者、关键词" confirm-type="search" /></view>
-        <view class="result-note">{{ filteredArticles.length }} 篇 AI 相关内容 · 本机已收录资料</view>
+        <view class="result-note">{{ filteredArticles.length }} 篇 AI 相关内容 · 已收录资料</view>
         <view v-for="article in visibleArticles" :key="article.id" class="article" @click="openArticle(article)">
           <view class="article-main"><view class="article-title"><text class="tag">{{ article.isDigested ? '精华' : (article.kind || '分享') }}</text>{{ article.title }}</view><view class="article-summary">{{ article.overview || article.summary || '打开查看已收录的内容。' }}</view><view class="article-meta">{{ article.author || '生财圈友' }} <text>·</text> {{ formatDate(article.publishedAt) }} <text>·</text> {{ Number(article.commentCount || 0) }} 条评论</view></view>
           <view class="save-button" @click.stop="toggleSaved(article)">{{ isSaved(article) ? '★' : '☆' }}</view>
@@ -87,7 +87,7 @@ const filteredArticles=computed(()=>{
     .sort((a,b)=>Number(b.publishedAt||0)-Number(a.publishedAt||0));
 });
 const visibleArticles=computed(()=>filteredArticles.value.slice(0,limit.value));
-const freshness=computed(()=>`${feedMeta.source||'本机快照'} · ${feedMeta.lastSuccessLabel?`上次成功 ${feedMeta.lastSuccessLabel}`:'成功时间未记录'} · ${feedMeta.statusText||'等待连接'}`);
+const freshness=computed(()=>`${feedMeta.source||'已保存资料'} · ${feedMeta.lastSuccessLabel?`上次成功 ${feedMeta.lastSuccessLabel}`:'成功时间未记录'} · ${feedMeta.statusText||'等待连接'}`);
 function refreshSaved(){try{const value=uni.getStorageSync('ainpe:saved');saved.value=Array.isArray(value)?value:[];}catch{saved.value=[];}}
 onShow(refreshSaved);
 function selectCategory(category){selectedCategory.value=category;limit.value=20;}

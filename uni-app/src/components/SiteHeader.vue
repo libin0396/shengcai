@@ -5,9 +5,9 @@
         <view class="site-brand-mark">↗</view>
         <view class="site-brand-name"><text class="site-brand-cn">AI 实战情报站</text><text class="site-brand-en">AINPE.</text></view>
       </view>
-      <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false">
+      <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false" :scroll-into-view="active ? 'site-nav-'+active : ''" :scroll-with-animation="true">
         <view class="site-nav" aria-label="主导航">
-          <view v-for="link in links" :key="link.key" class="site-nav-item" :class="{ 'is-current': active === link.key }" @tap="go(link.url)">{{ link.label }}</view>
+          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': active === link.key }" :aria-current="active === link.key ? 'page' : null" @tap="go(link.url)" @keydown.enter.prevent="go(link.url)" @keydown.space.prevent="go(link.url)">{{ link.label }}</button>
         </view>
       </scroll-view>
       <view class="site-actions">
@@ -62,8 +62,9 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
 .site-camp { padding:0 15px; margin:0; line-height:34px; height:34px; background:#f35b26; border-radius:20px; color:#fff; font-weight:700; font-size:12px; }
 .site-nav-scroll { flex:1; min-width:0; white-space:nowrap; }
 .site-nav { display:flex; align-items:center; gap:23px; width:max-content; min-width:100%; }
-.site-nav-item { padding:22px 0 19px; border-bottom:3px solid transparent; font-size:13px; font-weight:600; color:#b4c9bb; }
+.site-nav-item { margin:0; padding:22px 0 19px; border:0; border-bottom:3px solid transparent; border-radius:0; background:transparent; line-height:20px; font-size:13px; font-weight:600; color:#b4c9bb; }
 .site-nav-item.is-current { border-bottom-color:#ffcd55; color:#fff; }
+.site-nav-item:focus-visible { outline:2px solid #ffcd55; outline-offset:-2px; }
 .site-contact-overlay { position:fixed; z-index:9999; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(4,19,12,.64); }
 .site-contact-modal { width:100%; max-width:390px; max-height:90vh; overflow:auto; padding:20px; border-radius:8px; background:#fff; color:#19382c; }
 .site-contact-head { display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:700; }

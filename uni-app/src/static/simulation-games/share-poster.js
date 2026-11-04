@@ -1,5 +1,15 @@
 (function(){
   'use strict';
+  var returnLink=document.querySelector('a[href="/#/pages/simulate/index"]');
+  if(returnLink)returnLink.textContent='← 返回上一页';
+  document.addEventListener('click',function(e){
+    var link=e.target.closest('a[href="/#/pages/simulate/index"]');
+    if(!link||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    e.preventDefault();
+    var previous=null;try{previous=new URL(document.referrer)}catch(_){}
+    if(previous&&previous.origin===location.origin&&previous.pathname==='/'&&history.length>1)history.back();
+    else location.replace('/#/pages/simulate/index');
+  });
   var combos=[
     [['拖延','完美主义'],'明天再改三版'],[['拖延','工具囤积'],'万事俱备只欠开工'],[['夜间高效','拖延'],'凌晨两点觉醒者'],[['先算账','爱记数据'],'人形 Excel'],[['敢问用户','会聊客户'],'社牛读心术'],[['标题敏感','会做封面'],'点击率制造机']
   ];
