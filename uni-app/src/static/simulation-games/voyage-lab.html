@@ -351,13 +351,15 @@ body{background:var(--bg);color:var(--ink)}
 @media(max-width:420px){.camp{padding:18px 100px 18px 16px}.camp:after{right:12px;width:72px;height:118px}.camp .btn.ghost{font-size:14px;padding:9px 12px}}
 
 </style><link rel="stylesheet" href="./share-poster.css"></head><body>
-<nav style="max-width:1100px;margin:0 auto;padding:15px 20px 0;font:600 14px system-ui,sans-serif"><a href="/#/pages/simulate/index" style="color:#226547;text-decoration:none">← 返回模拟项目</a></nav>
+<nav class="ainpe-game-nav"><a href="/#/pages/simulate/index">← 返回模拟项目</a><a class="ainpe-game-camp" href="/#/pages/camp/index?from=game-header">3 天体验营</a></nav>
 <div class="top" id="top" hidden><div class="in"><span class="gname">AINPE · AI 项目模拟</span><span id="stepv"></span></div><div id="prog"><div id="progb"></div></div></div>
 <div class="wrap" id="app"></div>
 
 <script type="application/json" id="game-data">{}</script>
 <script src="./voyage-lab-data.js"></script>
 <script src="./voyage-lab-model.js"></script>
+<script src="../tracking.js"></script>
+<script src="./share-data.js"></script>
 <script src="./share-poster.js"></script>
 <script src="./voyage-lab-engine.js"></script>
 <style>

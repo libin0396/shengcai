@@ -12,7 +12,7 @@
       </scroll-view>
       <view class="site-actions">
         <button class="site-contact" @tap="contactOpen = true">联系站长</button>
-        <button class="site-camp" @tap="go('/pages/camp/index')">三天体验营</button>
+        <button class="site-camp" :class="{played:hasPlayed}" @tap="go('/pages/camp/index?from=header')">{{hasPlayed ? '你的下一步' : '3 天体验营'}}</button>
       </view>
     </view>
     <view v-if="contactOpen" class="site-contact-overlay" @tap="contactOpen = false">
@@ -28,22 +28,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { onShow } from '@dcloudio/uni-app';
 
 defineProps({ active: { type: String, default: '' } });
-const contactOpen = ref(false);
+const contactOpen = ref(false), hasPlayed=ref(false);
+function readPlayed(){try{const v=uni.getStorageSync('ainpe:played');hasPlayed.value=!!v}catch{hasPlayed.value=false}}
+onShow(readPlayed);
+// #ifdef H5
+function escapeContact(e){if(e.key==='Escape') contactOpen.value=false}
+onMounted(()=>window.addEventListener('keydown',escapeContact));
+onUnmounted(()=>window.removeEventListener('keydown',escapeContact));
+// #endif
 let statusBarHeight = 0;
 // #ifdef MP-WEIXIN
 try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } catch {}
 // #endif
 const links = [
-  { key: 'discover', label: '发现', url: '/pages/discover/index' },
-  { key: 'intelligence', label: 'AI 情报', url: '/pages/discover/index?section=intelligence' },
-  { key: 'fde', label: 'FDE 专题', url: '/pages/topic/index?slug=fde' },
-  { key: 'ai-cases', label: 'AI 实战案例', url: '/pages/topic/index?slug=ai-cases' },
+  { key: 'discover', label: '首页', url: '/pages/discover/index' },
+  { key: 'simulate', label: '模拟体验', url: '/pages/simulate/index' },
+  { key: 'intelligence', label: 'AI 情报', url: '/pages/intelligence/index' },
   { key: 'events', label: '线下活动', url: '/pages/events/index' },
-  { key: 'simulate', label: '模拟项目', url: '/pages/simulate/index' },
-  { key: 'saved', label: '我的收藏', url: '/pages/saved/index' },
+  { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
 function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
@@ -59,7 +65,8 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
 .site-brand-en { font-size:10px; font-weight:700; letter-spacing:.04em; color:#a9c096; }
 .site-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .site-contact { padding:0 6px; margin:0; min-width:0; line-height:34px; height:34px; font-size:12px; background:transparent; color:#cfddd0; }
-.site-camp { padding:0 15px; margin:0; line-height:34px; height:34px; background:#f35b26; border-radius:20px; color:#fff; font-weight:700; font-size:12px; }
+.site-camp { padding:0 15px; margin:0; line-height:34px; height:34px; background:transparent; border:1px solid #93b4a0; border-radius:20px; color:#eef5e5; font-weight:700; font-size:12px; }
+.site-camp.played { background:#f35b26; border-color:#f35b26; color:#fff; }
 .site-nav-scroll { flex:1; min-width:0; white-space:nowrap; }
 .site-nav { display:flex; align-items:center; gap:23px; width:max-content; min-width:100%; }
 .site-nav-item { margin:0; padding:22px 0 19px; border:0; border-bottom:3px solid transparent; border-radius:0; background:transparent; line-height:20px; font-size:13px; font-weight:600; color:#b4c9bb; }

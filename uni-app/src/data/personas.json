@@ -1,0 +1,122 @@
+[
+  {
+    "name": "午夜卷王",
+    "tagline": "别人睡了，你的项目醒着",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M40%2012a20%2020%200%201%200%2012%2032A16%2016%200%200%201%2040%2012z%22%2F%3E%3Cpath%20d%3D%22M47%2014v8M43%2018h8%22%20%2F%3E%3Ccircle%20cx%3D%2222%22%20cy%3D%2240%22%20r%3D%222.5%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M14%2052h20%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "AI 嘴替",
+    "tagline": "需求说得清，AI 就听话",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M12%2016h36a4%204%200%200%201%204%204v18a4%204%200%200%201-4%204H28l-10%209v-9h-6a4%204%200%200%201-4-4V20a4%204%200%200%201%204-4z%22%2F%3E%3Cpath%20d%3D%22M30%2022l2.5%205.5L38%2030l-5.5%202.5L30%2038l-2.5-5.5L22%2030l5.5-2.5z%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "Excel 判官",
+    "tagline": "每天一行数据，月底一份答案",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%2240%22%20height%3D%2236%22%20rx%3D%224%22%2F%3E%3Cpath%20d%3D%22M10%2024h40M10%2036h40M24%2012v36%22%2F%3E%3Cpath%20d%3D%22M40%2044l6%206%2010-12%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "社牛调研员",
+    "tagline": "先问 10 个人，再做第 1 版",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M8%2014h28a4%204%200%200%201%204%204v14a4%204%200%200%201-4%204H20l-8%207v-7H8a4%204%200%200%201-4-4V18a4%204%200%200%201%204-4z%22%2F%3E%3Cpath%20d%3D%22M44%2026h12a4%204%200%200%201%204%204v12a4%204%200%200%201-4%204h-2v6l-7-6h-3%22%2F%3E%3Cpath%20d%3D%22M17%2022a5%205%200%201%201%206%205v2%22%2F%3E%3Ccircle%20cx%3D%2223%22%20cy%3D%2232.5%22%20r%3D%221.8%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "过审锦鲤",
+    "tagline": "提审不卡壳，上线快一步",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M8%2032c8-12%2024-14%2036-6l10-8v28l-10-8C32%2046%2016%2044%208%2032z%22%2F%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2230%22%20r%3D%222.5%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M24%2034l5%205%209-11%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "标题党本党",
+    "tagline": "一眼看出哪条能火",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M14%2016h30M29%2016v34%22%2F%3E%3Cpath%20d%3D%22M48%2010l3%206%206%203-6%203-3%206-3-6-6-3%206-3z%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M20%2050h18%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "人形计算器",
+    "tagline": "动手前，账已经算好了",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%2214%22%20y%3D%228%22%20width%3D%2236%22%20height%3D%2248%22%20rx%3D%225%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2214%22%20width%3D%2224%22%20height%3D%2210%22%20rx%3D%222%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Ccircle%20cx%3D%2223%22%20cy%3D%2233%22%20r%3D%222%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2233%22%20r%3D%222%22%2F%3E%3Ccircle%20cx%3D%2241%22%20cy%3D%2233%22%20r%3D%222%22%2F%3E%3Ccircle%20cx%3D%2223%22%20cy%3D%2242%22%20r%3D%222%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2242%22%20r%3D%222%22%2F%3E%3Cpath%20d%3D%22M41%2040v8M23%2050h9%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "甲方翻译官",
+    "tagline": "三句话问出客户真正想要什么",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%226%22%20y%3D%2210%22%20width%3D%2226%22%20height%3D%2220%22%20rx%3D%224%22%2F%3E%3Crect%20x%3D%2232%22%20y%3D%2234%22%20width%3D%2226%22%20height%3D%2220%22%20rx%3D%224%22%2F%3E%3Cpath%20d%3D%22M40%2016h10a4%204%200%200%201%204%204v6M50%2022l4%204%204-4M24%2048H14a4%204%200%200%201-4-4v-6M14%2042l-4-4-4%204%22%2F%3E%3Cpath%20d%3D%22M13%2020h12M39%2044h12%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "像素挑刺王",
+    "tagline": "哪一帧不对，一眼就知道",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M10%2022V10h12M42%2010h12v12M54%2042v12H42M22%2054H10V42%22%2F%3E%3Crect%20x%3D%2226%22%20y%3D%2226%22%20width%3D%2212%22%20height%3D%2212%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "错别字终结者",
+    "tagline": "错别字逃不过你的眼睛",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Ccircle%20cx%3D%2227%22%20cy%3D%2227%22%20r%3D%2216%22%2F%3E%3Cpath%20d%3D%22M39%2039l14%2014%22%2F%3E%3Cpath%20d%3D%22M21%2021l12%2012M33%2021L21%2033%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "版权警长",
+    "tagline": "能商用的素材才放行",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M32%206l22%208v16c0%2014-10%2024-22%2028C20%2054%2010%2044%2010%2030V14z%22%2F%3E%3Cpath%20d%3D%22M38%2024a9%209%200%201%200%200%2012%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "封面颜值担当",
+    "tagline": "封面一换，点击就来",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%2212%22%20y%3D%228%22%20width%3D%2234%22%20height%3D%2246%22%20rx%3D%224%22%2F%3E%3Cpath%20d%3D%22M12%2040l10-10%208%208%206-6%2010%2010%22%2F%3E%3Cpath%20d%3D%22M50%206l2.5%205%205%202.5-5%202.5-2.5%205-2.5-5-5-2.5%205-2.5z%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "群聊潜水艇",
+    "tagline": "40 个群，消息比谁都快",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M8%2038c0-8%208-12%2020-12h12c10%200%2016%205%2016%2012s-6%2012-16%2012H24C14%2050%208%2046%208%2038z%22%2F%3E%3Cpath%20d%3D%22M30%2026v-10h8%22%2F%3E%3Ccircle%20cx%3D%2226%22%20cy%3D%2238%22%20r%3D%223.5%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Ccircle%20cx%3D%2240%22%20cy%3D%2238%22%20r%3D%223.5%22%2F%3E%3Cpath%20d%3D%22M56%2034l4-2M56%2042l4%202%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "家族群 CEO",
+    "tagline": "第一批用户，就在家族群里",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M10%2030L32%2012l22%2018v24H10z%22%2F%3E%3Cpath%20d%3D%22M24%2012l4-6%204%204%204-4%204%206%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M32%2046l-7-7a4%204%200%200%201%207-5%204%204%200%200%201%207%205z%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "人脉宝藏",
+    "tagline": "第一单，可能来自朋友的店",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Ccircle%20cx%3D%2214%22%20cy%3D%2218%22%20r%3D%226%22%2F%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2218%22%20r%3D%226%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2246%22%20r%3D%228%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M19%2022l8%2017M45%2022l-8%2017M20%2018h24%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "Deadline 战神",
+    "tagline": "不到最后一刻，绝不开工",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M16%208h32M16%2056h32M20%208c0%2014%2024%2014%2024%2024S20%2042%2020%2056M44%208c0%2014-24%2014-24%2024s24%2010%2024%2024%22%2F%3E%3Cpath%20d%3D%22M34%2022l-6%2010h8l-6%2010%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "工具仓鼠",
+    "tagline": "会员买了 8 个，常用 2 个",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%228%22%20y%3D%2234%22%20width%3D%2222%22%20height%3D%2220%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%2234%22%20y%3D%2234%22%20width%3D%2222%22%20height%3D%2220%22%20rx%3D%222%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2212%22%20width%3D%2224%22%20height%3D%2222%22%20rx%3D%222%22%2F%3E%3Cpath%20d%3D%22M28%2012v6M36%2012v6M14%2034v6M48%2034v6%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2226%22%20r%3D%222.5%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "改稿永动机",
+    "tagline": "一个按钮，能改三天",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M52%2030a20%2020%200%200%201-36%2012M12%2034a20%2020%200%200%201%2036-12%22%2F%3E%3Cpath%20d%3D%22M48%2012v10H38M16%2052V42h10%22%2F%3E%3Cpath%20d%3D%22M26%2038l12-12%204%204-12%2012h-4z%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "明天再改三版",
+    "tagline": "明天开始，然后改三天",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%2210%22%20y%3D%2212%22%20width%3D%2244%22%20height%3D%2242%22%20rx%3D%225%22%2F%3E%3Cpath%20d%3D%22M10%2024h44M22%206v10M42%206v10%22%2F%3E%3Cpath%20d%3D%22M26%2032h10l-6%206a5%205%200%201%201-4%208%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "万事俱备只欠开工",
+    "tagline": "工具齐了，就差开始",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Crect%20x%3D%228%22%20y%3D%2224%22%20width%3D%2248%22%20height%3D%2228%22%20rx%3D%224%22%2F%3E%3Cpath%20d%3D%22M24%2024v-6a4%204%200%200%201%204-4h8a4%204%200%200%201%204%204v6M8%2036h48%22%2F%3E%3Crect%20x%3D%2228%22%20y%3D%2232%22%20width%3D%228%22%20height%3D%228%22%20rx%3D%221%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M44%208h8l-8%208h8%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "凌晨两点觉醒者",
+    "tagline": "白天拖着，半夜冲刺",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2236%22%20r%3D%2218%22%2F%3E%3Cpath%20d%3D%22M32%2026v10l-6%205%22%2F%3E%3Cpath%20d%3D%22M12%2016l8-6M52%2016l-8-6M20%2056l-4%204M44%2056l4%204%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2236%22%20r%3D%222.5%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "人形 Excel",
+    "tagline": "你的副业，住在表格里",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2214%22%20r%3D%228%22%2F%3E%3Crect%20x%3D%2216%22%20y%3D%2228%22%20width%3D%2232%22%20height%3D%2228%22%20rx%3D%224%22%2F%3E%3Cpath%20d%3D%22M16%2038h32M16%2047h32M27%2028v28M38%2028v28%22%2F%3E%3Crect%20x%3D%2238%22%20y%3D%2238%22%20width%3D%2210%22%20height%3D%229%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "社牛读心术",
+    "tagline": "用户还没开口，你已经懂了",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M8%2032c6-10%2014-16%2024-16s18%206%2024%2016c-6%2010-14%2016-24%2016S14%2042%208%2032z%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%227%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M32%206v4M14%2012l3%203M50%2012l-3%203%22%2F%3E%3C%2Fsvg%3E"
+  },
+  {
+    "name": "点击率制造机",
+    "tagline": "标题和封面，两把刀",
+    "icon": "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%20width%3D%2230%22%20height%3D%2230%22%20fill%3D%22none%22%20stroke%3D%22%23ffcd55%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20style%3D%22--a%3A%23ffcd55%22%3E%3Cpath%20d%3D%22M22%2018l26%2012-11%204-4%2011z%22%20fill%3D%22%23ffcd55%22%20fill-opacity%3D%22.32%22%20stroke%3D%22%23ffcd55%22%2F%3E%3Cpath%20d%3D%22M37%2034l12%2012%22%2F%3E%3Cpath%20d%3D%22M12%208l4%205M8%2020h6M22%206v6%22%2F%3E%3C%2Fsvg%3E"
+  }
+]

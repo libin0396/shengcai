@@ -1,7 +1,7 @@
 
 var D=JSON.parse(document.getElementById('game-data').textContent),$=function(q){return document.querySelector(q)},app=$('#app'),UI=D.ui;
 var S;
-function reset(){var raw=new URLSearchParams(location.search).get("seed"),seed=raw!==null&&/^\d{1,6}$/.test(raw)?Number(raw):(Math.random()*1e6)|0;S={cond:{},talents:[],choice:{},task:null,days:30,seed:seed}}
+function reset(){var raw=new URLSearchParams(location.search).get("seed"),seed=raw!==null&&/^\d{1,6}$/.test(raw)?Number(raw):(Math.random()*1e6)|0;S={cond:{},talents:[],choice:{},task:null,days:30,seed:seed};var requested=new URLSearchParams(location.search).get('life');var life=D.conditions.find(function(c){return c.id==='life'});var aliases={'上班族':'全职上班','宝妈宝爸':'全职宝妈宝爸','待业中':'待业'};if(life&&requested){var target=aliases[requested]||requested;var idx=life.opts.findIndex(function(o){return o.t===target});if(idx<0&&['全职宝妈宝爸','待业'].indexOf(target)>=0)idx=life.opts.findIndex(function(o){return o.t==='其他'});if(idx>=0)S.cond.life=idx}}
 function money(n){return(n<0?'-¥':'¥')+Math.abs(Math.round(n)).toLocaleString()}
 function prog(k){var b=document.getElementById('progb');if(b)b.style.width=(k*100)+'%'}
 var BR='AINPE · AI 实战情报站';
@@ -17,10 +17,11 @@ function intro(){reset();$('#top').hidden=true;wide(0);top0();
  app.innerHTML='<div style="margin-top:22px"><span class="brand">'+BR+'</span></div><h1>'+UI.title+'</h1><p class="lead">'+UI.intro+'</p>'+
  '<ol class="flow">'+UI.steps.map(function(x,i){return '<li><span class="fn">'+(i+1)+'</span><span>'+x+'</span></li>'}).join('')+'</ol>'+
  '<div class="note"><div class="nh"><b>'+UI.refLabel+'</b><span class="num">'+money(D.baseRef)+'</span><span class="tag">游戏假设</span></div><p>'+D.baseRefNote+'</p></div>'+
- '<p class="fine">本游戏的数值、事件、客户和平台规则均为模拟设定；模拟结果不是收入预测。</p><div class="challenge-entry"><label for="challenge-seed">有挑战码？</label><div><input id="challenge-seed" inputmode="numeric" maxlength="6" placeholder="输入 1–6 位挑战码"><button class="btn ghost" id="apply-seed" type="button">使用挑战码</button></div><p id="seed-message" role="status">同一挑战码下，条件和决策也相同才会得到相同结果。</p></div>'+cta('<button class="btn" id="go">开始模拟</button>');
- var raw=new URLSearchParams(location.search).get('seed');if(raw!==null&&/^\d{1,6}$/.test(raw)){$('#challenge-seed').value=raw;$('#seed-message').textContent='已载入挑战码 #'+raw+'，可以开始模拟。'}
- $('#apply-seed').onclick=function(){var v=$('#challenge-seed').value.trim();if(!/^\d{1,6}$/.test(v)){$('#seed-message').textContent='请输入 1–6 位数字挑战码。';return}S.seed=Number(v);$('#seed-message').textContent='已使用挑战码 #'+v+'，可以开始模拟。'};
- $('#go').onclick=conds}
+ '<p class="fine">本游戏的数值、事件、客户和平台规则均为模拟设定；模拟结果不是收入预测。</p><details class="challenge-entry"><summary>复刻一局（可选）</summary><label for="challenge-seed">历史复刻码</label><div><input id="challenge-seed" inputmode="numeric" maxlength="6" placeholder="输入 1–6 位挑战码"><button class="btn ghost" id="apply-seed" type="button">使用复刻码</button></div><p id="seed-message" role="status">复刻时需要相同条件和决策，才能得到相同结果。</p></details>'+cta('<button class="btn" id="go">开始模拟</button>');
+ var raw=new URLSearchParams(location.search).get('seed');if(raw!==null&&/^\d{1,6}$/.test(raw)){$('#challenge-seed').value=raw;$('#seed-message').textContent='已载入复刻码 #'+raw+'，可以开始模拟。'}
+ $('#apply-seed').onclick=function(){var v=$('#challenge-seed').value.trim();if(!/^\d{1,6}$/.test(v)){$('#seed-message').textContent='请输入 1–6 位数字挑战码。';return}S.seed=Number(v);$('#seed-message').textContent='已使用复刻码 #'+v+'，可以开始模拟。'};
+ var incoming=window.AINPEShare&&window.AINPEShare.challenge();if(incoming){var banner=document.createElement('div');banner.className='ainpe-challenge-intro';banner.textContent=window.AINPEShare.challengeText(incoming,UI.titles);app.insertBefore(banner,app.firstChild);if(window.AINPETrack)window.AINPETrack.track('challenge_open',{game:window.AINPEShare.gameKey(),played:window.AINPEShare.hasPlayed()})}
+ $('#go').onclick=function(){if(window.AINPETrack)window.AINPETrack.track('sim_start',{game:window.AINPEShare.gameKey(),played:window.AINPEShare.hasPlayed()});conds()}}
 
 function conds(){$('#top').hidden=false;wide(0);$('#stepv').textContent='1/'+NSTEP+' 开局条件';prog(.15);
  var h='<div class="kick"><span>第 1 步</span></div><h2>开局条件</h2><p class="mute" style="margin:0">按真实情况选，结果才有参考价值。</p>';
@@ -111,10 +112,10 @@ function verdict(R){var F=R.flags,good=[],bad=[],life=D.conditions[0].opts[S.con
  function has(r){if(r.all&&!r.all.every(function(f){return F[f]}))return false;if(r.any&&!r.any.some(function(f){return F[f]}))return false;if(r.not&&r.not.some(function(f){return F[f]}))return false;return true}
  D.rules.forEach(function(r){if(!has(r))return;if(r.bad)bad.push([r.bad[0].replace('{life}',life),r.bad[1]]);if(r.good)good.push(r.good)});
  var p=R.profit,fit=R.fit,ok=p>=UI.okP&&fit>=3,mid=p>0;
- var v=ok?'适合：值得认真试一次':mid?'可以试：先改掉几个问题':'暂不适合：先补短板';
+ var v=ok?'可以继续探索':mid?'可以试：先改掉几个问题':'还差几步：先补短板';
  var T=UI.titles,title=p>=T[0][0]?T[0][1]:p>=T[1][0]?T[1][1]:p>=T[2][0]?T[2][1]:p>0?T[3][1]:p>-500?T[4][1]:T[5][1];
  (D.specials||[]).forEach(function(x){if(F[x.f]&&p<x.lt)title=x.t});
- return {v:v,title:title,good:good.slice(0,3),bad:bad.slice(0,3),lv:ok?'good':mid?'mid':'bad'}}
+ return {v:v,title:title,good:good.slice(0,3),bad:bad.slice(0,3),allBad:bad,lv:ok?'good':mid?'mid':'bad'}}
 
 function ending(R){$('#stepv').textContent='复盘';prog(1);wide(1);top0();var V=verdict(R);
  var lifeO=D.conditions.map(function(c){return c.opts[S.cond[c.id]].t}),pc=R.profit>=0?'var(--good)':'var(--bad)';
@@ -129,7 +130,7 @@ function ending(R){$('#stepv').textContent='复盘';prog(1);wide(1);top0();var V
  app.innerHTML='<div class="end"><div class="endL">'+slip+acts+'</div><div class="endR">'+fitB+'<div class="camp"><b>想把模拟换成实战？</b><p class="mute" style="font-size:14px">扫码了解三天体验营，活动安排以入口说明为准。</p><button class="btn ghost" id="camp">查看体验营介绍</button></div>'+taskBlock()+breakdown()+hitsBlock(R)+
  '<div class="grp imgc"><div class="q" style="text-align:left">战报图片 <span class="tag">模拟</span></div><canvas id="cv" width="720" height="1000" hidden></canvas><img class="cardimg" id="ci" alt="模拟战报图片"><button class="btn ghost" id="dl2" style="max-width:400px;margin:10px auto 0">保存这张图</button></div>'+
  realBlock()+'<div class="disc">声明：本局的数值、事件、客户、平台规则和'+UI.refLabel+'都是游戏设定。模拟结果不是收入预测，也不代表原作者或任何人的收入。</div></div></div>';
- if(window.AINPEShare){var p=R.profit,T=UI.titles,idx=p>=T[0][0]?0:p>=T[1][0]?1:p>=T[2][0]?2:p>0?3:p>-500?4:5;window.AINPEShare.mount({host:app.querySelector('.endR'),project:D.project,result:V.title,days:S.days,amount:R.profit,seed:S.seed,talents:S.talents.map(function(i){return D.talents[i].t}),issues:V.bad.slice(0,3).map(function(x){return x[0]+'；下次：'+x[1]}),pitCount:R.hits.filter(function(x){return x.m<0&&!x.dup}).length,completed:D.choices.length+' 个关键决策',grades:T.map(function(x){return x[1]}),gradeIndex:idx,url:location.origin+location.pathname})}
+ if(window.AINPEShare){var p=R.profit,T=UI.titles,idx=p>=T[0][0]?0:p>=T[1][0]?1:p>=T[2][0]?2:p>0?3:p>-500?4:5;window.AINPEShare.mount({host:app.querySelector('.endR'),project:D.project,result:V.title,days:S.days,amount:R.profit,seed:S.seed,run:R,game:D,allBad:V.allBad,choices:D.choices.map(function(c){return S.choice[c.id]}).join(''),talents:S.talents.map(function(i){return D.talents[i]}),issues:V.bad.slice(0,3).map(function(x){return x[0]+'；下次：'+x[1]}),pitCount:R.hits.filter(function(x){return x.m<0&&!x.dup}).length,completed:D.choices.length+' 个关键决策',grades:T.map(function(x){return x[1]}),gradeIndex:idx,url:location.origin+location.pathname})}
  function save(){var a=document.createElement('a');a.download='AINPE-'+UI.dl+'-'+S.seed+'.png';a.href=$('#cv').toDataURL('image/png');a.click()}
  var draw=function(){drawCard(R,V,lifeO)};if(document.fonts&&document.fonts.load){Promise.all([document.fonts.load('700 40px "Barlow Condensed"'),document.fonts.load('600 40px "Barlow Condensed"')]).then(draw,draw)}else draw();
  $('#dl').onclick=save;$('#dl2').onclick=save;

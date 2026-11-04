@@ -2,46 +2,30 @@
   <view class="discover-page">
     <SiteHeader active="discover" />
     <view class="home-hero">
-      <view class="hero-inner">
-        <view class="hero-copy">
-          <text class="hero-badge">AI 情报 · 真实案例 · 亲手体验</text>
-          <view class="hero-title">看见 AI 机会，<br/>也亲手试一试。</view>
-          <view class="hero-desc">从真实案例与一线情报出发，体验项目怎么做，再找到适合自己的下一步。</view>
-          <view class="hero-points"><view><text>看情报</text>发现新方向</view><view><text>试项目</text>动手走一遍</view><view><text>看案例</text>了解真实经验</view><view><text>见同行</text>寻找线下交流</view></view>
-          <view class="hero-actions"><button class="button-primary" @click="navigate('/pages/simulate/index')">先体验一个项目</button><button class="button-outline" @click="scrollToIntelligence">看看 AI 情报</button></view>
-          <view class="hero-footnote">游戏为模拟体验，案例结果以作者自述为准。</view>
+      <view class="hero-v2">
+        <text class="hero-kicker">AI 实战 · 先体验，再决定</text>
+        <view class="hero-headline">先把一个项目，<br/>亲手跑一遍。</view>
+        <view class="hero-sub">选一个方向，做几次关键决策，看看过程中的机会和难题。</view>
+        <view class="hero-step"><text>01</text> 你现在是？ <text class="hero-small">可选，带入游戏后仍可修改</text></view>
+        <view class="life-options"><button v-for="person in people" :key="person.value" :class="{selected:life===person.value}" :aria-pressed="life===person.value" @click="life=life===person.value?'':person.value">{{person.label}}</button></view>
+        <view class="hero-step"><text>02</text> 选一个项目，马上开始</view>
+        <view class="hero-games">
+          <view class="hero-game featured"><text class="hero-game-tag">新手可以先试</text><view class="hero-game-title">AI 小程序副业</view><view class="hero-game-copy">从需求到上线推广，看看关键环节怎么衔接。</view><button @click="goGame('miniapp')">开始模拟 →</button></view>
+          <view class="hero-game"><view class="hero-game-title">AI 视频定制</view><view class="hero-game-copy">接一单，从客户需求走到作品交付。</view><button class="game-secondary" @click="goGame('video')">开始模拟 →</button></view>
+          <view class="hero-game"><view class="hero-game-title">小红书教育 PPT</view><view class="hero-game-copy">当一次课件质检员，找出需要修正的地方。</view><button class="game-secondary" @click="goGame('education-ppt')">开始模拟 →</button></view>
         </view>
-        <view class="hero-poster" @click="navigate('/pages/camp/index')"><image :src="campaign.posterUrl" mode="aspectFit"/><view class="poster-caption"><view><text>想进一步实战？</text><text>了解三天体验营</text></view><text>查看 →</text></view></view>
+        <view class="hero-footnote-v2">数值与事件均为游戏设定，不是收入预测。<text @click="navigate('/pages/simulate/index')"> 查看全部六个项目 →</text></view>
       </view>
     </view>
     <view class="content-shell">
-      <view class="section-heading"><view><view class="section-title">先模拟，感受项目怎么做。</view><view class="section-subtitle">选个感兴趣的方向，亲手走一遍关键步骤。</view></view><text class="section-more" @click="navigate('/pages/simulate/index')">全部模拟 →</text></view>
-      <view class="project-grid">
-        <view class="project-card" @click="goGame('miniapp')"><text class="project-tag">AI 小程序副业</text><view class="project-title">从想法跑到复盘</view><view class="project-copy">体验立项、制作、上线和推广的关键步骤。</view><view class="project-link">开始模拟 →</view></view>
-        <view class="project-card" @click="goGame('video')"><text class="project-tag">AI 视频定制</text><view class="project-title">接一单，亲手补需求</view><view class="project-copy">从客户 brief 到制作交付，体验接单过程。</view><view class="project-link">开始模拟 →</view></view>
-        <view class="project-card" @click="goGame('education-ppt')"><text class="project-tag">教育资料 PPT</text><view class="project-title">当一次课件质检员</view><view class="project-copy">检查 AI 课件、制作资料，体验内容交付。</view><view class="project-link">开始模拟 →</view></view>
-      </view>
-      <view class="simulation-note">数值和事件均为游戏设定，不是收入预测。</view>
+      <view class="how-v2"><view><text>01 · 体验</text><text class="how-title">跑一遍项目</text><text class="how-copy">完成关键决策</text></view><view><text>02 · 复盘</text><text class="how-title">看你卡在哪</text><text class="how-copy">回看每一步的影响</text></view><view><text>03 · 对照</text><text class="how-title">了解真实案例</text><text class="how-copy">参考作者自述的经历</text></view><view @click="navigate('/pages/camp/index?from=home')"><text>04 · 下一步</text><text class="how-title">了解三天体验营 →</text><text class="how-copy">想实践时，再看看参与方式</text></view></view>
       <view class="highlights-grid">
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">AI 情报与实战案例</view><view class="section-subtitle">来自真实分享，看看别人正在探索什么。</view></view><text @click="scrollToIntelligence">更多情报 →</text></view><view class="highlight-list"><view v-for="(item,index) in featuredArticles" :key="item.id" class="highlight-row" @click="openArticle(item)"><text class="rank">{{ index+1 }}</text><view class="highlight-content"><view class="highlight-title">{{ item.title }}</view><view class="highlight-meta">{{ item.author || '生财圈友' }} · {{ formatDate(item.publishedAt) }}</view></view><text class="row-arrow">›</text></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view><view class="section-subtitle">看看不同城市的同行在交流什么。</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="conference-link" @click="navigate('/pages/events/index?view=conference')"><view><text>线下大会报名</text><view>查看报名二维码与购票说明</view></view><text>查看 →</text></view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <view class="topic-strip" @click="navigate('/pages/topic/index?topic=fde')"><view><text>本期关注 · 企业 AI 落地</text><view>FDE 实战与同行交流</view></view><text>进入专题 →</text></view>
-      <view id="ai-intelligence" class="section-top"><view><text class="eyebrow">AI INTELLIGENCE · 实战情报</text><view class="section-title">多看真实经验，找到下一步。</view><view class="section-subtitle">案例、工具和方法，按你的方向探索。</view></view><text class="feed-status">{{ freshness }}</text></view>
-      <view class="shortcuts"><view class="shortcut" @click="navigate('/pages/topic/index?topic=fde')"><text class="shortcut-icon">↗</text><view><text class="shortcut-name">FDE 专题</text><text class="shortcut-copy">企业 AI 落地与案例</text></view><text class="shortcut-arrow">›</text></view><view class="shortcut" @click="navigate('/pages/topic/index?topic=ai-video')"><text class="shortcut-icon orange">▶</text><view><text class="shortcut-name">AI 视频</text><text class="shortcut-copy">制作方法与实战案例</text></view><text class="shortcut-arrow">›</text></view></view>
-      <view class="practice-card"><view class="practice-card-title">看完案例，也可以动手试试。</view><view class="practice-card-copy">选一个小工具，把想法整理成可以继续使用的草稿。</view><view class="practice-links"><view @click="navigate('/pages/practice/index?view=quiz')">AI 方向测试 ↗</view><view @click="navigate('/pages/practice/index?view=fde')">拆解业务问题 ↗</view><view @click="navigate('/pages/practice/index?view=video')">视频需求单 ↗</view><view @click="navigate('/pages/practice/index?view=return')">回来接着看 ↗</view></view></view>
-      <view class="library">
-        <scroll-view class="category-scroll" scroll-x><view class="categories"><view v-for="category in categories" :key="category.id" class="category" :class="{selected: category.id === selectedCategory}" @click="selectCategory(category.id)">{{ category.label }}<text v-if="category.id === 'all'"> {{ aiTotal }}</text></view></view></scroll-view>
-        <view class="toolbar"><view class="filter-buttons"><text class="filter-button" :class="{active:!onlySaved}" @click="onlySaved=false;limit=20">全部</text><text class="filter-button" :class="{active:onlySaved}" @click="onlySaved=true;limit=20">只看收藏</text></view><input class="search" v-model="query" placeholder="搜索标题、作者、关键词" confirm-type="search" /></view>
-        <view class="result-note">{{ filteredArticles.length }} 篇 AI 相关内容 · 已收录资料</view>
-        <view v-for="article in visibleArticles" :key="article.id" class="article" @click="openArticle(article)">
-          <view class="article-main"><view class="article-title"><text class="tag">{{ article.isDigested ? '精华' : (article.kind || '分享') }}</text>{{ article.title }}</view><view class="article-summary">{{ article.overview || article.summary || '打开查看已收录的内容。' }}</view><view class="article-meta">{{ article.author || '生财圈友' }} <text>·</text> {{ formatDate(article.publishedAt) }} <text>·</text> {{ Number(article.commentCount || 0) }} 条评论</view></view>
-          <view class="save-button" @click.stop="toggleSaved(article)">{{ isSaved(article) ? '★' : '☆' }}</view>
-        </view>
-        <view v-if="!filteredArticles.length" class="empty">{{ onlySaved ? '还没有收藏符合条件的文章。' : '没有找到相关内容，换个关键词试试。' }}</view>
-        <view v-if="limit < filteredArticles.length" class="load-more" @click="limit += 20">继续看更多文章 ↓</view>
-      </view>
-      <view class="camp" @click="navigate('/pages/camp/index')"><image class="camp-image" :src="campaign.posterUrl" mode="aspectFit" /><view class="camp-text"><view class="camp-title">看了案例，想自己动手做一次？</view><view class="camp-copy">了解 AI 成万事三天体验营，活动安排以入口说明为准。</view></view><view class="camp-cta">了解三天体验营 →</view></view>
+      <view class="intel-entry" @click="scrollToIntelligence"><view><text>继续探索</text><view>更多 AI 情报与实战案例</view><text class="intel-copy">按方向筛选、搜索，发现值得看的内容</text></view><text>进入情报库 →</text></view>
+      <view class="camp" @click="navigate('/pages/camp/index?from=home')"><image class="camp-image" :src="campaign.posterUrl" mode="aspectFit" /><view class="camp-text"><view class="camp-title">看了案例，想自己动手做一次？</view><view class="camp-copy">了解 AI 成万事三天体验营，活动安排以入口说明为准。</view></view><view class="camp-cta">了解三天体验营 →</view></view>
       <view class="footer-note">内容来自生财有术 · 展示已收录摘要与导读，具体语境请以原帖为准</view>
     </view>
   </view>
@@ -52,7 +36,10 @@ import {computed, ref} from 'vue';
 import {onLoad, onShow} from '@dcloudio/uni-app';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
+import {track} from '../../data/track.js';
 
+const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
+const life=ref('');
 const categories=[{id:'all',label:'全部 AI'},{id:'cases',label:'实战案例'},{id:'tools',label:'工具与教程'},{id:'content',label:'内容创作'},{id:'development',label:'开发与 FDE'}];
 const selectedCategory=ref('all');
 const query=ref('');
@@ -62,23 +49,23 @@ const saved=ref([]);
 const allArticles=Array.isArray(articles)?articles:[];
 const aiArticles=computed(()=>allArticles.filter(isAiArticle));
 const aiTotal=computed(()=>aiArticles.value.length);
-const featuredArticles=computed(()=>[...aiArticles.value].sort((a,b)=>Number(b.publishedAt||0)-Number(a.publishedAt||0)).slice(0,4));
+const featuredArticles=computed(()=>[...aiArticles.value].filter(a=>!/白嫖|反代|薅羊毛|绕过(?:限制|审核|封禁)/i.test(`${a.title||''} ${a.summary||''}`)).sort((a,b)=>Number(b.publishedAt||0)-Number(a.publishedAt||0)).slice(0,3));
 const eventAI=/(?:^|[^a-z])ai(?=$|[^a-z]|ppt|agent|video)|人工智能|智能体|大模型|生成式|AIGC|GPT|Claude|Codex|Gemini|Grok|Cursor|Copilot|OpenAI|DeepSeek|豆包|通义千问|文心一言|(?:^|[^a-z])(?:FDE|Agent|MCP|LLM)(?=$|[^a-z])|workbuddy|seedance|comfyui|minimax/i;
 const upcomingEvents=computed(()=>{const seen=new Set();return [...events].filter(e=>e&&e.city&&Number(e.startTime)*1000>Date.now()&&!/CANCEL|ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||'')&&eventAI.test(`${e.name||''} ${e.typeText||''}`)).sort((a,b)=>Number(a.startTime)-Number(b.startTime)).filter(e=>{if(seen.has(e.city))return false;seen.add(e.city);return true}).slice(0,3)});
 function eventDate(t){return new Date(Number(t)*1000+8*3600000)}
 function eventMonth(t){return eventDate(t).getUTCMonth()+1}
 function eventDay(t){return eventDate(t).getUTCDate()}
 function eventTime(t){const d=eventDate(t);return `${d.getUTCMonth()+1}月${d.getUTCDate()}日 ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`}
-function scrollToIntelligence(){uni.pageScrollTo({selector:'#ai-intelligence',duration:300})}
+function scrollToIntelligence(){navigate('/pages/intelligence/index')}
 function goGame(name){
   // #ifdef H5
-  window.location.href=`/static/simulation-games/${name}.html`;return;
+  window.location.href=`/static/simulation-games/${name}.html${life.value?'?life='+encodeURIComponent(life.value):''}`;return;
   // #endif
   // #ifndef H5
   navigate('/pages/simulate/index');
   // #endif
 }
-onLoad(options=>{if(options?.section==='intelligence')setTimeout(scrollToIntelligence,300)});
+onLoad(options=>{if(options?.section==='intelligence')uni.redirectTo({url:'/pages/intelligence/index'});else {let played=false;try{played=!!uni.getStorageSync('ainpe:played')}catch{}track('site_view',{page:'home',played})}});
 const filteredArticles=computed(()=>{
   const keyword=query.value.trim().toLowerCase();
   return aiArticles.value.filter(a=>matchesAiCategory(a,selectedCategory.value))
@@ -110,4 +97,7 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .conference-link{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 10px;margin:12px 0 0;background:#fff4e7;color:#bb4e1c;border-radius:7px;font-size:12px;cursor:pointer}.conference-link>view>text{font-weight:800;font-size:13px}.conference-link>view>view{color:#927965;font-size:11px;margin-top:4px}.conference-link>text{white-space:nowrap;font-weight:700}
 .hero-inner{grid-template-columns:minmax(0,1fr) 300px}.hero-poster{width:100%;max-width:300px;box-sizing:border-box}.hero-poster image{height:300px}
 @media(max-width:700px){.hero-inner{grid-template-columns:1fr}.hero-poster{max-width:none}.hero-poster image{width:110px;height:220px}.poster-caption{min-height:105px}}
+
+/* 先体验的首页结构，保留真实情报与线下活动入口 */
+.home-hero{background:#0b3021;color:#f4f8ed}.hero-v2{max-width:1120px;margin:auto;padding:45px 24px 38px;box-sizing:border-box}.hero-kicker{font-size:13px;font-weight:800;color:#ffcf59}.hero-headline{font-size:44px;line-height:1.18;font-weight:850;margin-top:12px}.hero-sub{font-size:15px;line-height:1.7;color:#bcd0c2;margin-top:12px}.hero-step{font-size:15px;font-weight:750;margin-top:26px}.hero-step>text:first-child{display:inline-block;color:#0b3021;background:#ffcf59;border-radius:50%;width:25px;height:25px;text-align:center;line-height:25px;margin-right:6px;font-size:12px}.hero-small{color:#a4bbaa;font-weight:400;font-size:12px;margin-left:7px}.life-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.life-options button{margin:0;border:1px solid #749381;border-radius:25px;background:transparent;color:#d9e8db;font-size:13px;line-height:34px;padding:0 16px}.life-options button.selected{background:#ffcf59;color:#163529;border-color:#ffcf59}.hero-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.hero-game{position:relative;background:#fff;color:#173528;border-radius:9px;padding:21px;display:flex;flex-direction:column;gap:11px}.hero-game.featured{outline:2px solid #ffcf59}.hero-game-tag{align-self:flex-start;color:#715407;background:#fff1c3;font-size:11px;padding:4px 8px;border-radius:4px}.hero-game-title{font-size:19px;font-weight:800}.hero-game-copy{font-size:13px;line-height:1.65;color:#6f8074;flex:1}.hero-game button{margin:5px 0 0;background:#ee5a24;color:#fff;font-size:14px;font-weight:750;line-height:42px}.hero-game button.game-secondary{background:#fff;color:#1b6040;border:1px solid #27734d}.hero-footnote-v2{font-size:12px;color:#a4bcaa;margin-top:16px}.hero-footnote-v2 text{color:#f8d471;margin-left:8px}.how-v2{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.how-v2 view{background:#fff;border:1px solid #e7e3db;border-radius:8px;padding:16px}.how-v2 text{display:block}.how-v2 text{color:#d35b2c;font-size:11px;font-weight:750}.how-v2 .how-title{font-size:15px;font-weight:750;color:#183328;margin:6px 0}.how-v2 .how-copy{color:#8b9a8e;font-size:12px}.intel-entry{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e4e5dd;border-radius:8px;padding:20px;margin-bottom:20px;color:#226542}.intel-entry view>text{font-size:11px;color:#86a388}.intel-entry view>view{font-weight:800;font-size:19px;margin:5px 0}.intel-entry .intel-copy{font-size:12px;color:#869787}.intel-entry>text{font-size:13px;font-weight:700}.hero-v2 button:after{border:0}@media(max-width:700px){.hero-v2{padding:30px 16px}.hero-headline{font-size:32px}.hero-games{grid-template-columns:1fr;gap:9px}.hero-game{padding:16px}.hero-game-copy{font-size:12px}.how-v2{grid-template-columns:1fr 1fr;gap:8px}.intel-entry{gap:12px}.intel-entry>text{white-space:nowrap}}
 </style>

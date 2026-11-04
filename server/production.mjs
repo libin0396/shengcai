@@ -64,12 +64,20 @@ function send(res, status, body, method, headers = {}) {
 export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
-  let reservations=null;
+  let reservations=null,tracking=null,board=null;
   if(reservation){
     const dbParent=await realpath(path.dirname(reservation.dbPath));
     if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
     const {createProductionReservationApi}=await import('./production-reservations.mjs');
     reservations=createProductionReservationApi({root,...reservation});
+    const {createProductionTrackingApi}=await import('./production-tracking.mjs');
+    const trackingPath=path.join(dbParent,'ainpe-tracking.sqlite');
+    if(path.resolve(reservation.dbPath)===trackingPath)throw new Error('tracking_db_conflicts_with_reservations');
+    tracking=createProductionTrackingApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin});
+    const {createProductionBoardApi}=await import('./production-board.mjs');
+    const boardPath=path.join(dbParent,'ainpe-board.sqlite');
+    if(path.resolve(reservation.dbPath)===boardPath)throw new Error('board_db_conflicts_with_reservations');
+    board=createProductionBoardApi({root,dbPath:boardPath,publicOrigin:reservation.publicOrigin});
   }
   // Capture the release identity at startup, so a symlink swap cannot make an
   // older process report the new release's identity.
@@ -139,17 +147,19 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     }); };
-    const afterReservation = () => { void feed(req, res, fallback).catch(() => {
+    const afterBoard = () => { void feed(req, res, fallback).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     }); };
+    const afterTracking = () => { if(board)board.middleware(req,res,afterBoard);else afterBoard(); };
+    const afterReservation = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
     if(reservations){reservations.middleware(req,res,afterReservation);return;}
     void feed(req, res, fallback).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     });
   });
-  server.once('close',()=>reservations?.close());
+  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();});
   return server;
 }
 

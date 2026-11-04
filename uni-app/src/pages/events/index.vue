@@ -23,7 +23,7 @@ const conferenceStatus=computed(()=>{const e=conference.value;if(!e)return '报�
 const registrationLabel=computed(()=>{const e=conference.value;if(!e||/CANCEL|ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||'')||(Number(e.startTime)>0&&Number(e.startTime)*1000<=now.value)||(Number(e.submitEnd)>0&&Number(e.submitEnd)*1000<now.value)||e.full)return '查看活动资料';return '查看大会报名图'});
 const clock=setInterval(()=>{now.value=Date.now()},60000);onUnmounted(()=>clearInterval(clock));
 function goFdeTopic(){uni.navigateTo({url:'/pages/topic/index?slug=fde'})}
-onLoad(options=>{if(options?.view==='conference')conferenceOpen.value=true});
+onLoad(options=>{if(options?.view==='conference'){fdeOpen.value=true;conferenceOpen.value=true}});
 function previewConference(){uni.previewImage({current:'/static/assets/conference-invite.png',urls:['/static/assets/conference-invite.png']})}
 const ai=/(?:^|[^a-z])ai(?=$|[^a-z]|ppt|agent|video)|人工智能|智能体|大模型|生成式|AIGC|GPT|Claude|Codex|Gemini|Grok|Cursor|Copilot|OpenAI|DeepSeek|豆包|通义千问|文心一言|(?:^|[^a-z])(?:FDE|Agent|MCP|LLM)(?=$|[^a-z])|workbuddy|seedance|comfyui|minimax/i;
 function isAiEvent(e){if(ai.test(`${e.name||''} ${e.typeText||''}`))return true;return /(?:本期|本次|本场|活动|聚会|分享|主题|从).{0,16}(?:AI|人工智能|智能体|大模型|FDE|Agent|MCP)/i.test(String(e.summary||e.description||'').slice(0,300))}
