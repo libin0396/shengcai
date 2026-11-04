@@ -1,0 +1,24 @@
+{
+  "chineseName": "AI 实战情报站",
+  "englishBrand": "AINPE",
+  "promotion": {
+    "status": "unverified",
+    "eventUrls": {},
+    "communityJoinUrl": null
+  },
+  "contact": {
+    "wechatId": "Yandati4",
+    "qrUrl": "/assets/wechat-contact.jpg"
+  },
+  "campaign": {
+    "id": "ai-camp",
+    "title": "AI 成万事 · 3 天体验营",
+    "description": "从看机会、学路径，到动手做出一份成果。",
+    "posterUrl": "/assets/ai-camp-poster.jpg",
+    "qrUrl": "/assets/ai-camp-qr.png",
+    "targetUrl": "https://work.weixin.qq.com/ct/wcdedc1ce1dac91037db251680ee63a8200f",
+    "targetKind": "wecom",
+    "sourceLabel": "用户提供的体验营海报",
+    "scheduleLabel": "海报标注 11 月 2 日 19:00 开营，当前排期以入口说明为准。"
+  }
+}

@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 小程序副业 · 模拟复盘 · AINPE</title>
+<style>
+/* ============ AINPE 模拟复盘 · 统一设计语言（三个游戏共用） ============ */
+:root{
+ --bg:#12142a;--bg2:#0c0e20;--card:#1a1d39;--card2:#22264a;--line:#2c3160;--line2:#3e4580;
+ --ink:#f2f3fb;--sub:#c3c7e6;--mute:#8d93bf;
+ --acc:#ffc23d;--acc2:#ffd877;--accInk:#241a00;--accSoft:rgba(255,194,61,.11);--accLine:rgba(255,194,61,.45);
+ --good:#3fd6a2;--goodSoft:rgba(63,214,162,.11);--bad:#ff6f86;--badSoft:rgba(255,111,134,.11);
+ --sim:#a2a9ec;--simSoft:rgba(162,169,236,.13);
+ --r-lg:20px;--r-md:14px;--r-sm:10px;
+ --num:"Barlow Condensed","DIN Condensed","DIN Alternate","Bahnschrift SemiCondensed","Bahnschrift","Roboto Condensed","Arial Narrow",system-ui,-apple-system,sans-serif;
+ --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","MiSans","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+ --W:620px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.65 var(--sans);letter-spacing:.01em;
+ background:radial-gradient(120% 60% at 50% -10%,#1e2250 0%,rgba(30,34,80,0) 60%),var(--bg);background-attachment:fixed;-webkit-font-smoothing:antialiased}
+body.wide{--W:1060px}
+button{font-family:inherit;color:inherit}
+a{color:var(--good)}
+:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:0}
+.wrap{max-width:var(--W);margin:0 auto;padding:8px 16px calc(32px + env(safe-area-inset-bottom))}
+
+/* 顶栏 */
+.top{position:sticky;top:0;z-index:20;background:rgba(18,20,42,.86);backdrop-filter:saturate(1.3) blur(10px);-webkit-backdrop-filter:saturate(1.3) blur(10px);border-bottom:1px solid var(--line)}
+.top .in{max-width:var(--W);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px 12px}
+.top .gname{font-size:13px;font-weight:600;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top #stepv{font-size:13px;color:var(--acc);font-weight:600;white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}
+#progb{height:2px;width:0;background:var(--acc);box-shadow:0 0 10px rgba(255,194,61,.6);transition:width .35s ease}
+
+/* 文字层级 */
+.brand{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--acc);background:var(--accSoft);border:1px solid rgba(255,194,61,.28);border-radius:999px;padding:3px 11px}
+.brand:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+h1,.h1{font-size:30px;line-height:1.22;font-weight:800;margin:14px 0 10px;letter-spacing:.01em}
+h2,.h2{font-size:22px;line-height:1.35;font-weight:750;margin:6px 0 8px}
+.lead{font-size:15.5px;color:var(--sub);margin:0 0 4px}
+.mute{color:var(--mute);font-size:13px}
+.fine{color:var(--mute);font-size:12.5px;line-height:1.6}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+.kick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:18px 0 2px;font-size:13px;color:var(--mute)}
+.kick b{color:var(--acc);font-weight:600}
+
+/* 标签 */
+.tag{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;line-height:1;padding:4px 7px;border-radius:6px;background:var(--simSoft);color:var(--sim);margin-left:6px;vertical-align:2px;white-space:nowrap}
+.tag.real{background:var(--goodSoft);color:var(--good)}
+.tag.warn{background:rgba(255,194,61,.14);color:var(--acc2)}
+.rtag{display:inline-flex;font-size:11.5px;color:var(--sim);background:var(--simSoft);border-radius:6px;padding:2px 7px;margin:4px 4px 0 0}
+
+/* 容器 */
+.sec{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 14px 16px;margin:12px 0}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:700;margin:0 0 10px}
+.sec-h .st{font-size:12px;font-weight:500;color:var(--mute);white-space:nowrap}
+.sec-h .st.ok{color:var(--good)}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:12px 0}
+.grp .q,.q{font-weight:700;font-size:16px;margin-bottom:8px}
+.note{border-radius:var(--r-md);padding:12px 14px;margin:14px 0;background:var(--simSoft);border:1px dashed rgba(162,169,236,.4)}
+.note p{margin:6px 0 0;font-size:13px;color:var(--sub)}
+.note .nh{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.note .nh b{font-size:16px}.note .nh .num{font-size:22px;color:var(--acc);margin-left:4px}
+
+/* 首页流程 */
+.flow{list-style:none;margin:18px 0 6px;padding:0;position:relative}
+.flow li{display:flex;gap:12px;align-items:flex-start;padding:7px 0;position:relative;font-size:15px}
+.flow li:not(:last-child):after{content:"";position:absolute;left:13px;top:34px;bottom:-6px;width:2px;background:var(--line)}
+.flow .fn{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 15px var(--num);background:var(--card2);border:1px solid var(--line2);color:var(--acc)}
+.flow li span:last-child{padding-top:2px}
+
+/* 选项 */
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.opts.list{grid-template-columns:1fr;gap:10px}
+.opt{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:52px;padding:10px 34px 10px 12px;text-align:left;font-size:15px;font-weight:600;background:var(--bg2);border:1.5px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s,background .15s,transform .08s}
+.opt .n{display:block;font-size:12.5px;font-weight:400;color:var(--mute);line-height:1.45}
+.opt .ck{position:absolute;right:10px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;border:1.5px solid var(--line2);transition:all .15s}
+.opt:hover{border-color:var(--line2);background:#14173a}
+.opt:active{transform:scale(.985)}
+.opt.on{border-color:var(--acc);background:var(--accSoft)}
+.opt.on .ck{border-color:var(--acc);background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.4l2.6 2.5L12 5.4' fill='none' stroke='%23241a00' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.opt.on .n{color:var(--sub)}
+.opts.list .opt{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;min-height:60px;padding:12px 40px 12px 12px}
+.opt .ab{flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:700 16px var(--num);background:var(--card2);color:var(--sub);transition:all .15s}
+.opt.on .ab{background:var(--acc);color:var(--accInk)}
+.opt .tx{display:flex;flex-direction:column}
+
+/* 决策进度点 */
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:18px;height:4px;border-radius:2px;background:var(--line2)}
+.dots i.d{background:var(--acc)}.dots i.c{background:var(--acc2);width:28px}
+
+/* 天赋 */
+.talents{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tal{position:relative;display:flex;flex-direction:column;gap:4px;min-height:96px;padding:14px 12px 12px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;overflow:hidden;transition:border-color .15s,transform .1s,background .15s}
+.tal b{font-size:15.5px;line-height:1.35;padding-right:22px}
+.tal .mute{font-size:12.5px;line-height:1.5}
+.tal:before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--line2)}
+.tal.r1:before{background:linear-gradient(90deg,#8f7dff,#5f8bff)}
+.tal.r1{background:linear-gradient(160deg,#25224f 0%,var(--card) 55%)}
+.tal.r2:before{background:linear-gradient(90deg,#ffc23d,#ff9a3d)}
+.tal.r2{background:linear-gradient(160deg,#3a2c17 0%,var(--card) 55%)}
+.tal:hover{border-color:var(--line2)}
+.tal:active{transform:scale(.98)}
+.tal .ck{position:absolute;right:10px;top:12px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2)}
+.tal.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset,0 6px 20px rgba(255,194,61,.12)}
+.tal.on .ck{border-color:var(--acc);background:var(--acc);color:var(--accInk);font:700 13px/17px var(--num);text-align:center}
+.tal.dim{opacity:.5}
+.tal.pick{animation:pk .3s ease}
+@keyframes pk{40%{transform:scale(1.035)}}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:2px}
+.slots span{height:34px;border-radius:9px;border:1.5px dashed var(--line2);display:flex;align-items:center;justify-content:center;font-size:12.5px;color:var(--mute);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slots span.f{border:1.5px solid var(--accLine);background:var(--accSoft);color:var(--ink);font-weight:600}
+
+/* 按钮 */
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border:0;border-radius:14px;padding:12px 16px;font-size:17px;font-weight:750;background:var(--acc);color:var(--accInk);cursor:pointer;margin-top:10px;letter-spacing:.04em;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 8px 22px -8px rgba(255,194,61,.55);transition:transform .08s,filter .15s,background .2s}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{cursor:not-allowed;background:var(--card2);color:var(--mute);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line2);font-weight:600;font-size:15.5px;box-shadow:none;letter-spacing:.02em}
+.btn.ghost:hover:not(:disabled){background:var(--card)}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+.tlink{background:none;border:0;color:var(--mute);font-size:14px;min-height:44px;cursor:pointer;padding:0 10px}
+.tlink:hover{color:var(--ink)}
+.links{display:flex;justify-content:center;flex-wrap:wrap}
+.cta{position:sticky;bottom:0;z-index:6;margin:14px -16px 0;padding:22px 16px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(rgba(18,20,42,0),var(--bg) 22px)}
+.cta .btn{margin-top:6px}
+.cta .hint{font-size:12.5px;color:var(--mute);text-align:center;min-height:18px;transition:color .2s}
+.cta .hint.warn{color:var(--acc2)}
+
+/* 动手任务 */
+.task .slide{max-width:480px;margin:0 auto}
+.task{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:14px 0}
+.chat .who{font-size:12px;color:var(--mute);margin:10px 0 2px}
+.chat .who:first-child{margin-top:0}
+.chat .bub{background:#1f3a2e;border-radius:4px 14px 14px 14px;padding:9px 12px;margin:6px 0;max-width:88%;width:fit-content;font-size:14.5px;line-height:1.55}
+.slide{background:#f7f3e8;color:#222;border-radius:8px;padding:14px;aspect-ratio:16/10;position:relative;overflow:hidden;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)}
+.slide .h{font-size:18px;font-weight:700;color:#7a2b14}.slide .ov{white-space:nowrap;overflow:visible;color:#333}
+.slide .img{float:right;width:34%;height:42%;background:repeating-linear-gradient(45deg,#cfd8e3,#cfd8e3 6px,#e3e9f0 6px,#e3e9f0 12px);border-radius:6px;font-size:10px;color:#556;display:flex;align-items:flex-end;padding:4px;box-sizing:border-box;margin-left:8px}
+.slide .ft{position:absolute;bottom:6px;left:14px;right:14px;font-size:10px;color:#777;display:flex;justify-content:space-between}
+.chk{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:12px;margin:8px 0;min-height:48px;font-size:15px;line-height:1.55;cursor:pointer;transition:border-color .15s,background .15s}
+.chk:hover{border-color:var(--line2)}
+.chk .bx{flex:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;transition:all .15s}
+.chk.on{border-color:var(--acc);background:var(--accSoft)}.chk.on .bx{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.chk.ok{border-color:rgba(63,214,162,.55);background:var(--goodSoft)}.chk.ok .bx{background:var(--good);border-color:var(--good);color:#04261a}
+.chk.miss{border-color:rgba(255,111,134,.6);background:var(--badSoft)}.chk.miss .bx{background:var(--bad);border-color:var(--bad);color:#2a0710}
+.chk.fp{border-color:rgba(255,194,61,.45)}.chk.fp .bx{border-color:var(--acc2);color:var(--acc2)}
+.chk .why{display:block;font-size:13px;color:var(--sub);margin-top:6px;line-height:1.6}
+.chk .why b{font-weight:700;margin-right:6px}
+.chk.ok .why b{color:var(--good)}.chk.miss .why b{color:var(--bad)}.chk.fp .why b{color:var(--acc2)}
+.fixb{margin-top:10px;background:var(--bad);border:0;color:#2a0710;font-weight:700;border-radius:9px;padding:6px 14px;min-height:38px;cursor:pointer;font-size:13.5px}
+.score{display:flex;align-items:baseline;gap:6px;margin:4px 0 6px}
+.score .num{font-size:56px;font-weight:700;line-height:1}
+.score small{font-size:15px;color:var(--mute)}
+
+/* 模拟时长 */
+.dtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.dtile{position:relative;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-lg);padding:16px 14px;cursor:pointer;min-height:132px;transition:border-color .15s,background .15s}
+.dtile .num{display:block;font-size:52px;line-height:1;font-weight:700}
+.dtile .u{font-size:14px;color:var(--sub);margin-left:4px;font-weight:600}
+.dtile .n{display:block;margin-top:10px;font-size:13px;color:var(--mute);line-height:1.5}
+.dtile.on{border-color:var(--acc);background:var(--accSoft)}.dtile.on .num{color:var(--acc)}
+.seedc{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.seed{font-family:var(--num);font-size:20px;font-weight:700;color:var(--acc);letter-spacing:.02em}
+
+/* 运行画面 */
+.rn{display:grid;gap:12px;margin-top:6px}
+.rnHead{display:flex;gap:14px;align-items:center}
+.cal{position:relative;flex:none;width:88px;text-align:center;background:#f6f1e3;color:#20223a;border-radius:12px;padding:16px 0 6px;box-shadow:0 10px 24px -10px rgba(0,0,0,.7)}
+.cal:before{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:var(--acc);border-radius:12px 12px 0 0}
+.cal:after{content:"";position:absolute;left:22px;right:22px;top:-4px;height:9px;background:radial-gradient(circle,#2a2d4f 3.5px,transparent 4px) 0 0/22px 9px repeat-x}
+.cal small{display:block;font-size:11px;color:#6a6d8a;font-weight:600}
+.cal b{display:block;font:700 46px/1 var(--num);margin:2px 0 0}
+.cal.tick b{animation:tk .25s ease-out}
+@keyframes tk{from{transform:translateY(-6px);opacity:.3}}
+.rnT{min-width:0}
+.rnT .ph{font-size:13px;color:var(--mute)}
+.rnT #phn{display:block;font-size:24px;font-weight:800;color:var(--ink);line-height:1.25}
+.rnT .sd{font-size:12px;color:var(--mute);margin-top:2px}
+.trk{margin:4px 0 0}
+.trkB{height:8px;background:var(--bg2);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.trkB i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9a3d,var(--acc));border-radius:5px;transition:width .25s}
+.trkL{position:relative;height:26px}
+.trkL span{position:absolute;top:6px;text-align:center;font-size:12px;color:var(--mute);border-left:1px solid var(--line);white-space:nowrap;overflow:hidden;line-height:18px}
+.trkL span:first-child{border-left:0}
+.trkL span.done{color:var(--good)}.trkL span.on{color:var(--acc);font-weight:700}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
+.phT{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;margin-bottom:10px}
+.phT .mute{font-size:12px;font-weight:400}
+.mets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mets div{background:var(--bg2);border-radius:10px;padding:8px 10px}
+.mets small{display:block;color:var(--mute);font-size:12px}
+.mets b{display:block;font:700 26px/1.15 var(--num);font-variant-numeric:tabular-nums}
+.mets.n4{grid-template-columns:repeat(4,1fr)}.mets.n4 div{padding:8px}.mets.n4 b{font-size:22px}
+#spk{width:100%;height:56px;margin:12px 0 6px;display:block;overflow:visible}
+.evs{min-height:104px}
+.evc{display:flex;gap:12px;align-items:flex-start;min-height:104px;background:var(--card2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;position:relative;overflow:hidden}
+.evc:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.evc.bd:before{background:var(--bad)}.evc.gd:before{background:var(--good)}
+.evc.bd{background:linear-gradient(100deg,rgba(255,111,134,.12),var(--card2) 60%)}
+.evc.gd{background:linear-gradient(100deg,rgba(63,214,162,.12),var(--card2) 60%)}
+.evc.idle{opacity:.6}.evc.idle:before{background:var(--line2)}
+.evc .ic{flex:none;width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:19px}
+.evc b{display:block;font-size:15.5px;line-height:1.45;margin-top:2px}
+.evc small{font-size:12px}
+.evc.pop{animation:pop .4s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.log{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-lg);padding:6px 14px;overflow:auto;font-size:14px;height:30vh;margin-top:12px;-webkit-mask:linear-gradient(transparent,#000 22px)}
+.log div{padding:7px 0;border-bottom:1px solid rgba(44,49,96,.6);color:var(--sub);animation:ap .25s}
+.log div:last-child{border-bottom:0;color:var(--ink)}
+.log .ev{color:var(--acc2)}.log .bd{color:var(--bad)}.log .gd{color:var(--good)}
+.log em{font-style:normal;color:var(--mute);font:600 13px var(--num);margin-right:10px;display:inline-block;min-width:26px}
+.rn .rtag{margin:0 0 0 4px}
+.trans[hidden]{display:none}
+.trans{position:fixed;inset:0;background:rgba(12,14,32,.94);display:flex;align-items:center;justify-content:center;text-align:center;z-index:50;animation:ap .35s;padding:24px}
+.trans h2{font-size:24px;margin:16px 0 6px}
+.spin{width:36px;height:36px;margin:18px auto 0;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--acc);animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes ap{from{opacity:0;transform:translateY(4px)}}
+
+/* 复盘：结算单 */
+.end{display:grid;gap:4px}
+.slip{position:relative;background:linear-gradient(180deg,#232750,#1a1d3c);border:1px solid var(--line2);border-radius:var(--r-lg) var(--r-lg) 6px 6px;padding:18px 18px 22px;margin:12px 0 18px;overflow:visible}
+.slip:after{content:"";position:absolute;left:10px;right:10px;bottom:-9px;height:10px;background:radial-gradient(circle at 7px -1px,transparent 6px,#1a1d3c 6.5px) 0 0/14px 10px repeat-x}
+.slip .sh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--mute)}
+.slip .lbl{margin-top:14px;font-size:13px;color:var(--sub)}
+.big{font:700 64px/1.02 var(--num);font-variant-numeric:tabular-nums;margin:4px 0 6px;letter-spacing:-.01em}
+.stamp{display:inline-block;transform:rotate(-3deg);border:2.5px solid currentColor;border-radius:10px;padding:5px 12px;font-size:19px;font-weight:800;color:var(--acc);margin:6px 0 10px;box-shadow:0 0 0 3px rgba(0,0,0,0) ,inset 0 0 0 1px rgba(255,255,255,.04)}
+.stamp.bad{color:var(--bad)}.stamp.good{color:var(--good)}
+.slip.in .stamp{animation:stm .5s .25s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes stm{from{opacity:0;transform:rotate(-12deg) scale(1.6)}}
+.vpill{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;padding:9px 12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line)}
+.vpill i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.vpill.good i{background:var(--good)}.vpill.bad i{background:var(--bad)}
+.ledger{margin:16px 0 0;padding:12px 0 0;border-top:1px dashed var(--line2);font-size:13.5px}
+.ledger div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;color:var(--sub)}
+.ledger div b{font:600 17px var(--num);color:var(--ink)}
+.ledger div.ex{color:var(--mute)}.ledger div.ex b{color:var(--mute);font-weight:500}
+.ledger div.tot{border-top:1px solid var(--line);margin-top:4px;padding-top:7px;color:var(--ink);font-weight:700}
+.ledger .fine{margin:8px 0 0;display:block}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts .btn{margin:0}.acts .full{grid-column:1/-1}
+.fitl{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.fitl:first-of-type{border-top:0}
+.fitl .mk{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+.fitl.g .mk{background:var(--goodSoft);color:var(--good)}.fitl.b .mk{background:var(--badSoft);color:var(--bad)}
+.fitl .nx{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:1fr 64px;gap:4px 10px;align-items:center;font-size:13.5px}
+.bar .bt{color:var(--sub);line-height:1.45}
+.bar .bv{text-align:right;font:700 16px var(--num)}
+.bar .bl{grid-column:1/-1;height:6px;border-radius:3px;background:var(--bg2);overflow:hidden}
+.bar .bl i{display:block;height:100%;border-radius:3px}
+.bar.p .bv{color:var(--good)}.bar.p .bl i{background:var(--good)}
+.bar.m .bv{color:var(--bad)}.bar.m .bl i{background:var(--bad)}
+.subh{font-size:12.5px;color:var(--mute);margin:12px 0 6px}
+.flowline{font-size:13.5px;color:var(--sub);background:var(--bg2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flowline .num{font-size:18px;font-weight:700;color:var(--ink)}
+details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--sub);font-size:14px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);margin-left:10px;margin-top:-4px;transition:transform .2s}
+details[open]>summary:after{transform:rotate(-135deg);margin-top:4px}
+.tl{position:relative;padding-left:18px}
+.tl:before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tli{position:relative;padding:6px 0 10px}
+.tli:before{content:"";position:absolute;left:-18px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--line2)}
+.tli.m:before{border-color:var(--bad)}.tli.p:before{border-color:var(--good)}
+.tli .dd{font:600 13px var(--num);color:var(--mute);margin-right:6px}
+.tli .amt{display:inline-block;font-size:13px;margin-left:4px}
+.tli .mute{margin-top:2px}
+.cardimg{width:100%;max-width:400px;margin:12px auto 4px;border-radius:14px;display:block;box-shadow:0 18px 40px -16px rgba(0,0,0,.8)}
+.imgc{text-align:center}
+.real{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:12px 0;position:relative}
+.real .ch{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.real .ch b{font-size:16px}
+.real .kv{font-size:13.5px;color:var(--sub);margin-top:8px}
+.real .kv span{color:var(--mute)}
+.real ul{margin:4px 0 0;padding-left:18px;font-size:14px}
+.real li{margin:2px 0}
+.res{margin-top:10px;padding:10px 12px;background:var(--goodSoft);border:1px solid rgba(63,214,162,.25);border-radius:12px}
+.res b{color:var(--good);font-size:15px}
+.res .mute{font-size:12.5px;margin-top:2px}
+.src{margin-top:10px;font-size:12.5px;color:var(--mute)}
+.src a{color:var(--good);text-decoration:none;border-bottom:1px solid rgba(63,214,162,.4)}
+details.all{background:transparent;border:1px solid var(--line);border-radius:var(--r-lg);padding:0 14px;margin:12px 0}
+details.all[open]{padding-bottom:4px}
+.disc{background:var(--simSoft);border:1px dashed rgba(162,169,236,.4);border-radius:var(--r-md);padding:12px 14px;font-size:13px;color:var(--sub);margin:16px 0}
+.camp{border:1px solid var(--line);background:linear-gradient(140deg,#2a2347,var(--card));border-radius:var(--r-lg);padding:16px;margin:12px 0}
+.camp b{font-size:17px}
+.sheetbg{position:fixed;inset:0;background:rgba(5,6,16,.6);z-index:40;animation:ap .2s}
+.modal{position:fixed;left:0;right:0;bottom:0;background:var(--card2);border-top:1px solid var(--line2);padding:18px 16px calc(16px + env(safe-area-inset-bottom));z-index:41;max-width:560px;margin:0 auto;border-radius:20px 20px 0 0;animation:up .25s ease-out}
+.modal:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line2);margin:-6px auto 12px}
+@keyframes up{from{transform:translateY(100%)}}
+.h2s{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:26px 0 4px}
+.h2s h2{margin:0}
+
+/* 桌面 */
+@media(min-width:760px){
+ h1,.h1{font-size:40px}
+ .talents{grid-template-columns:repeat(3,1fr)}
+ .wrap{padding-top:16px}
+}
+@media(min-width:900px){
+ .rn{grid-template-columns:1fr 1.1fr;gap:20px;align-items:start}
+ .rn .log{height:330px;margin-top:12px}
+ .end{grid-template-columns:400px 1fr;gap:28px;align-items:start}
+ .endL{position:sticky;top:70px}
+ .endR>.grp:first-child,.endR>.sec:first-child{margin-top:12px}
+ .cta{position:static;background:none;margin:20px 0 0;padding:0}
+ .cta.runc{position:sticky;bottom:0;background:linear-gradient(rgba(18,20,42,0),var(--bg) 22px);padding:16px 0 12px;max-width:420px;margin-left:auto}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+/* AINPE 浅色实战复盘：统一配色，保留现有模拟流程 */
+:root{
+ --bg:#f6f2e9;--bg2:#f7f4ec;--card:#ffffff;--card2:#eff5ed;--line:#e7e0d4;--line2:#c7d4c6;
+ --ink:#142b20;--sub:#50665a;--mute:#819286;
+ --acc:#f35a22;--acc2:#d94619;--accInk:#ffffff;--accSoft:rgba(243,90,34,.08);--accLine:rgba(243,90,34,.35);
+ --good:#126243;--goodSoft:#e4f1e9;--bad:#df512c;--badSoft:#fcebe6;
+ --sim:#7866a2;--simSoft:#f0edf7;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink)}
+.top{background:rgba(7,48,33,.98);border-color:#315544}
+.top .gname{color:#e3eee4}.top #stepv{color:#ffd255}
+#progb{background:#ffcd4e;box-shadow:none}
+.brand{color:#126243;background:#e4f1e9;border-color:#cde1d4}.brand:before{background:#126243}
+.btn{background:#f35a22;color:#fff;box-shadow:0 6px 15px -8px rgba(185,64,23,.65);letter-spacing:0}
+.btn.ghost{background:transparent;color:#126243;border-color:#2d7452}
+.btn.ghost:hover:not(:disabled){background:#edf5ec}
+.btn:disabled{background:#e9ede6;color:#96a298}
+.opt:hover{background:#f6f8f3}.opt.on .ck{background-color:#f35a22}
+.opt.on .ab{color:#fff}.opt.on .n{color:#50665a}
+.tal.r1{background:linear-gradient(160deg,#eef2fa 0%,#fff 55%)}
+.tal.r2{background:linear-gradient(160deg,#fff4e1 0%,#fff 55%)}
+.tal.r1:before{background:#88a4b0}.tal.r2:before{background:#e9a339}
+.tal.on .ck{color:#fff}.cta{background:linear-gradient(rgba(246,242,233,0),var(--bg) 22px)}
+.chat .bub{background:#e7f2e9;color:#193e2c}
+.chk.ok .bx,.chk.miss .bx{color:#fff}.fixb{color:#fff}
+.slip{background:#fff;border-color:var(--line);border-radius:16px;padding:22px;margin-bottom:14px}
+.slip:after{display:none}.big{color:#126243}.stamp{color:#e65122}.stamp.bad{color:#df512c}
+.vpill{background:#f6f2e9;border:0}.ledger div.tot b{color:#126243}
+.camp{position:relative;min-height:155px;padding:22px 122px 22px 22px;background:#083b29;border:0;color:#fff;overflow:hidden}
+.camp b{font-size:18px}.camp .mute{color:#cfdfd3!important}.camp .btn.ghost{background:#f35a22;border-color:#f35a22;color:#fff;width:auto;min-height:44px;display:inline-flex;padding:10px 18px}
+.camp:after{content:"";position:absolute;right:22px;top:50%;transform:translateY(-50%);width:76px;height:126px;border-radius:6px;background:#fff url('/static/assets/ai-camp-poster.jpg') center/contain no-repeat;pointer-events:none}
+.real{background:#fff}.res{border-color:#d0e5d7}.src a{border-color:#a6cfb1}
+.note,.disc{border-color:#d8d2e2}.trans{background:rgba(246,242,233,.97)}
+.modal{box-shadow:0 -10px 35px rgba(20,43,32,.12)}
+.ainpe-gate-link{background:#f35a22!important;color:#fff!important}
+@media(min-width:900px){.cta.runc{background:linear-gradient(rgba(246,242,233,0),var(--bg) 22px)}}
+@media(max-width:420px){.camp{padding:18px 100px 18px 16px}.camp:after{right:12px;width:72px;height:118px}.camp .btn.ghost{font-size:14px;padding:9px 12px}}
+
+</style></head><body>
+<nav style="max-width:1100px;margin:0 auto;padding:15px 20px 0;font:600 14px system-ui,sans-serif"><a href="/#/pages/simulate/index" style="color:#226547;text-decoration:none">← 返回模拟项目</a></nav>
+<div class="top" id="top" hidden><div class="in"><span class="gname">AINPE · AI 小程序副业模拟</span><span id="stepv"></span></div><div id="prog"><div id="progb"></div></div></div>
+<div class="wrap" id="app"></div>
+
+<!-- ================= 可替换数据：案例 / 条件 / 选择 / 事件 =================
+ real:  仅放核实过的真实案例事实（来源：作者自述）
+ 其余：全部为游戏设定，可整体替换为其它案例 -->
+<script type="application/json" id="game-data">{"project": "AI 微信小程序副业", "baseRef": 3000, "baseRefNote": "游戏起点值。参考圈友艺文自述的“小程序累计变现几千元”设定，不是平均值，也不是收益承诺。", "real": {"who": "圈友艺文（生财有术）", "facts": ["用小红书探索流量，自然流累计百万曝光", "小程序累计变现几千元", "流量好的时候，付费产品还没准备好"], "note": "以上为作者写作当时的自述，不代表平均水平，也不是收益承诺。", "nodes": ["需求", "主体与账号", "开发", "测试", "审核与发布"]}, "conditions": [{"id": "life", "q": "生活状态", "opts": [{"t": "全职上班", "n": "下班后才有时间，加班会打断", "d": -300, "fit": 0, "flags": ["interrupt"]}, {"t": "学生", "n": "时间多，考试周会停摆", "d": -100, "fit": 1, "flags": ["exam"]}, {"t": "全职宝妈宝爸", "n": "时间碎，懂家长需求", "d": -400, "fit": 0, "flags": ["kid"]}, {"t": "自由职业", "n": "时间自己安排，收入不稳", "d": 200, "fit": 2, "flags": []}, {"t": "待业", "n": "时间充足，压力也大", "d": 100, "fit": 1, "flags": ["anxious"]}]}, {"id": "time", "q": "每天可投入时间", "opts": [{"t": "0.5 小时", "d": -1200, "fit": -2, "flags": ["lowtime"], "n": "通勤路上挤出来"}, {"t": "1 小时", "d": -500, "fit": 0, "flags": ["lowtime"], "n": "下班后一小时"}, {"t": "2 小时", "d": 0, "fit": 1, "flags": [], "n": "够开发加发笔记"}, {"t": "4 小时", "d": 600, "fit": 2, "flags": ["hightime"], "n": "接近半职投入"}]}, {"id": "tech", "q": "技术基础", "opts": [{"t": "零基础", "n": "没写过代码", "d": -800, "fit": -1, "flags": ["notech"]}, {"t": "会用 AI 编程", "d": 0, "fit": 1, "flags": [], "n": "让 AI 写，自己能改"}, {"t": "程序员", "d": 400, "fit": 2, "flags": ["coder"], "n": "能独立开发上线"}]}, {"id": "fund", "q": "启动资金", "opts": [{"t": "¥0", "n": "只用免费额度", "d": -300, "fit": 0, "flags": [], "cost": 0}, {"t": "¥500", "n": "工具会员 + 云服务", "d": 0, "fit": 1, "flags": [], "cost": 300}, {"t": "¥2000", "d": 300, "fit": 1, "flags": [], "cost": 800, "n": "有少量推广预算"}, {"t": "¥5000", "n": "预算宽，也容易乱花", "d": 500, "fit": 0, "flags": ["rich"], "cost": 1200}]}, {"id": "xhs", "q": "内容经验（小红书）", "opts": [{"t": "从没发过", "d": -600, "fit": -1, "flags": ["noxhs"], "n": "账号从零开始"}, {"t": "偶尔发", "d": 0, "fit": 0, "flags": [], "n": "了解平台调性"}, {"t": "有千粉账号", "d": 800, "fit": 2, "flags": ["xhspro"], "n": "有现成读者"}]}, {"id": "lic", "q": "营业执照（企业主体）", "opts": [{"t": "没有", "d": 0, "fit": 0, "flags": ["nolic"], "n": "只能用个人主体或现办"}, {"t": "有", "d": 300, "fit": 1, "flags": ["lic"], "n": "可注册企业主体"}]}], "talents": [{"t": "夜间高效", "n": "晚上思路最清楚", "d": 200, "r": 0, "flags": []}, {"t": "会提需求", "n": "能把需求跟 AI 说清楚", "d": 250, "r": 0, "flags": []}, {"t": "爱记数据", "n": "每天记一行数据", "d": 300, "r": 1, "flags": ["data"]}, {"t": "敢问用户", "n": "愿意私信陌生人做调研", "d": 350, "r": 1, "flags": ["research"]}, {"t": "审核顺利", "n": "提审常常一次过", "d": 200, "r": 1, "flags": ["luckyreview"]}, {"t": "拖延", "n": "总想明天再开始", "d": -400, "r": 0, "flags": ["procrast"]}, {"t": "工具囤积", "n": "会员买了 8 个，常用 2 个", "d": -300, "r": 0, "flags": ["toolbuyer"]}, {"t": "标题敏感", "n": "看一眼就知道笔记有没有戏", "d": 500, "r": 2, "flags": ["viral"]}, {"t": "完美主义", "n": "一个按钮能改三天", "d": -200, "r": 0, "flags": ["perfect"]}, {"t": "混副业群", "n": "潜在 40 个副业群里", "d": 150, "r": 0, "flags": []}, {"t": "亲友测试团", "n": "亲戚朋友都愿意帮你试", "d": 100, "r": 0, "flags": ["family"]}, {"t": "先算账", "n": "动手前先算投入产出", "d": 400, "r": 2, "flags": ["calc"]}], "choices": [{"id": "need", "node": "需求", "q": "做什么需求？", "opts": [{"t": "AI 简历润色", "n": "场景具体，有人愿意付费", "d": 400, "flags": ["goodneed"]}, {"t": "万能 AI 助手", "n": "什么都能做，也就什么都不突出", "d": -700, "flags": ["vague"]}, {"t": "照抄热门小程序", "n": "上手快，但同质化", "d": -300, "flags": ["copy"]}]}, {"id": "order", "node": "开发", "q": "开发先做哪一块？", "opts": [{"t": "先验证核心功能，再问付费意愿", "d": 500, "flags": ["payfirst"], "n": "慢一点，但心里有底"}, {"t": "先发笔记引流，付费以后再说", "d": -400, "flags": ["trafficfirst"], "n": "先有人看再说"}, {"t": "先把支付页和界面做漂亮", "n": "看起来像样，核心还没跑通", "d": -300, "flags": ["payui"]}]}, {"id": "ent", "node": "主体与账号", "q": "用什么主体注册？", "opts": [{"t": "个人主体", "n": "注册快，部分类目和能力受限（游戏设定）", "d": -200, "flags": ["personal"]}, {"t": "企业主体", "n": "能力更全，没执照需要现办", "d": 200, "flags": ["ent"]}]}, {"id": "post", "node": "推广", "q": "小红书怎么发？", "opts": [{"t": "真实使用的前后对比", "d": 400, "flags": ["honest"], "n": "慢热，但能积累搜索流量"}, {"t": "「3 天赚 1 万」式标题", "d": -600, "flags": ["hype"], "n": "点击高，风险也高"}, {"t": "开 5 个号批量发", "n": "时间够才撑得住", "d": 0, "flags": ["matrix"]}, {"t": "记录开发过程", "n": "同行爱看", "d": -300, "flags": ["techpost"]}]}, {"id": "stop", "node": "复盘", "q": "推广 10 天，没有明显反馈", "opts": [{"t": "看数据，止损并重新找需求", "d": 200, "flags": ["stoploss"]}, {"t": "再坚持一个月，暂不看数据", "d": -300, "flags": ["nostop"]}]}], "events": [{"need": ["interrupt"], "p": 0.8, "day": [3, 12], "m": -150, "t": "连续加班一周，小程序没碰，进度停摆。"}, {"need": ["exam"], "p": 0.7, "day": [8, 20], "m": -100, "t": "考试周，项目暂停一周。"}, {"need": ["kid"], "p": 0.8, "day": [2, 14], "m": -150, "t": "娃发烧三天，电脑一次没打开。"}, {"need": ["kid", "goodneed"], "p": 0.6, "day": [10, 25], "m": 250, "t": "宝妈群里有人想重返职场，主动来问简历润色。"}, {"need": ["anxious", "rich"], "p": 0.8, "day": [4, 10], "m": -600, "t": "太焦虑，冲动投了一笔推广，点击很多，几乎没成交。"}, {"need": ["anxious"], "p": 0.4, "day": [6, 16], "m": -100, "t": "刷到别人晒收入，焦虑了一下午。"}, {"need": ["notech"], "p": 0.9, "day": [2, 6], "m": -200, "t": "卡在 AppID 和 AppSecret 的配置上，整整两天。"}, {"need": ["notech", "lowtime"], "p": 0.8, "day": [5, 12], "m": -300, "t": "开发进度只有 30%，时间不够补课。"}, {"need": ["coder"], "p": 0.8, "day": [3, 7], "m": 150, "t": "一晚上就把核心功能跑通了。"}, {"need": ["ent", "nolic"], "p": 1, "day": [1, 4], "m": -500, "t": "去办营业执照，代办费 + 等待 5 天。"}, {"need": ["personal", "goodneed"], "p": 0.5, "day": [9, 15], "m": -200, "t": "个人主体部分能力受限（游戏设定），付费流程得绕一下。"}, {"need": ["luckyreview"], "p": 1, "day": [11, 13], "m": 100, "t": "提交审核，一次通过。"}, {"need": ["vague"], "p": 0.9, "day": [11, 14], "m": -200, "t": "功能堆得太多，审核被驳回：服务内容描述不清。", "ref": "阿甘", "k": "vague"}, {"need": ["copy"], "p": 0.8, "day": [12, 22], "m": -250, "t": "用户留言：“这跟 XX 小程序一模一样啊。”"}, {"need": ["trafficfirst"], "p": 0.9, "day": [12, 20], "m": -700, "t": "一篇笔记小爆，但付费功能还没上线，流量没接住。", "ref": "艺文"}, {"need": ["payfirst", "goodneed"], "p": 0.8, "day": [14, 24], "m": 400, "t": "笔记带来的用户顺利下单，付费转化跑通了。"}, {"need": ["both", "lowtime"], "p": 0.9, "day": [10, 18], "m": -400, "t": "两头都在做，两头都没做完。"}, {"need": ["hype"], "p": 0.8, "day": [10, 20], "m": -500, "t": "笔记因夸大宣传被限流，评论区有人质疑“割韭菜”。", "k": "hype"}, {"need": ["honest"], "p": 0.7, "day": [12, 26], "m": 300, "t": "前后对比笔记被收藏 800 次，持续有人搜进来。"}, {"need": ["matrix", "lowtime"], "p": 0.9, "day": [11, 18], "m": -450, "t": "5 个号只更了 2 个，矩阵断更。"}, {"need": ["matrix", "hightime"], "p": 0.6, "day": [15, 25], "m": 350, "t": "矩阵号有一个起量了。"}, {"need": ["viral"], "p": 0.6, "day": [13, 24], "m": 300, "t": "一条笔记进了推荐流。"}, {"need": ["xhspro"], "p": 0.7, "day": [11, 20], "m": 250, "t": "老粉主动来试用，第一批好评到手。"}, {"need": ["noxhs"], "p": 0.7, "day": [11, 18], "m": -200, "t": "前 10 篇笔记，平均每篇 30 次浏览。"}, {"need": ["procrast"], "p": 0.9, "day": [1, 5], "m": -200, "t": "计划推迟到明天。"}, {"need": ["toolbuyer"], "p": 1, "day": [2, 6], "m": -300, "t": "又开了 3 个 AI 工具年费会员。"}, {"need": ["perfect"], "p": 0.8, "day": [6, 12], "m": -150, "t": "首页按钮的颜色调了一个下午。"}, {"need": ["research"], "p": 0.8, "day": [3, 8], "m": 200, "t": "私信 50 人，摸清了大家最想改的是“项目经历”。"}, {"need": ["data"], "p": 0.7, "day": [16, 26], "m": 150, "t": "看数据发现 21 点发笔记效果最好，调整了时间。"}, {"need": ["calc"], "p": 0.8, "day": [5, 15], "m": 200, "t": "先算了一笔账，砍掉了两个不赚钱的功能。"}, {"need": ["family"], "p": 0.8, "day": [7, 12], "m": 50, "t": "亲友发来 37 条反馈，其中 3 条真有用。"}, {"need": ["payui"], "p": 0.9, "day": [8, 14], "m": -450, "t": "支付页很漂亮，但核心功能输出不稳定，返工一周。", "ref": "杨树亮／大力爸"}, {"need": ["vague"], "p": 0.7, "day": [15, 22], "m": -300, "t": "用户来了不少，但没验证过付费意愿，几乎没人付钱。", "ref": "山芋（Leo）", "k": "vague"}, {"need": ["copy"], "p": 0.6, "day": [15, 22], "m": -250, "t": "有人用，但没人愿意付费——上线前没问过。", "ref": "山芋（Leo）"}, {"need": [], "p": 0.5, "day": [14, 26], "m": -150, "t": "云服务账单比预想的高。", "ref": "山芋（Leo）"}, {"need": ["techpost"], "p": 0.9, "day": [11, 18], "m": -450, "t": "笔记讲开发技术，引来一堆同行点赞，目标用户没来。", "ref": "阿甘"}, {"need": ["notech"], "p": 0.5, "day": [6, 12], "m": -250, "t": "没备份源码，改坏了只能重做一遍。", "ref": "叁柒（三七）"}, {"need": ["interrupt"], "p": 0.4, "day": [9, 14], "m": -100, "t": "把体验版发给同事，他们用到的版本时好时坏。", "ref": "叮咚"}, {"need": ["kid", "goodneed"], "p": 0.4, "day": [16, 24], "m": -200, "t": "付钱的是家长、用的是别人，单账号会员不适配，补共享功能花了十多天。", "ref": "杨树亮／大力爸"}, {"need": ["procrast"], "p": 0.6, "day": [8, 14], "m": -200, "t": "拖到节日前一周才上线，错过了提前布局的窗口。", "ref": "江炜"}, {"need": ["notech"], "p": 0.3, "day": [9, 13], "m": -150, "t": "AI 生成的占位内容被当成了已完成功能，测试才发现。", "ref": "柯妮可 Nicole"}, {"need": ["stoploss"], "p": 1, "day": [12, 14], "m": 200, "t": "推广 10 天没有明确反馈，止损，换了一个更具体的需求（模拟：省下后续投入）。", "ref": "徐百万"}, {"need": ["nostop"], "p": 1, "day": [14, 20], "m": -450, "t": "没反馈还继续硬推，时间和推广费都在消耗。"}, {"need": ["notech"], "p": 0.5, "day": [8, 16], "m": -150, "k": "device", "t": "模拟器里一切正常，真机上分享按钮没反应，返工两晚。", "why": "只在模拟器测，没用真机回归", "ref": "峰教练"}, {"need": ["coder"], "p": 0.25, "day": [8, 16], "m": -100, "k": "device", "t": "让 AI 改转发功能，旧 bug 又回来了，只好补代码重新提审。", "why": "改完没做回归测试", "ref": "波本零（波本）"}, {"need": ["hype"], "p": 0.5, "day": [16, 26], "m": -400, "k": "hype", "t": "一天狂发十几条引流笔记，两个号被限流。", "why": "引流太急、内容雷同", "ref": "蓬松的头发"}, {"need": ["matrix", "lowtime"], "p": 0.3, "day": [18, 26], "m": -150, "t": "让 AI 批量写文案，点击有了，付费却很少。", "why": "AI 文案不懂产品和用户痛点", "ref": "蓝子鱼"}, {"need": ["vague"], "p": 0.5, "day": [10, 16], "m": -250, "k": "vague", "t": "预审发现名称和按钮写的功能比实际做的多，只好缩范围改名。", "why": "宣传超出实际功能", "ref": "黄浩在观察"}, {"need": ["vague"], "p": 0.5, "day": [5, 12], "m": -200, "k": "scope", "t": "需求越加越多（多人、纪念日…），一周了基础功能还没做完。", "why": "范围蔓延，没先定 MVP", "ref": "伍拾陆"}, {"need": ["research"], "p": 0.4, "day": [11, 15], "m": -100, "k": "review", "t": "图片上传没接内容安全检测，首次审核被驳回。", "why": "上传类功能要先接内容安全", "ref": "暄亿"}, {"need": ["perfect"], "p": 0.4, "day": [6, 12], "m": -100, "t": "一口气堆了 8 个功能，大图上传闪退查了三天。", "why": "功能堆太多，核心没跑稳", "ref": "暄亿"}, {"need": ["exam"], "p": 0.4, "day": [12, 20], "m": -150, "k": "accept", "t": "上线前人工验收，发现漏了一项会员权益，紧急补上。", "why": "需求清单没逐条验收", "ref": "不知名的上仙"}, {"need": ["noxhs", "stoploss"], "p": 0.6, "day": [22, 29], "m": 0, "t": "开了流量主但几乎没推广，每天广告收入不到 1 元。", "why": "没有持续获客", "ref": "年轻人"}, {"need": ["payfirst"], "p": 0.6, "day": [12, 18], "m": 0, "t": "第一笔支付是自己测试的，第二笔才是陌生人付费——这一笔才算验证。", "why": "自测订单不算需求验证", "ref": "暮子风"}, {"need": ["goodneed", "payfirst"], "p": 0.35, "day": [20, 28], "m": 200, "t": "老客户顺手用上了你的小工具，还帮你转给朋友。", "ref": "峰教练"}], "filler": ["改了一版提示词。", "调整小程序页面。", "发了一篇笔记，看了几次后台数据。", "回复了 2 条私信。", "研究了 3 个竞品。", "修了一个小 bug。", "写了 5 个标题，最后用了第 6 个。", "今天没有进展。"], "dataNote": "以下 20 个案例均为作者自述，非随机样本，不代表平均或概率；金额口径（用户、订单、报价、销售额、到账、成本、利润）和周期各不相同，不可相加或比较。未披露 ≠ 0。", "cases": [{"author": "艺文", "date": "2026-11-02", "url": "https://scys.com/articleDetail/xq_topic/82258452211188182", "platform": "小程序（原帖未明确具体平台；作者提到微信生态及流量主）", "cond": {"daily_time": "未披露", "technical_background": "作者自述不会写代码，使用 AI 开发小程序。", "life_context": "小学老师，同时自述做 AI 代写和面向师生的文创产品；小程序日常投入时长未披露。"}, "project": "面向教师的壁纸小程序；用小红书内容吸引用户，电脑壁纸主要通过广告解锁，手机壁纸包含付费内容。", "pits": ["流量较好时尚未准备付费产品；作者不能判断如果更早收费是否一定多赚。", "内容效果随时间和形式波动；同时需要处理用户反馈、精力与持续投入。"], "results": [{"amount_text": "累计变现几千元", "period": "截至2026-11-02发文时，具体经营时长未披露", "scope": "单个小程序累计变现；收入来源涉及广告及付费，成本与净利润未披露", "description": "截至发文时小程序累计变现几千元，小红书内容自然流累计获得百万曝光。"}, {"amount_text": "首元广告收入", "period": "推广后第6天；同一作者同一项目的较早阶段", "scope": "单个小程序最初广告收入；不另算独立作者或项目", "description": "作者另一篇复盘称推广第 4 天有 500 多名陌生用户来自小红书，第 6 天获得首元广告收入；该篇对开通流量主的具体日期前后表述不完全一致。"}], "m": {"life": ["全职上班"], "tech": [0, 1], "flags": ["trafficfirst"]}}, {"author": "叮咚", "date": "2026-07-22", "url": "https://scys.com/articleDetail/xq_topic/45544254155415558", "platform": "微信小程序", "cond": {"daily_time": "未披露具体每晚小时数；自述用两晚业余时间完成初版", "technical_background": "自述不懂代码，利用 AI 与已有保险行业经验。", "life_context": "35 岁、二胎母亲，在职从事银行保险代理相关工作。"}, "project": "保险计划书工具：根据产品和条件做计算，并输出 A4 PDF；作者称已上线，支持 4 款产品。", "pits": ["早期计算与官方原表存在多处差异，需要逐项核对原始数据与取整。", "手机及多页 PDF 排版错位；体验版与正式版混淆导致别人使用不稳定。"], "results": [{"amount_text": "付费金额未披露", "period": "初版两晚；付费统计周期未披露", "scope": "首批付费；38 元为自述工具充值，不是收入或完整成本", "description": "作者称两晚完成初版并收到同事微信转账付费，具体到账金额、收入周期和净利润未披露；自述充值 token 38 元。"}], "m": {"life": ["全职上班", "全职宝妈宝爸"], "tech": [0, 1], "flags": ["kid"]}}, {"author": "山芋（Leo）", "date": "2026-10-25", "url": "https://scys.com/articleDetail/xq_topic/22258215228428141", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者称没有编程、前后端及数据库基础，使用过 GPT 和 Codex。", "life_context": "同时有其他工作项目；关注演唱会。"}, "project": "演唱会座位视角查询小程序，通过朋友圈和小红书等推广。", "pits": ["未先充分验证付费意愿；低估云服务计费。", "流量增长伴随争议，作者提到产品被模仿后的争议带来流量，这不是建议复制的获客方式。"], "results": [{"amount_text": "累计广告收入 511.43 元；云开发支出 338.40 元；两项相减 173.03 元", "period": "约两个月，截至2026-10-23", "scope": "单个产品的广告收入和部分云成本；未计人力及其他成本，173.03 元不是完整净利润", "description": "截至 2026-10-23、约两个月，作者称累计约 6.68 万用户；广告累计 511.43 元、云开发支出 338.40 元，二者相减 173.03 元。"}], "m": {"life": ["全职上班"], "tech": [0, 1], "flags": ["vague"]}}, {"author": "杨树亮／大力爸", "date": "2026-09-10", "url": "https://scys.com/articleDetail/xq_topic/45548814811452528", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者称以前没写过一行代码，2026 年 5 月看航海手册后开始用 Codex。", "life_context": "两个小学生的家长；职业未披露。"}, "project": "制作 4 款家庭教育类小程序；重点为任务打卡与家庭权益的假期计划表。第一款听写工具自述首版用 2.5 天，另一款前后近一个月。", "pits": ["付费购买的家长、实际使用的孩子、查看进度的家庭成员不是同一个人；最初单账号会员不适配，花十多天补家庭共享。", "第五款拼豆图案项目先做界面和支付，但核心出图不稳定，约两周做界面、一周调核心输出后暂停，没有上线。"], "results": [{"amount_text": "假期计划表截至 8 月 30 日总收入约 450 元", "period": "截至2026-08-30，完整累计经营时长未披露", "scope": "假期计划表单产品收入；四款合计用户数不是该产品用户数；成本和净利润未披露", "description": "截至 2026-08-30，假期计划表 2124 用户、25 位付费、总收入约 450 元；四款小程序合计 4000 多用户。"}], "m": {"life": ["全职宝妈宝爸"], "tech": [0, 1], "flags": ["payui", "kid"]}}, {"author": "阿甘", "date": "2026-05-18", "url": "https://scys.com/articleDetail/xq_topic/14422584214884812", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者称没有技术或程序员背景，参加 2026 年 3 月微信小程序航海。", "life_context": "从事线下汽车销售代理；之前加入生财多年未实际做出产品。"}, "project": "围绕家庭高频生活决策做微信工具；作者未公开具体名称和详细领域，首个跑通后又做了两个小程序。", "pits": ["本人经历主体备案等待 12 个工作日；云函数漏部署、隐私权限遗漏，以及真机边界问题。", "最初功能堆得过多；小红书内容偏开发技术，吸引了非目标用户，后来改为讲生活痛点和产品界面。"], "results": [{"amount_text": "接近 7000 元", "period": "约一个月，截至2026-05-18发文时回顾", "scope": "三个小程序合计、来自小红书渠道的作者自述收入；不是首个产品单独收入，净利润未知", "description": "作者自述约一个月，小红书渠道推广三个小程序合计带来接近 7000 元收入。"}], "m": {"life": ["全职上班"], "tech": [0, 1], "flags": ["techpost", "vague"]}}, {"author": "安小生", "date": "2026-08-12", "url": "https://scys.com/articleDetail/xq_topic/82255155254225522", "platform": "微信小程序", "cond": {"daily_time": "未披露具体每日小时数；作者称白天上班或加班，晚上做项目", "technical_background": "全职全栈工程师。", "life_context": "上班之余做副业产品。"}, "project": "制作多款垂直工具类小程序，通过流量主广告及轻会员变现；第一款工具约 2～3 周上线。", "pits": ["曾投入大量精力做跨十几个平台的大工具，后转向轻量、具体的小需求。", "原文有多个工具示例，但未逐一披露哪些具体产品贡献了多少收入。"], "results": [{"amount_text": "累计 1 万元以上", "period": "累计跨度未披露", "scope": "多款小程序合计变现；不是单款或单月收入，成本与净利润未披露", "description": "作者自述后续几款垂直小工具累计变现 1 万元以上。"}], "m": {"life": ["全职上班"], "tech": [2], "flags": ["coder"]}}, {"author": "柯妮可 Nicole", "date": "2026-09-08", "url": "https://scys.com/articleDetail/xq_topic/22258841828154421", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者自称技术小白，第一次把想法做成产品。", "life_context": "2026 年 4 月加入生财；职业与日常安排未披露。"}, "project": "制作体重记录类小程序，涉及记录和文字识别，计划中的部分周期相关功能尚未完成。", "pits": ["视觉设计阶段多次更换方向，作者称 4 天做了 15 版。", "文字识别超时一度反复调参；作者后来发现相关识别服务未开通，并进行分层排查；不能归结为唯一原因。", "需求范围不够明确时，AI 生成的占位内容可能被误当成已完成。"], "results": [{"amount_text": "未披露", "period": "2026-08-10 至 2026-08-23；后续营收周期未披露", "scope": "开发及审核过程，不是零收入的证据", "description": "作者自述 2026-08-10 开始写需求文档、8 月 23 日通过审核；上线初期具体用户数及收入未披露。"}], "m": {"life": [], "tech": [0, 1], "flags": ["perfect"]}}, {"author": "叁柒（三七）", "date": "2026-02-03", "url": "https://scys.com/articleDetail/xq_topic/82811224424881852", "platform": "微信小程序", "cond": {"daily_time": "未披露每日小时数", "technical_background": "作者称没有编程基础，借助 AI 探索产品。", "life_context": "36 岁，辞职半年，全职探索 AI。"}, "project": "作者称上线两款微信小程序并尝试内购；帖子未明确披露两款的具体名称和功能。", "pits": ["AI 接口和付费配置两个问题前后卡住约三天。", "体验用户能看到作者测试数据，需要隔离；曾因没有保存源代码而丢失并重做；苹果与安卓测试表现不同。"], "results": [{"amount_text": "未披露", "period": "第一款十几天、第二款基本做完约两天；营收周期未披露", "scope": "个人制作时间与上线数量，不是收益", "description": "作者称第一款前后做了十几天，第二款基本做完约两天，并上线两款；收入及净利润未披露。"}], "m": {"life": ["待业"], "tech": [0, 1], "flags": ["anxious"]}}, {"author": "徐百万", "date": "2026-07-08", "url": "https://scys.com/articleDetail/xq_topic/14422124555541822", "platform": "小程序；具体平台未明确披露", "cond": {"daily_time": "未披露", "technical_background": "是否有编程背景未明确披露。", "life_context": "作者自述容易拖延、行动力不足；职业与生活安排未披露。"}, "project": "跟着小程序航海做了自己的小程序，并尝试推广；具体功能和上线状态未披露。", "pits": ["连续推广 10 天后，作者认为没有找到精准需求，于是放弃该小程序方向；这是作者个人判断，未独立证实因果。"], "results": [{"amount_text": "小程序收入未披露；另一个贴图项目收入不可混入", "period": "小程序推广约10天", "scope": "个人小程序尝试；不是零收入的证据", "description": "做出小程序并推广约 10 天后暂停；小程序收入没有披露。作者后来做公众号贴图两个月赚 1000 元，与小程序项目不是同一笔收入。"}], "m": {"life": [], "tech": [], "flags": ["procrast", "stoploss", "nostop"]}}, {"author": "江炜", "date": "2026-02-15", "url": "https://scys.com/articleDetail/xq_topic/45811514541218148", "platform": "小程序；该小程序所属平台在正文中未明确", "cond": {"daily_time": "未披露", "technical_background": "作者自述为独立开发者，2025 年初开始聚焦 AI 产品。", "life_context": "之前职业阶段及每日可投入时间未披露。"}, "project": "围绕 AI 异形及动态红包封面制作与销售，同时使用小红书内容、小红书店铺及小程序承接，并尝试广告。", "pits": ["作者认为临近春节一周多才上线，错过较早布局的机会；此前两年考虑方向但未想清商业化。", "节日需求有强时效，不能把历史春节结果当全年稳定流量。"], "results": [{"amount_text": "收入未披露；7 天约 850 单跨渠道", "period": "截至2026-02-15发文，上线7天", "scope": "小红书店铺和小程序跨渠道订单，不是单一小程序收入", "description": "作者自述产品上线 7 天时累计约 850 单，当日约 300 单、日 UV 约 1000；订单跨小红书店铺与小程序，未披露总收入、成本或净利润。"}], "m": {"life": ["自由职业"], "tech": [2], "flags": ["viral"]}, "warn": "跨小红书店铺与小程序的订单数，不是单渠道收入"}, {"author": "暮子风", "platform": "微信小程序", "cond": {"daily_time": "未披露具体每日小时数", "technical_background": "未明确披露原有编程背景。", "life_context": "家长；职业及日常工作安排未披露。"}, "project": "生活场景英语启蒙点读小程序；文章称产品名由“小场景英语”改为“口语小场景”。", "pits": ["从卡密验证付费转向微信支付时，需要兼容原来的用户。", "作者称备案审核涉及学科词汇而更名；这是其历史经历，不应视为现行通用规则。", "考虑发音素材的使用权问题，后来改用付费 API；不代表具体成本已披露。"], "results": [{"amount_text": "作者自述一篇小红书笔记约一周带来 650 多名用户，另外添加了 108 位微信种子用户；首笔微信支付是本人测试，第二笔是陌生用户付费。39.9 元是后来的整套解锁售价，不是累计收入。", "period": "一篇笔记约一周的用户数据；累计收入周期未披露。", "scope": "作者自述用户与付费经历；成本、净利润、总体营收未披露。", "description": "给游戏的启发（整理者）：可模拟一个有支付测试与素材授权检查的教育产品；不能把自己测试的订单当陌生人付费。"}], "url": "https://scys.com/articleDetail/xq_topic/14422512282124182", "date": "2026-05-09", "m": {"life": ["全职宝妈宝爸"], "tech": [], "flags": ["kid", "payfirst"]}}, {"author": "蓬松的头发", "platform": "微信小程序", "cond": {"daily_time": "未披露每日实际小时数", "technical_background": "自述没有开发基础，也没有学过 AI 编程；参加 2026 年 8 月微信小程序航海。", "life_context": "职业与生活安排未披露。"}, "project": "基于自己的需求制作“顺顺的体重打卡”，用于体重和趋势记录。", "pits": ["把自己的需求直接当成市场需求，之后才去小红书验证。", "首次名称审核未通过；注册验证码卡点后来通过向教练求助解决。", "过急引流导致两个账号出现问题；不应把该做法作为游戏推荐。"], "results": [{"amount_text": "作者自述 21 天航海期内做出了小程序，但这一项目在该期间一分钱没赚到。", "period": "2026 年 8 月航海的 21 天。", "scope": "该项目、该期间的作者自述；不是净亏损，也不能推断其他时期收入。", "description": "给游戏的启发（整理者）：可设计先验证自己的需求是否有其他人需要，以及求助和调整推广策略的分支。"}], "url": "https://scys.com/articleDetail/xq_topic/22258822852888281", "date": "2026-08-29", "m": {"life": [], "tech": [0, 1], "flags": ["hype", "copy"]}}, {"author": "峰教练", "platform": "微信小程序", "cond": {"daily_time": "未披露每日时长；作者估计两版合计约 20 小时，跨 3～4 天", "technical_background": "编程基础未披露。", "life_context": "惠州健身工作室教练、兼职店长，开始时已有会员。"}, "project": "为工作室会员制作热量与食物换算参考工具；作者表示前端工具本身不直接收费。", "pits": ["模拟器正常但真机出现异常，默认分享功能不能用。", "审核时遇到类目与简介不符，按反馈调整；这是当时个人经历。"], "results": [{"amount_text": "作者称上线约一个月时，每月有 100 多人使用；工作室收入增加 1 万元以上，作者归因于续费、新客签约及转介绍。", "period": "文章回顾上线约一个月的表现。", "scope": "线下门店收入增量的作者自述、无对照验证；不是小程序直接收费或个人净利润。", "description": "给游戏的启发（整理者）：将产品辅助线下服务与直接卖小程序区分；涉及健康数据的实际使用应由专业人士核验。"}], "url": "https://scys.com/articleDetail/xq_topic/22255442228581241", "date": "2026-07-31", "m": {"life": ["全职上班"], "tech": [], "flags": ["goodneed"]}, "warn": "线下门店收入增量，不是小程序收费"}, {"author": "蓝子鱼", "platform": "小程序；所读原帖未明确首款小程序所属平台，小红书为变现渠道", "cond": {"daily_time": "未披露", "technical_background": "自称不会写代码、不懂数据库，使用 AI 编程工具。", "life_context": "此前多年做小红书、抖音教育资料，已有内容和店铺运营经验；其他生活状态未披露。"}, "project": "将教育或面试等需要反馈的资料做成付费小程序；通过小红书店铺出售兑换码，也有小程序内付费。原文未明确首款产品的具体细分领域。", "pits": ["让助理运营后，AI 生成文案不了解具体产品与用户痛点，容易只写表面现象，出现有点击但转化低。", "作者提到投放成本，因此不能把变现额等同净利润。"], "results": [{"amount_text": "作者自述做了 6 款小程序，第一款在小红书渠道 3 个月变现超过 10 万元；其他几款陆续变现。", "period": "首款的 3 个月；具体起止日期未披露。", "scope": "作者自述的首款项目小红书渠道变现；成本、净利润和财务口径细节未披露。", "description": "给游戏的启发（整理者）：模拟已有运营经验的角色，以及曝光、点击、转化和投放成本的区别；高结果不是新手平均。"}], "url": "https://scys.com/articleDetail/xq_topic/22258221581184141", "date": "2026-10-16", "m": {"life": [], "tech": [0, 1], "flags": ["xhspro"]}, "warn": "有多年运营经验，高结果不是新手平均"}, {"author": "黄浩在观察", "platform": "微信小程序", "cond": {"daily_time": "没有披露每天的实际时长；作者估算本人操作累计不超过 6 小时，分散于数日", "technical_background": "大学学习信息管理，接触过 C 语言和数据库，工作经历为运维；称自己不能独立编出可上线产品。", "life_context": "当前具体职务与生活安排未披露。"}, "project": "制作可离线使用的人才培养方案编制助手，供高校教师组织专业信息、课程、统计与检查。", "pits": ["部署层级与服务器配置让作者困惑。", "早期名称和按钮对 Word／Excel 的能力表述超过实际功能；在预审时发现后缩减范围，改成实际可用的本地编制助手。"], "results": [{"amount_text": "作者称 8 月 10 日到 17 日完成航海作业与提交，8 月 19 日备案通过后版本审核一次通过；本人操作累计估算不超过 6 小时。", "period": "2026-08-10 至 2026-08-19；营收周期未披露。", "scope": "上线路径及作者估计的累计人工操作时间；不是每天 6 小时，也不是实际收入。", "description": "给游戏的启发（整理者）：可设计功能与宣传一致性检查、上线前缩小范围；不要把 AI 运行时间当玩家本人投入时间。"}], "url": "https://scys.com/articleDetail/xq_topic/45548822884542158", "date": "2026-09-05", "m": {"life": [], "tech": [1], "flags": ["vague", "calc"]}}, {"author": "伍拾陆", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "自述非科班、没有代码基础，使用 Codex 开发。", "life_context": "此前做外卖 CPS 约一年，已有用户和持续更新活动；其他生活状态未披露。"}, "project": "2026 年 6 月下旬到 7 月中旬做两个小程序：轮班人找共同休息时间，以及聚合既有 CPS 业务的优惠券口令。", "pits": ["找同休项目持续增加多人、纪念日等需求，约一周基础功能仍未完成，因此暂时搁置。", "优惠券项目体验版短链接不能使用，后来改为复制优惠口令。", "作者经历备案与认证次序问题并重审约 6 天；不代表当前通用流程。"], "results": [{"amount_text": "作者称第二个优惠券项目先上线；两款小程序的收入、用户数及净利润未披露。", "period": "2026年6月下旬至7月中旬的制作阶段。", "scope": "小程序上线和停做进度；其他 CPS 项目的佣金变化不能当这两个小程序的营收。", "description": "给游戏的启发（整理者）：用范围蔓延、现有用户基础与可用性测试构造真实取舍；收入未知不能写零。"}], "url": "https://scys.com/articleDetail/xq_topic/22255444182285581", "date": "2026-08-04", "m": {"life": [], "tech": [0, 1], "flags": ["vague"]}, "warn": "与 AI 视频版里的伍拾陆是不同项目"}, {"author": "暄亿", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "生物医学与机电交叉硕士、5 年制造业 B/C 端产品经理，自称无代码基础。", "life_context": "业余爱好拼豆；其他生活安排未披露。"}, "project": "制作“拼豆预见”，让爱好者比较照片转拼豆图纸的不同方案并按用途参考；前期调研七八个竞品。", "pits": ["图片上传内容安全方面的首次审核被驳回。", "接入过程出现大图片上传闪退，经过多轮排查及压缩处理；起初想堆功能，后来聚焦核心需求。"], "results": [{"amount_text": "作者称在 AI 小程序航海中约一周达到上岸要求并上线首版 MVP，仍在收集反馈；用户数、收入、成本和净利润均未披露。", "period": "该期航海内约一周完成首版；收入周期未披露。", "scope": "MVP 上线和学习进度；不能把作者其他志愿者工作的参与人数当该产品用户。", "description": "给游戏的启发（整理者）：模拟上传测试、审核反馈和功能取舍；不要推断已有用户或销售额。"}], "url": "https://scys.com/articleDetail/xq_topic/45548855154225128", "date": "2026-08-31", "m": {"life": [], "tech": [0, 1], "flags": ["research", "perfect"]}}, {"author": "不知名的上仙", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者自述不会编程，参加 3 月 AI 编程航海，使用 ChatGPT 和 Codex。", "life_context": "00 后大学生，通过朋友圈展示 AI 技能获得企业客户。"}, "project": "为健身房客户定制并交付上线会员小程序。", "pits": ["遗漏了咖啡会员权益，后来在上线前补充人工验收。", "混淆 ICP 与小程序备案导致本人项目延迟约两周；还需留意 AI 额度与支付安全。"], "results": [{"amount_text": "标题自称“单品收入7000+”；正文明确最初商定的是 7000 元纯开发技术费。文章未披露确切实收、结算时间、成本及净利润。", "period": "该次定制项目；结算周期未披露。", "scope": "7000 元为正文初步商定报价，不得自动当作到账、月收入或净利润；标题自称与正文口径不同。", "description": "给游戏的启发（整理者）：模拟咨询、需求与报价、验收、备案和交付；报价只能在确定到账时转为收入。"}], "url": "https://scys.com/articleDetail/xq_topic/22258251228528121", "date": "2026-09-26", "m": {"life": ["学生"], "tech": [0, 1], "flags": ["exam"]}, "warn": "7000 为商定报价，不等于到账"}, {"author": "年轻人", "platform": "微信小程序", "cond": {"daily_time": "个人小程序每日投入未披露；作者称后续 25 天接单期折算约半个月完整时间，二者不可混同。", "technical_background": "自述零代码基础；曾做大厂云计算销售。", "life_context": "自由职业。"}, "project": "个人陆续上线 4 个微信小程序，其中 2 个开通流量主；同时另做多类型 AI 编程定制接单。", "pits": ["个人小程序没怎么推广，广告收益很低。", "定制业务遇到急单、需求不清、AI 接口成本及后续维护问题；这些问题不能全部算作四款个人小程序的成本。"], "results": [{"amount_text": "作者称两个开通流量主的个人小程序因较少推广，每天被动收入“不到 1 元左右”。", "period": "文章回顾时的每日口径，未说明连续天数。", "scope": "两个个人小程序的广告收入自述；不是 0，未给净利润。", "description": ""}, {"amount_text": "另述 6 月 10 日至 7 月 5 日闲鱼 AI 编程相关变现约 5100 元、投流约花 300 元，包含小程序、网页、H5、智能体等，不是个人小程序的单项收入。", "period": "2026-06-10 至 2026-07-05；作者称约半个月完整时间。", "scope": "多类别接单合计，非四款个人小程序收入，也未披露完整净利润。", "description": "给游戏的启发（整理者）：提供低于 1 元／天的真实低反馈情境，同时严格分开自营广告收入和多类别接单收入。"}], "url": "https://scys.com/articleDetail/xq_topic/82255482825284252", "date": "2026-07-13", "m": {"life": ["自由职业"], "tech": [0], "flags": ["noxhs"]}, "warn": "两段口径不同，不可相加"}, {"author": "波本零（波本）", "platform": "微信小程序", "cond": {"daily_time": "未披露", "technical_background": "作者称有一定 HTML 和 CSS 基础，但不是专业开发者，不应称完全零基础。", "life_context": "职业与生活安排未披露；参加 2024 年 12 月 Cursor 小航海。"}, "project": "经历多个尝试后，将范围缩小，制作并上架房贷计算器微信小程序。", "pits": ["先尝试复杂下载工具，AI 多次修改代码时引入旧问题，经程序员朋友建议后转向更简单的计算器。", "计算结果需要反复核验；过复杂且不确定的计算功能被移除。", "备案、上传与审核易遗漏；审核后发现不能转发，补代码重新审核。"], "results": [{"amount_text": "作者称在 2024 年 12 月底上架，元旦前仍在修改；尚未走到流量主收入阶段，未披露具体收入、净利润或用户数。", "period": "2024 年 12 月航海至月底上线；营收周期未披露。", "scope": "上线及开发经历，尚无可引用的收入金额。", "description": "给游戏的启发（整理者）：用复杂度失控、AI 改动反复和真实使用前回归测试来设计事件；房贷计算需专业核验。"}], "url": "https://scys.com/articleDetail/xq_topic/1525118885854852", "date": "2025-01-08", "m": {"life": [], "tech": [1], "flags": ["vague"]}}], "ui": {"top": "AINPE · AI 小程序副业模拟", "title": "AI 小程序副业 · 模拟复盘", "intro": "把一个 AI 微信小程序副业，从立项跑到复盘。条件和决策由你定，过程按天模拟，最后对照 20 个真实案例。一局约 2 分钟。", "steps": ["填开局条件：生活状态、时间、技术、资金", "选 3 个天赋", "做 5 个关键决策", "模拟 15 或 30 天", "看结果、复盘，对照真实案例"], "refLabel": "参考收入", "nodeLabel": "航海节点", "dash": "小程序后台", "hideNote": "收入和盈亏在复盘时揭晓", "phases": [["立项", 0.1], ["开发", 0.35], ["上线审核", 0.45, "审核"], ["推广", 0.85], ["复盘", 1]], "liveFrom": 2, "mets": [["曝光", 60, 3], ["用户", 0.07], ["付费单", 0.05]], "ev0": "立项！在需求板写下第一行字。", "evMid": {"f": 0.35, "t": "小程序提交审核（航海节点：审核与发布）。"}, "d15": "冷启动期，收入多半还没起来", "card": "AI 小程序副业 · 模拟复盘", "dl": "小程序模拟", "grossLabel": "模拟到账", "profitNote": "模拟到账 − 花费 ± 事件", "camp": "三天体验营：按需求 → 主体与账号 → 开发 → 测试 → 审核与发布，动手做一遍。", "okP": 1500, "titles": [[3500, "跑通了，可以复制"], [2000, "稳步回本"], [800, "小有收获"], [0, "勉强回本"], [-500, "投入没收回"], [0, "亏损复盘"]]}, "specials": [{"f": "trafficfirst", "lt": 1500, "t": "流量来了，付费没接住"}, {"f": "hype", "lt": 500, "t": "标题透支了信任"}, {"f": "toolbuyer", "lt": 0, "t": "工具买多了"}], "rules": [{"any": ["lowtime"], "bad": ["每天时间不够", "固定每天 2 小时，或只做一个最小功能"]}, {"not": ["lowtime"], "good": "时间够支撑开发和发笔记"}, {"any": ["notech"], "bad": ["卡在开发", "先用 AI 编程跑通一个 Demo，再正式立项；上线前用真机测一遍"]}, {"any": ["coder"], "good": "技术不是瓶颈，开发快"}, {"any": ["trafficfirst"], "bad": ["流量先到，付费没准备好", "先把付费功能做好再推流量，这也是真实案例里的坑"]}, {"any": ["payfirst"], "good": "先验证核心功能，流量来了接得住"}, {"any": ["hype"], "bad": ["标题夸大、引流太急", "改用真实的前后对比，别一天狂发"]}, {"any": ["honest"], "good": "真实对比笔记带来持续搜索流量"}, {"any": ["vague", "copy"], "bad": ["需求不聚焦", "选一个有人愿意付费的具体场景，先定 MVP 再加功能"]}, {"any": ["goodneed"], "good": "需求具体，有人愿意付费"}, {"all": ["matrix", "lowtime"], "bad": ["多账号更新不过来", "先把一个号跑通再扩"]}, {"any": ["interrupt", "kid"], "bad": ["{life}，时间常被打断", "把任务拆成 30 分钟一块，固定一个不被打扰的时段"]}, {"any": ["payui"], "bad": ["先做支付和界面", "先验证核心功能和付费意愿"]}, {"any": ["techpost"], "bad": ["笔记吸引的不是目标用户", "讲用户的痛点和产品界面，不讲开发过程"]}, {"any": ["nostop"], "bad": ["没反馈还硬撑", "提前定止损线，比如推广 10 天看一次数据"]}, {"any": ["stoploss"], "good": "看数据，能及时止损"}, {"any": ["xhspro"], "good": "已有的小红书读者直接变成流量"}], "bal": {"good": ["00000", "00100"], "goodFit": 6, "badFit": 0}}</script>
+<script src="./miniapp-script-1.js"></script>
+<script src="./miniapp-script-2.js"></script>
+
+<style>
+.ainpe-gate-backdrop{position:fixed;inset:0;z-index:99999;background:rgba(8,12,20,.76);display:flex;align-items:center;justify-content:center;padding:16px}
+.ainpe-gate{position:relative;width:min(100%,430px);max-height:92vh;overflow:auto;background:#fff;color:#193a2b;border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 55px rgba(0,0,0,.35)}
+.ainpe-gate h2{font-size:20px;margin:0 24px 10px}.ainpe-gate p{font-size:14px;line-height:1.65;margin:0 0 14px;color:#536a5c}
+.ainpe-gate img{display:block;width:min(100%,280px);height:auto;margin:0 auto 10px;border-radius:8px}.ainpe-gate a{color:#247249;font-weight:700}.ainpe-gate .ainpe-gate-link{display:block;margin-top:15px;padding:12px;border-radius:10px;background:#ddf2a1;text-decoration:none;color:#193a2b}.ainpe-gate .ainpe-gate-original{display:block;margin-top:14px;font-size:13px}.ainpe-gate-close{position:absolute;top:12px;right:14px;background:none;border:0;font-size:25px;color:#536a5c;cursor:pointer}
+</style>
+<script src="./miniapp-script-3.js"></script>
+
+</body></html>

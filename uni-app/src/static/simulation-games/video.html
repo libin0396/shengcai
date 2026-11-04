@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 视频定制 · 模拟复盘 · AINPE</title>
+<style>
+/* ============ AINPE 模拟复盘 · 统一设计语言（三个游戏共用） ============ */
+:root{
+ --bg:#12142a;--bg2:#0c0e20;--card:#1a1d39;--card2:#22264a;--line:#2c3160;--line2:#3e4580;
+ --ink:#f2f3fb;--sub:#c3c7e6;--mute:#8d93bf;
+ --acc:#ffc23d;--acc2:#ffd877;--accInk:#241a00;--accSoft:rgba(255,194,61,.11);--accLine:rgba(255,194,61,.45);
+ --good:#3fd6a2;--goodSoft:rgba(63,214,162,.11);--bad:#ff6f86;--badSoft:rgba(255,111,134,.11);
+ --sim:#a2a9ec;--simSoft:rgba(162,169,236,.13);
+ --r-lg:20px;--r-md:14px;--r-sm:10px;
+ --num:"Barlow Condensed","DIN Condensed","DIN Alternate","Bahnschrift SemiCondensed","Bahnschrift","Roboto Condensed","Arial Narrow",system-ui,-apple-system,sans-serif;
+ --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","HarmonyOS Sans SC","MiSans","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+ --W:620px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.65 var(--sans);letter-spacing:.01em;
+ background:radial-gradient(120% 60% at 50% -10%,#1e2250 0%,rgba(30,34,80,0) 60%),var(--bg);background-attachment:fixed;-webkit-font-smoothing:antialiased}
+body.wide{--W:1060px}
+button{font-family:inherit;color:inherit}
+a{color:var(--good)}
+:focus-visible{outline:2px solid var(--acc2);outline-offset:2px;border-radius:6px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:0}
+.wrap{max-width:var(--W);margin:0 auto;padding:8px 16px calc(32px + env(safe-area-inset-bottom))}
+
+/* 顶栏 */
+.top{position:sticky;top:0;z-index:20;background:rgba(18,20,42,.86);backdrop-filter:saturate(1.3) blur(10px);-webkit-backdrop-filter:saturate(1.3) blur(10px);border-bottom:1px solid var(--line)}
+.top .in{max-width:var(--W);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px 12px}
+.top .gname{font-size:13px;font-weight:600;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top #stepv{font-size:13px;color:var(--acc);font-weight:600;white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:transparent}
+#progb{height:2px;width:0;background:var(--acc);box-shadow:0 0 10px rgba(255,194,61,.6);transition:width .35s ease}
+
+/* 文字层级 */
+.brand{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--acc);background:var(--accSoft);border:1px solid rgba(255,194,61,.28);border-radius:999px;padding:3px 11px}
+.brand:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc)}
+h1,.h1{font-size:30px;line-height:1.22;font-weight:800;margin:14px 0 10px;letter-spacing:.01em}
+h2,.h2{font-size:22px;line-height:1.35;font-weight:750;margin:6px 0 8px}
+.lead{font-size:15.5px;color:var(--sub);margin:0 0 4px}
+.mute{color:var(--mute);font-size:13px}
+.fine{color:var(--mute);font-size:12.5px;line-height:1.6}
+.pos{color:var(--good)}.neg{color:var(--bad)}
+.kick{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:18px 0 2px;font-size:13px;color:var(--mute)}
+.kick b{color:var(--acc);font-weight:600}
+
+/* 标签 */
+.tag{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;line-height:1;padding:4px 7px;border-radius:6px;background:var(--simSoft);color:var(--sim);margin-left:6px;vertical-align:2px;white-space:nowrap}
+.tag.real{background:var(--goodSoft);color:var(--good)}
+.tag.warn{background:rgba(255,194,61,.14);color:var(--acc2)}
+.rtag{display:inline-flex;font-size:11.5px;color:var(--sim);background:var(--simSoft);border-radius:6px;padding:2px 7px;margin:4px 4px 0 0}
+
+/* 容器 */
+.sec{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 14px 16px;margin:12px 0}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:700;margin:0 0 10px}
+.sec-h .st{font-size:12px;font-weight:500;color:var(--mute);white-space:nowrap}
+.sec-h .st.ok{color:var(--good)}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:12px 0}
+.grp .q,.q{font-weight:700;font-size:16px;margin-bottom:8px}
+.note{border-radius:var(--r-md);padding:12px 14px;margin:14px 0;background:var(--simSoft);border:1px dashed rgba(162,169,236,.4)}
+.note p{margin:6px 0 0;font-size:13px;color:var(--sub)}
+.note .nh{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.note .nh b{font-size:16px}.note .nh .num{font-size:22px;color:var(--acc);margin-left:4px}
+
+/* 首页流程 */
+.flow{list-style:none;margin:18px 0 6px;padding:0;position:relative}
+.flow li{display:flex;gap:12px;align-items:flex-start;padding:7px 0;position:relative;font-size:15px}
+.flow li:not(:last-child):after{content:"";position:absolute;left:13px;top:34px;bottom:-6px;width:2px;background:var(--line)}
+.flow .fn{flex:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 15px var(--num);background:var(--card2);border:1px solid var(--line2);color:var(--acc)}
+.flow li span:last-child{padding-top:2px}
+
+/* 选项 */
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.opts.list{grid-template-columns:1fr;gap:10px}
+.opt{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:52px;padding:10px 34px 10px 12px;text-align:left;font-size:15px;font-weight:600;background:var(--bg2);border:1.5px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s,background .15s,transform .08s}
+.opt .n{display:block;font-size:12.5px;font-weight:400;color:var(--mute);line-height:1.45}
+.opt .ck{position:absolute;right:10px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;border:1.5px solid var(--line2);transition:all .15s}
+.opt:hover{border-color:var(--line2);background:#14173a}
+.opt:active{transform:scale(.985)}
+.opt.on{border-color:var(--acc);background:var(--accSoft)}
+.opt.on .ck{border-color:var(--acc);background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.4l2.6 2.5L12 5.4' fill='none' stroke='%23241a00' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+.opt.on .n{color:var(--sub)}
+.opts.list .opt{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;min-height:60px;padding:12px 40px 12px 12px}
+.opt .ab{flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font:700 16px var(--num);background:var(--card2);color:var(--sub);transition:all .15s}
+.opt.on .ab{background:var(--acc);color:var(--accInk)}
+.opt .tx{display:flex;flex-direction:column}
+
+/* 决策进度点 */
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:18px;height:4px;border-radius:2px;background:var(--line2)}
+.dots i.d{background:var(--acc)}.dots i.c{background:var(--acc2);width:28px}
+
+/* 天赋 */
+.talents{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tal{position:relative;display:flex;flex-direction:column;gap:4px;min-height:96px;padding:14px 12px 12px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);cursor:pointer;overflow:hidden;transition:border-color .15s,transform .1s,background .15s}
+.tal b{font-size:15.5px;line-height:1.35;padding-right:22px}
+.tal .mute{font-size:12.5px;line-height:1.5}
+.tal:before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--line2)}
+.tal.r1:before{background:linear-gradient(90deg,#8f7dff,#5f8bff)}
+.tal.r1{background:linear-gradient(160deg,#25224f 0%,var(--card) 55%)}
+.tal.r2:before{background:linear-gradient(90deg,#ffc23d,#ff9a3d)}
+.tal.r2{background:linear-gradient(160deg,#3a2c17 0%,var(--card) 55%)}
+.tal:hover{border-color:var(--line2)}
+.tal:active{transform:scale(.98)}
+.tal .ck{position:absolute;right:10px;top:12px;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line2)}
+.tal.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset,0 6px 20px rgba(255,194,61,.12)}
+.tal.on .ck{border-color:var(--acc);background:var(--acc);color:var(--accInk);font:700 13px/17px var(--num);text-align:center}
+.tal.dim{opacity:.5}
+.tal.pick{animation:pk .3s ease}
+@keyframes pk{40%{transform:scale(1.035)}}
+.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:2px}
+.slots span{height:34px;border-radius:9px;border:1.5px dashed var(--line2);display:flex;align-items:center;justify-content:center;font-size:12.5px;color:var(--mute);padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slots span.f{border:1.5px solid var(--accLine);background:var(--accSoft);color:var(--ink);font-weight:600}
+
+/* 按钮 */
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border:0;border-radius:14px;padding:12px 16px;font-size:17px;font-weight:750;background:var(--acc);color:var(--accInk);cursor:pointer;margin-top:10px;letter-spacing:.04em;box-shadow:0 1px 0 rgba(255,255,255,.35) inset,0 8px 22px -8px rgba(255,194,61,.55);transition:transform .08s,filter .15s,background .2s}
+.btn:hover:not(:disabled){filter:brightness(1.06)}
+.btn:active:not(:disabled){transform:scale(.98)}
+.btn:disabled{cursor:not-allowed;background:var(--card2);color:var(--mute);box-shadow:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line2);font-weight:600;font-size:15.5px;box-shadow:none;letter-spacing:.02em}
+.btn.ghost:hover:not(:disabled){background:var(--card)}
+.row{display:flex;gap:10px}.row .btn{flex:1}
+.tlink{background:none;border:0;color:var(--mute);font-size:14px;min-height:44px;cursor:pointer;padding:0 10px}
+.tlink:hover{color:var(--ink)}
+.links{display:flex;justify-content:center;flex-wrap:wrap}
+.cta{position:sticky;bottom:0;z-index:6;margin:14px -16px 0;padding:22px 16px calc(8px + env(safe-area-inset-bottom));background:linear-gradient(rgba(18,20,42,0),var(--bg) 22px)}
+.cta .btn{margin-top:6px}
+.cta .hint{font-size:12.5px;color:var(--mute);text-align:center;min-height:18px;transition:color .2s}
+.cta .hint.warn{color:var(--acc2)}
+
+/* 动手任务 */
+.task .slide{max-width:480px;margin:0 auto}
+.task{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:14px 0}
+.chat .who{font-size:12px;color:var(--mute);margin:10px 0 2px}
+.chat .who:first-child{margin-top:0}
+.chat .bub{background:#1f3a2e;border-radius:4px 14px 14px 14px;padding:9px 12px;margin:6px 0;max-width:88%;width:fit-content;font-size:14.5px;line-height:1.55}
+.slide{background:#f7f3e8;color:#222;border-radius:8px;padding:14px;aspect-ratio:16/10;position:relative;overflow:hidden;font-size:13px;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)}
+.slide .h{font-size:18px;font-weight:700;color:#7a2b14}.slide .ov{white-space:nowrap;overflow:visible;color:#333}
+.slide .img{float:right;width:34%;height:42%;background:repeating-linear-gradient(45deg,#cfd8e3,#cfd8e3 6px,#e3e9f0 6px,#e3e9f0 12px);border-radius:6px;font-size:10px;color:#556;display:flex;align-items:flex-end;padding:4px;box-sizing:border-box;margin-left:8px}
+.slide .ft{position:absolute;bottom:6px;left:14px;right:14px;font-size:10px;color:#777;display:flex;justify-content:space-between}
+.chk{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-md);padding:12px;margin:8px 0;min-height:48px;font-size:15px;line-height:1.55;cursor:pointer;transition:border-color .15s,background .15s}
+.chk:hover{border-color:var(--line2)}
+.chk .bx{flex:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;transition:all .15s}
+.chk.on{border-color:var(--acc);background:var(--accSoft)}.chk.on .bx{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
+.chk.ok{border-color:rgba(63,214,162,.55);background:var(--goodSoft)}.chk.ok .bx{background:var(--good);border-color:var(--good);color:#04261a}
+.chk.miss{border-color:rgba(255,111,134,.6);background:var(--badSoft)}.chk.miss .bx{background:var(--bad);border-color:var(--bad);color:#2a0710}
+.chk.fp{border-color:rgba(255,194,61,.45)}.chk.fp .bx{border-color:var(--acc2);color:var(--acc2)}
+.chk .why{display:block;font-size:13px;color:var(--sub);margin-top:6px;line-height:1.6}
+.chk .why b{font-weight:700;margin-right:6px}
+.chk.ok .why b{color:var(--good)}.chk.miss .why b{color:var(--bad)}.chk.fp .why b{color:var(--acc2)}
+.fixb{margin-top:10px;background:var(--bad);border:0;color:#2a0710;font-weight:700;border-radius:9px;padding:6px 14px;min-height:38px;cursor:pointer;font-size:13.5px}
+.score{display:flex;align-items:baseline;gap:6px;margin:4px 0 6px}
+.score .num{font-size:56px;font-weight:700;line-height:1}
+.score small{font-size:15px;color:var(--mute)}
+
+/* 模拟时长 */
+.dtiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.dtile{position:relative;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-lg);padding:16px 14px;cursor:pointer;min-height:132px;transition:border-color .15s,background .15s}
+.dtile .num{display:block;font-size:52px;line-height:1;font-weight:700}
+.dtile .u{font-size:14px;color:var(--sub);margin-left:4px;font-weight:600}
+.dtile .n{display:block;margin-top:10px;font-size:13px;color:var(--mute);line-height:1.5}
+.dtile.on{border-color:var(--acc);background:var(--accSoft)}.dtile.on .num{color:var(--acc)}
+.seedc{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.seed{font-family:var(--num);font-size:20px;font-weight:700;color:var(--acc);letter-spacing:.02em}
+
+/* 运行画面 */
+.rn{display:grid;gap:12px;margin-top:6px}
+.rnHead{display:flex;gap:14px;align-items:center}
+.cal{position:relative;flex:none;width:88px;text-align:center;background:#f6f1e3;color:#20223a;border-radius:12px;padding:16px 0 6px;box-shadow:0 10px 24px -10px rgba(0,0,0,.7)}
+.cal:before{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:var(--acc);border-radius:12px 12px 0 0}
+.cal:after{content:"";position:absolute;left:22px;right:22px;top:-4px;height:9px;background:radial-gradient(circle,#2a2d4f 3.5px,transparent 4px) 0 0/22px 9px repeat-x}
+.cal small{display:block;font-size:11px;color:#6a6d8a;font-weight:600}
+.cal b{display:block;font:700 46px/1 var(--num);margin:2px 0 0}
+.cal.tick b{animation:tk .25s ease-out}
+@keyframes tk{from{transform:translateY(-6px);opacity:.3}}
+.rnT{min-width:0}
+.rnT .ph{font-size:13px;color:var(--mute)}
+.rnT #phn{display:block;font-size:24px;font-weight:800;color:var(--ink);line-height:1.25}
+.rnT .sd{font-size:12px;color:var(--mute);margin-top:2px}
+.trk{margin:4px 0 0}
+.trkB{height:8px;background:var(--bg2);border:1px solid var(--line);border-radius:5px;overflow:hidden}
+.trkB i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff9a3d,var(--acc));border-radius:5px;transition:width .25s}
+.trkL{position:relative;height:26px}
+.trkL span{position:absolute;top:6px;text-align:center;font-size:12px;color:var(--mute);border-left:1px solid var(--line);white-space:nowrap;overflow:hidden;line-height:18px}
+.trkL span:first-child{border-left:0}
+.trkL span.done{color:var(--good)}.trkL span.on{color:var(--acc);font-weight:700}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px}
+.phT{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;margin-bottom:10px}
+.phT .mute{font-size:12px;font-weight:400}
+.mets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mets div{background:var(--bg2);border-radius:10px;padding:8px 10px}
+.mets small{display:block;color:var(--mute);font-size:12px}
+.mets b{display:block;font:700 26px/1.15 var(--num);font-variant-numeric:tabular-nums}
+.mets.n4{grid-template-columns:repeat(4,1fr)}.mets.n4 div{padding:8px}.mets.n4 b{font-size:22px}
+#spk{width:100%;height:56px;margin:12px 0 6px;display:block;overflow:visible}
+.evs{min-height:104px}
+.evc{display:flex;gap:12px;align-items:flex-start;min-height:104px;background:var(--card2);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;position:relative;overflow:hidden}
+.evc:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.evc.bd:before{background:var(--bad)}.evc.gd:before{background:var(--good)}
+.evc.bd{background:linear-gradient(100deg,rgba(255,111,134,.12),var(--card2) 60%)}
+.evc.gd{background:linear-gradient(100deg,rgba(63,214,162,.12),var(--card2) 60%)}
+.evc.idle{opacity:.6}.evc.idle:before{background:var(--line2)}
+.evc .ic{flex:none;width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:19px}
+.evc b{display:block;font-size:15.5px;line-height:1.45;margin-top:2px}
+.evc small{font-size:12px}
+.evc.pop{animation:pop .4s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.log{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-lg);padding:6px 14px;overflow:auto;font-size:14px;height:30vh;margin-top:12px;-webkit-mask:linear-gradient(transparent,#000 22px)}
+.log div{padding:7px 0;border-bottom:1px solid rgba(44,49,96,.6);color:var(--sub);animation:ap .25s}
+.log div:last-child{border-bottom:0;color:var(--ink)}
+.log .ev{color:var(--acc2)}.log .bd{color:var(--bad)}.log .gd{color:var(--good)}
+.log em{font-style:normal;color:var(--mute);font:600 13px var(--num);margin-right:10px;display:inline-block;min-width:26px}
+.rn .rtag{margin:0 0 0 4px}
+.trans[hidden]{display:none}
+.trans{position:fixed;inset:0;background:rgba(12,14,32,.94);display:flex;align-items:center;justify-content:center;text-align:center;z-index:50;animation:ap .35s;padding:24px}
+.trans h2{font-size:24px;margin:16px 0 6px}
+.spin{width:36px;height:36px;margin:18px auto 0;border-radius:50%;border:3px solid var(--line2);border-top-color:var(--acc);animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes ap{from{opacity:0;transform:translateY(4px)}}
+
+/* 复盘：结算单 */
+.end{display:grid;gap:4px}
+.slip{position:relative;background:linear-gradient(180deg,#232750,#1a1d3c);border:1px solid var(--line2);border-radius:var(--r-lg) var(--r-lg) 6px 6px;padding:18px 18px 22px;margin:12px 0 18px;overflow:visible}
+.slip:after{content:"";position:absolute;left:10px;right:10px;bottom:-9px;height:10px;background:radial-gradient(circle at 7px -1px,transparent 6px,#1a1d3c 6.5px) 0 0/14px 10px repeat-x}
+.slip .sh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--mute)}
+.slip .lbl{margin-top:14px;font-size:13px;color:var(--sub)}
+.big{font:700 64px/1.02 var(--num);font-variant-numeric:tabular-nums;margin:4px 0 6px;letter-spacing:-.01em}
+.stamp{display:inline-block;transform:rotate(-3deg);border:2.5px solid currentColor;border-radius:10px;padding:5px 12px;font-size:19px;font-weight:800;color:var(--acc);margin:6px 0 10px;box-shadow:0 0 0 3px rgba(0,0,0,0) ,inset 0 0 0 1px rgba(255,255,255,.04)}
+.stamp.bad{color:var(--bad)}.stamp.good{color:var(--good)}
+.slip.in .stamp{animation:stm .5s .25s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes stm{from{opacity:0;transform:rotate(-12deg) scale(1.6)}}
+.vpill{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;padding:9px 12px;border-radius:10px;background:var(--bg2);border:1px solid var(--line)}
+.vpill i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc)}
+.vpill.good i{background:var(--good)}.vpill.bad i{background:var(--bad)}
+.ledger{margin:16px 0 0;padding:12px 0 0;border-top:1px dashed var(--line2);font-size:13.5px}
+.ledger div{display:flex;justify-content:space-between;gap:10px;padding:3px 0;color:var(--sub)}
+.ledger div b{font:600 17px var(--num);color:var(--ink)}
+.ledger div.ex{color:var(--mute)}.ledger div.ex b{color:var(--mute);font-weight:500}
+.ledger div.tot{border-top:1px solid var(--line);margin-top:4px;padding-top:7px;color:var(--ink);font-weight:700}
+.ledger .fine{margin:8px 0 0;display:block}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acts .btn{margin:0}.acts .full{grid-column:1/-1}
+.fitl{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.fitl:first-of-type{border-top:0}
+.fitl .mk{flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+.fitl.g .mk{background:var(--goodSoft);color:var(--good)}.fitl.b .mk{background:var(--badSoft);color:var(--bad)}
+.fitl .nx{display:block;font-size:13px;color:var(--mute);margin-top:2px}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:1fr 64px;gap:4px 10px;align-items:center;font-size:13.5px}
+.bar .bt{color:var(--sub);line-height:1.45}
+.bar .bv{text-align:right;font:700 16px var(--num)}
+.bar .bl{grid-column:1/-1;height:6px;border-radius:3px;background:var(--bg2);overflow:hidden}
+.bar .bl i{display:block;height:100%;border-radius:3px}
+.bar.p .bv{color:var(--good)}.bar.p .bl i{background:var(--good)}
+.bar.m .bv{color:var(--bad)}.bar.m .bl i{background:var(--bad)}
+.subh{font-size:12.5px;color:var(--mute);margin:12px 0 6px}
+.flowline{font-size:13.5px;color:var(--sub);background:var(--bg2);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.flowline .num{font-size:18px;font-weight:700;color:var(--ink)}
+details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--sub);font-size:14px;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary:after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);margin-left:10px;margin-top:-4px;transition:transform .2s}
+details[open]>summary:after{transform:rotate(-135deg);margin-top:4px}
+.tl{position:relative;padding-left:18px}
+.tl:before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tli{position:relative;padding:6px 0 10px}
+.tli:before{content:"";position:absolute;left:-18px;top:12px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--line2)}
+.tli.m:before{border-color:var(--bad)}.tli.p:before{border-color:var(--good)}
+.tli .dd{font:600 13px var(--num);color:var(--mute);margin-right:6px}
+.tli .amt{display:inline-block;font-size:13px;margin-left:4px}
+.tli .mute{margin-top:2px}
+.cardimg{width:100%;max-width:400px;margin:12px auto 4px;border-radius:14px;display:block;box-shadow:0 18px 40px -16px rgba(0,0,0,.8)}
+.imgc{text-align:center}
+.real{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;margin:12px 0;position:relative}
+.real .ch{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.real .ch b{font-size:16px}
+.real .kv{font-size:13.5px;color:var(--sub);margin-top:8px}
+.real .kv span{color:var(--mute)}
+.real ul{margin:4px 0 0;padding-left:18px;font-size:14px}
+.real li{margin:2px 0}
+.res{margin-top:10px;padding:10px 12px;background:var(--goodSoft);border:1px solid rgba(63,214,162,.25);border-radius:12px}
+.res b{color:var(--good);font-size:15px}
+.res .mute{font-size:12.5px;margin-top:2px}
+.src{margin-top:10px;font-size:12.5px;color:var(--mute)}
+.src a{color:var(--good);text-decoration:none;border-bottom:1px solid rgba(63,214,162,.4)}
+details.all{background:transparent;border:1px solid var(--line);border-radius:var(--r-lg);padding:0 14px;margin:12px 0}
+details.all[open]{padding-bottom:4px}
+.disc{background:var(--simSoft);border:1px dashed rgba(162,169,236,.4);border-radius:var(--r-md);padding:12px 14px;font-size:13px;color:var(--sub);margin:16px 0}
+.camp{border:1px solid var(--line);background:linear-gradient(140deg,#2a2347,var(--card));border-radius:var(--r-lg);padding:16px;margin:12px 0}
+.camp b{font-size:17px}
+.sheetbg{position:fixed;inset:0;background:rgba(5,6,16,.6);z-index:40;animation:ap .2s}
+.modal{position:fixed;left:0;right:0;bottom:0;background:var(--card2);border-top:1px solid var(--line2);padding:18px 16px calc(16px + env(safe-area-inset-bottom));z-index:41;max-width:560px;margin:0 auto;border-radius:20px 20px 0 0;animation:up .25s ease-out}
+.modal:before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:var(--line2);margin:-6px auto 12px}
+@keyframes up{from{transform:translateY(100%)}}
+.h2s{display:flex;align-items:center;flex-wrap:wrap;gap:4px;margin:26px 0 4px}
+.h2s h2{margin:0}
+
+/* 桌面 */
+@media(min-width:760px){
+ h1,.h1{font-size:40px}
+ .talents{grid-template-columns:repeat(3,1fr)}
+ .wrap{padding-top:16px}
+}
+@media(min-width:900px){
+ .rn{grid-template-columns:1fr 1.1fr;gap:20px;align-items:start}
+ .rn .log{height:330px;margin-top:12px}
+ .end{grid-template-columns:400px 1fr;gap:28px;align-items:start}
+ .endL{position:sticky;top:70px}
+ .endR>.grp:first-child,.endR>.sec:first-child{margin-top:12px}
+ .cta{position:static;background:none;margin:20px 0 0;padding:0}
+ .cta.runc{position:sticky;bottom:0;background:linear-gradient(rgba(18,20,42,0),var(--bg) 22px);padding:16px 0 12px;max-width:420px;margin-left:auto}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+/* AINPE 浅色实战复盘：统一配色，保留现有模拟流程 */
+:root{
+ --bg:#f6f2e9;--bg2:#f7f4ec;--card:#ffffff;--card2:#eff5ed;--line:#e7e0d4;--line2:#c7d4c6;
+ --ink:#142b20;--sub:#50665a;--mute:#819286;
+ --acc:#f35a22;--acc2:#d94619;--accInk:#ffffff;--accSoft:rgba(243,90,34,.08);--accLine:rgba(243,90,34,.35);
+ --good:#126243;--goodSoft:#e4f1e9;--bad:#df512c;--badSoft:#fcebe6;
+ --sim:#7866a2;--simSoft:#f0edf7;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink)}
+.top{background:rgba(7,48,33,.98);border-color:#315544}
+.top .gname{color:#e3eee4}.top #stepv{color:#ffd255}
+#progb{background:#ffcd4e;box-shadow:none}
+.brand{color:#126243;background:#e4f1e9;border-color:#cde1d4}.brand:before{background:#126243}
+.btn{background:#f35a22;color:#fff;box-shadow:0 6px 15px -8px rgba(185,64,23,.65);letter-spacing:0}
+.btn.ghost{background:transparent;color:#126243;border-color:#2d7452}
+.btn.ghost:hover:not(:disabled){background:#edf5ec}
+.btn:disabled{background:#e9ede6;color:#96a298}
+.opt:hover{background:#f6f8f3}.opt.on .ck{background-color:#f35a22}
+.opt.on .ab{color:#fff}.opt.on .n{color:#50665a}
+.tal.r1{background:linear-gradient(160deg,#eef2fa 0%,#fff 55%)}
+.tal.r2{background:linear-gradient(160deg,#fff4e1 0%,#fff 55%)}
+.tal.r1:before{background:#88a4b0}.tal.r2:before{background:#e9a339}
+.tal.on .ck{color:#fff}.cta{background:linear-gradient(rgba(246,242,233,0),var(--bg) 22px)}
+.chat .bub{background:#e7f2e9;color:#193e2c}
+.chk.ok .bx,.chk.miss .bx{color:#fff}.fixb{color:#fff}
+.slip{background:#fff;border-color:var(--line);border-radius:16px;padding:22px;margin-bottom:14px}
+.slip:after{display:none}.big{color:#126243}.stamp{color:#e65122}.stamp.bad{color:#df512c}
+.vpill{background:#f6f2e9;border:0}.ledger div.tot b{color:#126243}
+.camp{position:relative;min-height:155px;padding:22px 122px 22px 22px;background:#083b29;border:0;color:#fff;overflow:hidden}
+.camp b{font-size:18px}.camp .mute{color:#cfdfd3!important}.camp .btn.ghost{background:#f35a22;border-color:#f35a22;color:#fff;width:auto;min-height:44px;display:inline-flex;padding:10px 18px}
+.camp:after{content:"";position:absolute;right:22px;top:50%;transform:translateY(-50%);width:76px;height:126px;border-radius:6px;background:#fff url('/static/assets/ai-camp-poster.jpg') center/contain no-repeat;pointer-events:none}
+.real{background:#fff}.res{border-color:#d0e5d7}.src a{border-color:#a6cfb1}
+.note,.disc{border-color:#d8d2e2}.trans{background:rgba(246,242,233,.97)}
+.modal{box-shadow:0 -10px 35px rgba(20,43,32,.12)}
+.ainpe-gate-link{background:#f35a22!important;color:#fff!important}
+@media(min-width:900px){.cta.runc{background:linear-gradient(rgba(246,242,233,0),var(--bg) 22px)}}
+@media(max-width:420px){.camp{padding:18px 100px 18px 16px}.camp:after{right:12px;width:72px;height:118px}.camp .btn.ghost{font-size:14px;padding:9px 12px}}
+
+</style></head><body>
+<nav style="max-width:1100px;margin:0 auto;padding:15px 20px 0;font:600 14px system-ui,sans-serif"><a href="/#/pages/simulate/index" style="color:#226547;text-decoration:none">← 返回模拟项目</a></nav>
+<div class="top" id="top" hidden><div class="in"><span class="gname">AINPE · AI 视频定制模拟</span><span id="stepv"></span></div><div id="prog"><div id="progb"></div></div></div>
+<div class="wrap" id="app"></div>
+
+<!-- ================= 可替换数据：案例 / 条件 / 选择 / 事件 =================
+ real:  仅放核实过的真实案例事实（来源：作者自述）
+ 其余：全部为游戏设定，可整体替换为其它案例 -->
+<script type="application/json" id="game-data">{"project": "AI 视频定制", "baseRef": 2200, "baseRefNote": "游戏假设的起点值，不来自任何案例的平均或换算。6 个案例的口径各不相同（月收入、单笔结算、团队分成、含广告的混合收入），不能折算成这个数字。", "real": {}, "conditions": [{"id": "life", "q": "现在的生活状态", "opts": [{"t": "全职上班", "n": "下班后才有时间，加班会打断", "d": -300, "fit": 0, "flags": ["interrupt"]}, {"t": "学生", "n": "时间多，考试周会停摆", "d": -100, "fit": 1, "flags": ["exam"]}, {"t": "全职宝妈宝爸", "n": "时间碎，被打断是常态", "d": -400, "fit": 0, "flags": ["kid"]}, {"t": "自由职业", "n": "时间自己安排，收入不稳", "d": 200, "fit": 2, "flags": []}, {"t": "待业", "n": "时间充足，压力也大", "d": 100, "fit": 1, "flags": ["anxious"]}]}, {"id": "time", "q": "每天能投入多少时间", "opts": [{"t": "0.5 小时", "n": "通勤路上挤出来", "d": -1200, "fit": -2, "flags": ["lowtime"]}, {"t": "1 小时", "n": "下班后一小时", "d": -500, "fit": 0, "flags": ["lowtime"]}, {"t": "2 小时", "n": "够做一件完整的事", "d": 0, "fit": 1, "flags": []}, {"t": "4 小时", "n": "接近半职投入", "d": 600, "fit": 2, "flags": ["hightime"]}]}, {"id": "tech", "q": "视频 / AI 工具基础", "opts": [{"t": "零基础", "n": "没做过视频", "d": -800, "fit": -1, "flags": ["notech"]}, {"t": "会用 AI 视频工具", "n": "能出片，分镜还在学", "d": 0, "fit": 1, "flags": []}, {"t": "影视编导基础", "n": "懂分镜和镜头语言", "d": 400, "fit": 2, "flags": ["pro"]}]}, {"id": "fund", "q": "启动资金（主要是生成算力）", "opts": [{"t": "¥0", "n": "只用免费额度", "d": -300, "fit": 0, "flags": ["nofund"], "cost": 0}, {"t": "¥500", "n": "一个月的生成会员", "d": 0, "fit": 1, "flags": [], "cost": 300}, {"t": "¥2000", "n": "多个模型会员", "d": 300, "fit": 1, "flags": [], "cost": 800}, {"t": "¥5000", "n": "预算宽，也容易乱花", "d": 500, "fit": 0, "flags": ["rich"], "cost": 1200}]}, {"id": "acct", "q": "作品展示（内容账号）", "opts": [{"t": "没有作品", "n": "从第一条样片做起", "d": -600, "fit": -1, "flags": ["noacct"]}, {"t": "有零散作品", "n": "发过几条，没整理", "d": 0, "fit": 0, "flags": []}, {"t": "有作品集账号", "n": "客户能直接看到风格", "d": 800, "fit": 2, "flags": ["portfolio"]}]}], "talents": [{"t": "夜间高效", "n": "晚上思路最清楚", "d": 200, "flags": [], "r": 0}, {"t": "会提需求", "n": "能把需求跟 AI 说清楚", "d": 250, "flags": [], "r": 0}, {"t": "爱记数据", "n": "每天记一行数据", "d": 300, "flags": ["data"], "r": 1}, {"t": "敢问用户", "n": "愿意私信陌生人做调研", "d": 350, "flags": ["research"], "r": 1}, {"t": "拖延", "n": "总想明天再开始", "d": -400, "flags": ["procrast"], "r": 0}, {"t": "工具囤积", "n": "会员买了 8 个，常用 2 个", "d": -300, "flags": ["toolbuyer"], "r": 0}, {"t": "标题敏感", "n": "看一眼就知道笔记有没有戏", "d": 500, "flags": ["viral"], "r": 2}, {"t": "完美主义", "n": "一个细节能改三天", "d": -200, "flags": ["perfect"], "r": 0}, {"t": "先算账", "n": "动手前先算投入产出", "d": 400, "flags": ["calc"], "r": 2}, {"t": "会聊客户", "n": "三句话问到客户真实需求", "d": 300, "flags": ["talk"], "r": 1}, {"t": "有生意朋友", "n": "身边有开店做生意的朋友", "d": 150, "flags": ["net"], "r": 0}, {"t": "审美在线", "n": "看一眼就知道画面对不对", "d": 400, "flags": ["eye"], "r": 2}], "choices": [{"id": "cust", "node": "获客", "q": "第一批客户从哪来？", "opts": [{"t": "发样片作品到小红书 / 视频号", "n": "客户先看到风格再来问", "d": 400, "flags": ["showcase"]}, {"t": "去接单平台低价抢单", "n": "单多，但客户难缠", "d": -700, "flags": ["cheap"]}, {"t": "朋友圈晒 AI 技能，找熟人", "n": "起步快，量有限", "d": 100, "flags": ["friends"]}, {"t": "加入团队承制，按分成结算", "n": "不用自己找客户，回款看团队", "d": -700, "flags": ["team"]}]}, {"id": "quote", "node": "报价", "q": "怎么报价？", "opts": [{"t": "先定时长、画风、修改次数，再报价", "n": "报价对得上工作量", "d": 500, "flags": ["scoped"]}, {"t": "不问细节，先报个价", "n": "快，但后面容易加活", "d": -700, "flags": ["nopre"], "k": "scope"}, {"t": "先低价冲量", "n": "好成交，可能做一单亏一单", "d": -700, "flags": ["lowbid"], "k": "lowprice"}]}, {"id": "make", "node": "制作", "q": "怎么开始制作？", "opts": [{"t": "先出分镜和 10 秒样片，客户确认再全片", "n": "多一步沟通，少很多返工", "d": 400, "flags": ["storyfirst"]}, {"t": "直接全片生成，做完再给客户看", "n": "省一轮沟通，赌一次就过", "d": -700, "flags": ["genall"], "k": "regen"}]}, {"id": "rev", "node": "修改", "q": "修改怎么约定？", "opts": [{"t": "写明含 2 轮修改，超出另计", "n": "边界清楚", "d": 300, "flags": ["revlimit"]}, {"t": "改到客户满意为止", "n": "客户开心，你可能改到半夜", "d": -600, "flags": ["revinf"], "k": "rev"}]}, {"id": "del", "node": "交付", "q": "怎么交付？", "opts": [{"t": "按清单验收：画幅、字幕、格式、授权", "n": "一次交清", "d": 200, "flags": ["checklist"]}, {"t": "直接发网盘链接", "n": "省事，问题留到之后", "d": -400, "flags": ["loosedel"], "k": "fmt"}]}, {"id": "pay", "node": "收款", "q": "怎么收款？", "opts": [{"t": "开工前收 50% 定金", "n": "有底再开工", "d": 300, "flags": ["deposit"]}, {"t": "交付后一次收全款", "n": "好谈单，风险在你", "d": -600, "flags": ["payafter"], "k": "pay"}]}], "task": {"after": 0, "node": "需求沟通", "title": "动手：把客户 brief 的缺口补齐", "rtitle": "brief 检查", "card": "brief 补缺口", "desc": "第一位客户来了（客户和对话均为虚构）。下面这段需求缺了很多关键信息。勾选你开工前一定要问清的问题——漏掉的会在后面变成返工、拖款或授权问题。", "preview": "<div class=\"chat\"><div class=\"who\">客户 · 某奶茶店老板（虚构）<\/div><div class=\"bub\">你好，想做个新品宣传视频，要有氛围感，下周用。预算不多哈。<\/div><div class=\"bub\">图片我这有店员照片，你直接用就行。<\/div><div class=\"who\">你 · 准备回复<\/div><div class=\"bub\" style=\"background:#2a2f55\">好的！我先确认几件事……（勾选你要问的问题）<\/div><\/div>", "prompt": "开工前要问清哪些？（可多选）", "items": [{"id": "len", "need": 1, "t": "时长和画幅（15 秒竖屏？1 分钟横屏？）", "why": "没问清，做完才发现要的是另一种画幅，整片重出。", "fix": "报价前写清「时长 × 画幅 × 平台」。", "fd": -50, "ref": "果子"}, {"id": "style", "need": 1, "t": "画风参考（发 2-3 个喜欢的视频）", "why": "「氛围感」每人理解不同，没参考就是盲猜。", "fix": "让客户给参考片，并先确认自己能做到。", "fd": -50, "ref": "果子"}, {"id": "rev", "need": 1, "t": "含几轮修改，超出怎么算", "why": "没约定修改次数，客户会一直提新要求。", "fix": "写明含 2 轮修改，超出另计。", "fd": -50, "ref": "Jason"}, {"id": "fmt", "need": 1, "t": "交付时间和文件格式（分辨率、字幕版 / 无字幕版）", "why": "「下周用」是哪天？要几个版本？不问清就会临时加活。", "fix": "约定交付日期、分辨率和版本数。", "fd": -30}, {"id": "auth", "need": 1, "t": "店员照片的肖像使用授权", "why": "用真人照片做视频，需要本人同意；没授权要暂停补材料。", "fix": "请客户提供本人书面同意，或改用不含真人的素材。", "fd": -50, "ref": "雅痞"}, {"id": "pay", "need": 1, "t": "付款方式和定金", "why": "「预算不多」又没约定付款，交付后容易拖款。", "fix": "报价单写明定金比例和尾款时间。", "fd": -30, "ref": "雅痞"}, {"id": "rev_gdp", "need": 0, "t": "奶茶店一年营业额多少", "why": "和这单制作无关，问了反而显得不专业。", "d": -60}, {"id": "model", "need": 0, "t": "客户想用哪个 AI 模型", "why": "客户关心效果，不关心模型；这是你自己的事。", "d": -60}, {"id": "free", "need": 0, "t": "要不要先免费做完整版给他看看", "why": "免费做完整片是最大的时间浪费；做 10 秒样片就够。", "d": -150}]}, "events": [{"need": ["interrupt"], "p": 0.8, "day": [3, 12], "m": -150, "t": "连续加班一周，项目没碰，进度停摆。"}, {"need": ["exam"], "p": 0.7, "day": [8, 20], "m": -100, "t": "考试周，项目暂停一周。"}, {"need": ["kid"], "p": 0.8, "day": [2, 14], "m": -150, "t": "娃发烧三天，电脑一次没打开。"}, {"need": ["anxious", "rich"], "p": 0.6, "day": [5, 15], "m": -600, "t": "心急，一口气买了一堆课和会员。"}, {"need": ["anxious"], "p": 0.6, "day": [10, 20], "m": -100, "t": "焦虑到失眠，效率掉了一半。"}, {"need": ["procrast"], "p": 0.7, "day": [2, 10], "m": -200, "t": "「明天再开始」说了五天。"}, {"need": ["toolbuyer"], "p": 0.8, "day": [3, 12], "m": -300, "t": "又订了两个 AI 工具会员，用了一次。"}, {"need": ["perfect"], "p": 0.6, "day": [6, 14], "m": -150, "t": "一个细节改了三天，进度卡住。"}, {"need": ["data"], "p": 0.7, "day": [12, 24], "m": 150, "t": "翻数据表，发现一个高转化的入口，加大投入。"}, {"need": ["calc"], "p": 0.7, "day": [4, 10], "m": 200, "t": "动手前算了账，砍掉一个亏钱的方向。"}, {"need": ["research"], "p": 0.6, "day": [3, 10], "m": 200, "t": "私信问了 10 个潜在客户，确认需求是真的。"}, {"need": ["viral"], "p": 0.5, "day": [12, 24], "m": 300, "t": "一条笔记小爆，带来一波咨询。"}, {"need": ["notech"], "p": 0.7, "day": [3, 10], "m": -200, "t": "第一次用 AI 视频工具，人物脸一直变，学了三晚。"}, {"need": ["lowtime"], "p": 0.6, "day": [10, 20], "m": -300, "t": "客户等不及你下班后慢慢做，换了别人。", "why": "每天时间太少，交付周期太长"}, {"need": ["nofund"], "p": 0.6, "day": [8, 16], "m": -150, "t": "免费额度用完了，样片卡在一半。"}, {"need": ["noacct"], "p": 0.6, "day": [4, 12], "m": -200, "t": "客户问「有作品看看吗」，你拿不出来。", "why": "没有可展示的作品集"}, {"need": ["pro"], "p": 0.6, "day": [12, 24], "m": 300, "t": "分镜专业，客户直接追加一条。", "ref": "nana"}, {"need": ["portfolio"], "p": 0.7, "day": [6, 18], "m": 300, "t": "老客户看了新作品，回来复购。"}, {"need": ["talk"], "p": 0.6, "day": [5, 14], "m": 200, "t": "三句话问出客户真正想要的，一稿过。"}, {"need": ["net"], "p": 0.6, "day": [4, 12], "m": 200, "t": "开店的朋友介绍了第一单（虚构客户）。"}, {"need": ["eye"], "p": 0.6, "day": [12, 22], "m": 200, "t": "交付前自己挑出两处穿帮，客户没发现问题。"}, {"need": ["showcase"], "p": 0.8, "day": [6, 16], "m": 400, "t": "样片笔记带来 3 个咨询（虚构）。"}, {"need": ["friends"], "p": 0.7, "day": [3, 10], "m": 150, "t": "朋友圈有人来问价，成交一单小单（虚构）。"}, {"need": ["cheap"], "p": 0.8, "day": [6, 16], "m": -300, "k": "cheap", "t": "低价客户沟通了 3 天，提了 20 条意见。", "why": "低价单的沟通成本更高", "ref": "雅痞"}, {"need": ["team"], "p": 0.8, "day": [18, 28], "m": -600, "k": "team", "t": "团队分成迟迟没定，你垫付的算力收不回来。", "why": "分成和报销没在开工前写清", "ref": "伍拾陆"}, {"need": ["nopre"], "p": 0.8, "day": [10, 18], "m": -300, "k": "scope", "t": "客户一路加镜头、加演员表现，报价没变。", "why": "报价时没定范围", "ref": "nana"}, {"need": ["lowbid"], "p": 0.8, "day": [12, 20], "m": -300, "k": "lowprice", "t": "算了算这单的生成费，比报价还高。", "why": "报价没算生成成本和工时", "ref": "nana"}, {"need": ["genall"], "p": 0.8, "day": [10, 18], "m": -400, "k": "regen", "t": "整片生成完客户说「不是这个感觉」，算力白烧。", "why": "没先确认分镜和样片", "ref": "003"}, {"need": ["revinf"], "p": 0.8, "day": [16, 24], "m": -300, "k": "rev", "t": "改到第 6 版，凌晨两点还在改。", "why": "没约定修改次数", "ref": "Jason"}, {"need": ["loosedel"], "p": 0.6, "day": [22, 28], "m": -150, "k": "fmt", "t": "发了网盘链接，客户说打不开、要无字幕版。", "why": "交付没按清单"}, {"need": ["payafter"], "p": 0.7, "day": [24, 30], "m": -500, "k": "pay", "t": "交付了一周，尾款还在「走流程」。", "why": "没收定金", "ref": "雅痞"}, {"need": ["storyfirst"], "p": 0.7, "day": [10, 18], "m": 200, "t": "分镜和 10 秒样片一次确认，全片一稿过。", "ref": "果子"}, {"need": ["revlimit"], "p": 0.5, "day": [16, 24], "m": 100, "t": "客户第 3 轮修改按约定另计，顺利加价。"}, {"need": ["checklist"], "p": 0.6, "day": [22, 28], "m": 300, "t": "一次验收通过，客户转介绍了朋友。"}, {"need": ["deposit"], "p": 0.6, "day": [6, 14], "m": 0, "t": "定金到账才开工，心里有底。（只记到账，不提前算收入）"}, {"need": ["task_good"], "p": 0.8, "day": [5, 10], "m": 200, "t": "开工前问清了所有细节，客户说「你很专业」。"}, {"need": ["miss_len"], "p": 0.9, "day": [12, 18], "m": -300, "k": "scope", "t": "客户要 9:16 竖屏，你做的是横屏，重出一版。", "why": "brief 漏问：时长和画幅", "ref": "果子"}, {"need": ["miss_style"], "p": 0.9, "day": [10, 16], "m": -350, "k": "regen", "t": "客户：「不是我要的氛围感」，画风推倒重来。", "why": "brief 漏问：画风参考", "ref": "果子"}, {"need": ["miss_rev"], "p": 0.9, "day": [16, 24], "m": -300, "k": "rev", "t": "客户又提了一轮「小改动」，没约定次数，只能接着改。", "why": "brief 漏问：修改次数", "ref": "Jason"}, {"need": ["miss_fmt"], "p": 0.9, "day": [20, 26], "m": -150, "k": "fmt", "t": "交付当天客户才说要 4K 和无字幕版。", "why": "brief 漏问：交付时间和格式"}, {"need": ["miss_auth"], "p": 0.9, "day": [8, 14], "m": -200, "k": "auth", "t": "店员不同意用自己的照片，制作暂停、换素材。", "why": "brief 漏问：肖像授权", "ref": "雅痞"}, {"need": ["miss_pay"], "p": 0.9, "day": [24, 30], "m": -500, "k": "pay", "t": "交付后客户说「预算不够，先付一半」。", "why": "brief 漏问：付款和定金", "ref": "雅痞"}], "filler": ["回复了 2 条咨询私信。", "试了一个新的生成模型。", "整理了一下作品集。", "改了一版分镜。", "发了一条样片笔记。", "研究了 3 个同行的作品。", "给客户发了进度截图。", "算了算这周的生成费。"], "dataNote": "以下 6 个案例均为作者自述，非随机样本，不代表平均或概率；口径不同（月收入、单笔结算、团队分成、含广告的混合收入），不可相加或比较。未披露 ≠ 0。", "cases": [{"author": "003", "platform": "个人 AI 视频定制副业", "cond": {"daily_time": "作者自述每天约 3 小时", "technical_background": "此前技术基础未明确披露。", "life_context": "在校学生；参加 2026 年 3 月 AI 定制服务航海后入门。"}, "project": "承接 AI 视频定制服务；根据客户要求制作分镜、样片与视频，并在沟通修改后交付。", "pits": ["客户回复慢、需求或修改边界未明确时容易拖长交付。", "未经客户确认就大量生成画面，可能浪费算力并造成返工。"], "results": [{"amount_text": "作者标题自述副业月收入 5000 元以上，正文提到约 5000 元；完整成本、实际净利润及统计月份未披露。", "period": "月收入；具体统计月份未披露。", "scope": "个人副业自述收入，不是净利润或行业平均。", "description": "给游戏的启发（整理者）：适合模拟客户沟通、分镜确认、先做样片、修改与验收；订单和扣减应另设虚构金额。"}], "url": "https://scys.com/articleDetail/xq_topic/45544522454884258", "date": "2026-06-23", "m": {"life": ["学生"], "tech": [1], "flags": ["genall", "nopre", "miss_style"]}}, {"author": "Jason", "platform": "个人 AI 定制视频接单", "cond": {"daily_time": "前期接单较多、经常改稿到半夜；后期作者写平均每天“2.3 小时”，是小数还是 2～3 小时不明确。", "technical_background": "作者自述从零开始学习 AI；此前专业技术基础未进一步披露。", "life_context": "作者称主业裸辞后学习并接单。"}, "project": "以 AI 定制视频接单，作品偏科普，客户中包含政府类型需求，需反复沟通和修改。", "pits": ["前期接单多、交付与修改占用大量时间，后来感到疲惫并减少接单。", "文章引言写“半个月变现超过 7 万”，正文则写从 4 月至发文约半年累计 70985 元，两处周期存在冲突。"], "results": [{"amount_text": "正文自述从 4 月至发文约半年累计 70985 元，最高一个月约 1.7 万元；接单减少后，7～8 月每月约 5000～6000 元。", "period": "正文称从4月至发文约半年；引言另称半个月，二者冲突。", "scope": "作者自述变现；完整成本、到账状态和净利润未披露，不应忽略文章内部周期冲突。", "description": "给游戏的启发（整理者）：可模拟接单量增加、工作时间和反复修改之间的取舍；由于周期矛盾不宜直接用于平均收入。"}], "url": "https://scys.com/articleDetail/xq_topic/82258454581421112", "date": "2026-11-03", "m": {"life": ["待业"], "tech": [0], "flags": ["revinf", "miss_rev"]}, "warn": "原文周期前后冲突（半个月 / 约半年）"}, {"author": "果子", "platform": "个人全职 AI 视频定制接单", "cond": {"daily_time": "未披露", "technical_background": "参加航海之前的技术背景未披露。", "life_context": "2025 年 6 月参加 AI 视频航海，7 月底离职，8 月开始全职接单。"}, "project": "学习 AI 视频制作并寻找客户，确认脚本、画风、时长及修改要求后制作和交付。", "pits": ["接单前若没有确认脚本、画风、时长和修改范围，容易产生额外返工。", "需要先判断自己是否能达到客户的参考效果。"], "results": [{"amount_text": "作者自述 2025 年 8 月收入 6000 元以上，9～11 月各月过万，12 月超过 2 万元。", "period": "2025 年 8 月至 12 月，各月分别自述。", "scope": "个人接单收入自述；到账情况、完整成本及净利润未披露。", "description": "给游戏的启发（整理者）：适合模拟不同月份的接单量与能力边界，但不能将月入变化当成必然路径。"}], "url": "https://scys.com/articleDetail/xq_topic/14588481121824442", "date": "2026-03-02", "m": {"life": ["自由职业"], "tech": [1], "flags": ["nopre", "miss_len", "miss_style", "storyfirst"]}}, {"author": "nana", "platform": "个人企业 AI 真人带货视频定制", "cond": {"daily_time": "该单正文自述制作两天，每天五六小时；引言概述为两三天。", "technical_background": "中国传媒大学电视学院相关背景，有编导、摄影、分镜与视觉设计基础。", "life_context": "已有好物内容相关经验；当时其他工作安排未披露。"}, "project": "为企业制作约 1.5 分钟 AI 真人带货视频样片，并评估是否承接后续批量订单。", "pits": ["客户对镜头、表现与剧本的要求在沟通过程中增加，修改边界若不明确容易导致返工。", "生成调用费用与沟通时间使低价订单出现亏损，作者选择拒绝后续大单。"], "results": [{"amount_text": "作者正文称该单品牌方结算 250 元、制作花费 300 多元；作者自述亏损几十元，未计完整人工机会成本。", "period": "该条约 1.5 分钟样片；正文称两天，每天五六小时。", "scope": "一单作者自述结算和部分制作费用；亏损金额为作者自述，不是行业平均或完整净利润。", "description": "给游戏的启发（整理者）：用低价订单、时间和生成费展示为什么报价不等于利润。"}], "url": "https://scys.com/articleDetail/xq_topic/82255484152414822", "date": "2026-07-16", "m": {"life": [], "tech": [2], "flags": ["lowbid", "nopre", "pro"]}, "warn": "一单结算与部分费用，不是月收入"}, {"author": "伍拾陆", "platform": "AI 漫剧团队承制与分成；不是单人视频定制", "cond": {"daily_time": "未披露稳定每日工时；其中一个项目自述 20 天昼夜颠倒地完成。", "technical_background": "该篇未明确披露技术背景。", "life_context": "作者从全职工作转向尝试多个副业，参加 AI 漫剧团队项目。"}, "project": "参与团队 AI 漫剧制作和分成项目，需要配合剧本、画面、模型和交付。", "pits": ["模型切换、剧本变更及垫付算力增加了项目成本。", "分成与报销迟迟未明确；后续作品的投入无法收回。"], "results": [{"amount_text": "作者自述此前一部团队作品用约 20 天获 5000 元；下一部分成作品投入约两个月，个人收入为 0，垫付金钱及时间未收回，具体亏损未披露。", "period": "不同项目分别约20天与约两个月。", "scope": "两段不同团队项目的个人自述，不是单人视频定制平均收入；确切亏损未披露。", "description": "给游戏的启发（整理者）：可作为分成、团队协作和回款风险的另一种玩法，不应与单人定制的收益样本混算。"}], "url": "https://scys.com/articleDetail/xq_topic/22255258221588511", "date": "2026-05-29", "m": {"life": ["全职上班"], "tech": [], "flags": ["team"]}, "warn": "团队项目，不是单人定制；与小程序版伍拾陆是不同项目"}, {"author": "雅痞", "platform": "个人 AI 纪念视频定制，含公众号广告", "cond": {"daily_time": "未披露", "technical_background": "AI 工具技术基础未披露；有约 10 年互联网推广经验及已有账号。", "life_context": "在楼梯工厂做运营。"}, "project": "借助内容展示接 AI 人物纪念视频需求，通过沟通制作和交付，并有少量公众号广告收入。", "pits": ["低价客户可能带来较高沟通成本；作者也遇到付款及作品使用边界问题。", "涉及人物照片与肖像等敏感素材，须取得适当授权并保护隐私。"], "results": [{"amount_text": "作者称两天跑通首单；另一次记录合计 8 单，视频与公众号广告约收入 314 元（含广告 8.72 元），视频生成成本约 80 元。8 单的统计时间范围不明确；差额约 234 元未计工时及其他成本。", "period": "两天指首单闭环，8 单的统计周期未明确。", "scope": "含公众号广告的混合收入；差额约 234 元不是完整净利润，到账未独立核验。", "description": "给游戏的启发（整理者）：可模拟授权、客户沟通与成本核算；避免使用真实人像或暗示可以未经授权合成。"}], "url": "https://scys.com/articleDetail/xq_topic/14425558588558182", "date": "2026-08-22", "m": {"life": ["全职上班"], "tech": [], "flags": ["cheap", "payafter", "miss_auth", "miss_pay"]}, "warn": "含公众号广告的混合收入；差额不是净利润"}], "ui": {"top": "AINPE · AI 视频定制模拟", "title": "AI 视频定制 · 模拟复盘", "intro": "把一份 AI 视频定制副业，从找客户跑到收款。你要亲手补一份客户 brief，补得好不好会影响后面每一单。最后对照 6 个真实案例。一局约 3 分钟。", "steps": ["填开局条件：生活状态、时间、基础、资金、作品", "选 3 个天赋", "获客 → 动手补 brief → 报价、制作、修改、交付、收款", "模拟 15 或 30 天", "看结果、复盘，对照真实案例"], "refLabel": "预计收入", "nodeLabel": "业务节点", "dash": "接单看板", "hideNote": "收入和盈亏在复盘时揭晓；到账单数 ≠ 到账金额", "phases": [["获客", 0.2], ["需求沟通", 0.35, "沟通"], ["制作", 0.65], ["修改", 0.82], ["交付收款", 1, "交付"]], "liveFrom": 1, "mets": [["咨询", 1.2, 0.4], ["报价", 0.6], ["交付", 0.6], ["到账单", 0.85]], "ev0": "开张！把第一条样片发出去。", "evMid": {"f": 0.4, "t": "第一单进入制作（业务节点：制作）。"}, "d15": "刚接到前几单，回款多半还没到", "card": "AI 视频定制 · 模拟复盘", "dl": "视频定制模拟", "grossLabel": "模拟到账", "profitNote": "模拟到账 − 算力花费 ± 事件", "camp": "体验营：获客 → 需求沟通 → 分镜样片 → 修改 → 交付收款，动手接一单。", "okP": 1500, "boostFlag": "storyfirst", "titles": [[3500, "接单跑通了"], [2000, "稳步回本"], [800, "小有收获"], [0, "勉强回本"], [-500, "白忙一场"], [0, "亏损复盘"]]}, "specials": [{"f": "revinf", "lt": 1000, "t": "改稿改到半夜"}, {"f": "lowbid", "lt": 500, "t": "做一单亏一单"}, {"f": "team", "lt": 500, "t": "分成没谈清"}, {"f": "payafter", "lt": 500, "t": "活干完了，钱没到"}], "rules": [{"any": ["lowtime"], "bad": ["每天时间不够，客户等不及", "每天至少留 2 小时，或只接短视频单"]}, {"not": ["lowtime"], "good": "时间够支撑沟通和修改"}, {"any": ["notech"], "bad": ["工具还没上手", "先做 3 条自己的样片，再接单"]}, {"any": ["pro"], "good": "懂分镜，客户信得过"}, {"any": ["noacct"], "bad": ["没有作品给客户看", "先整理 3 条作品放进一个账号"]}, {"any": ["cheap", "lowbid"], "bad": ["低价单亏时间和算力", "报价先算生成费和工时，低于成本的不接"]}, {"any": ["team"], "bad": ["分成没写清就开工", "团队合作前写清分成、报销和回款时间"]}, {"any": ["nopre", "miss_len", "miss_style"], "bad": ["需求没问清就开工", "用 brief 清单问清时长、画幅、画风参考"]}, {"any": ["scoped"], "good": "报价前定好范围"}, {"any": ["genall"], "bad": ["没确认就全片生成", "先出分镜和 10 秒样片"]}, {"any": ["storyfirst"], "good": "先样片后全片，返工少"}, {"any": ["revinf", "miss_rev"], "bad": ["修改没边界", "写明含 2 轮修改，超出另计"]}, {"any": ["payafter", "miss_pay"], "bad": ["没收定金", "开工前收 50% 定金"]}, {"any": ["deposit"], "good": "先收定金，回款有保障"}, {"any": ["miss_auth"], "bad": ["素材授权没确认", "真人照片先拿书面同意"]}, {"any": ["task_good"], "good": "brief 一次问清，客户觉得专业"}, {"any": ["showcase", "portfolio"], "good": "作品先行，客户自己找上门"}, {"any": ["interrupt", "kid"], "bad": ["{life}，时间常被打断", "只接交付期宽松的单"]}], "bal": {"good": ["000000", "200000"], "goodFit": 6, "badFit": 0}}</script>
+<script src="./video-script-1.js"></script>
+<script src="./video-script-2.js"></script>
+
+<style>
+.ainpe-gate-backdrop{position:fixed;inset:0;z-index:99999;background:rgba(8,12,20,.76);display:flex;align-items:center;justify-content:center;padding:16px}
+.ainpe-gate{position:relative;width:min(100%,430px);max-height:92vh;overflow:auto;background:#fff;color:#193a2b;border-radius:18px;padding:24px;text-align:center;box-shadow:0 15px 55px rgba(0,0,0,.35)}
+.ainpe-gate h2{font-size:20px;margin:0 24px 10px}.ainpe-gate p{font-size:14px;line-height:1.65;margin:0 0 14px;color:#536a5c}
+.ainpe-gate img{display:block;width:min(100%,280px);height:auto;margin:0 auto 10px;border-radius:8px}.ainpe-gate a{color:#247249;font-weight:700}.ainpe-gate .ainpe-gate-link{display:block;margin-top:15px;padding:12px;border-radius:10px;background:#ddf2a1;text-decoration:none;color:#193a2b}.ainpe-gate .ainpe-gate-original{display:block;margin-top:14px;font-size:13px}.ainpe-gate-close{position:absolute;top:12px;right:14px;background:none;border:0;font-size:25px;color:#536a5c;cursor:pointer}
+</style>
+<script src="./video-script-3.js"></script>
+
+</body></html>

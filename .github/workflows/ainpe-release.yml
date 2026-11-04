@@ -27,6 +27,11 @@ jobs:
       - run: python3 tests/deploy-pipeline.test.py
       - run: python3 tests/deploy-attestation.test.py
       - run: python3 tests/deploy-download.test.py
+      - run: python3 deploy/check_uni_source.py
+      - run: npm ci --prefix uni-app
+      - run: npm run build:h5 --prefix uni-app
+      - run: python3 deploy/install_uni_h5.py
+      - run: node --test tests/uni-release.check.mjs
       - run: python3 deploy/build_artifact.py "$GITHUB_SHA" "$RUNNER_TEMP/ainpe-release"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

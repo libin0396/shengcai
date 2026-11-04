@@ -1,0 +1,12 @@
+{
+  "name": "AI 实战情报站 AINPE",
+  "appid": "",
+  "description": "AI 实战案例、项目模拟与线下活动",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "vueVersion": "3",
+  "uniStatistics": { "enable": false },
+  "h5": { "router": { "mode": "hash" } },
+  "mp-weixin": { "appid": "", "usingComponents": true, "setting": { "urlCheck": true } }
+}

@@ -1,0 +1,19 @@
+{
+  "pages": [
+    { "path": "pages/discover/index", "style": { "navigationBarTitleText": "发现" } },
+    { "path": "pages/article/index", "style": { "navigationBarTitleText": "文章详情" } },
+    { "path": "pages/practice/index", "style": { "navigationBarTitleText": "AI 实战工作台" } },
+    { "path": "pages/topic/index", "style": { "navigationBarTitleText": "专题" } },
+    { "path": "pages/events/index", "style": { "navigationBarTitleText": "线下活动" } },
+    { "path": "pages/saved/index", "style": { "navigationBarTitleText": "我的收藏" } },
+    { "path": "pages/simulate/index", "style": { "navigationBarTitleText": "模拟项目" } },
+    { "path": "pages/simulate/wallpaper-business", "style": { "navigationBarTitleText": "经营一家壁纸小店" } },
+    { "path": "pages/simulate/workbench", "style": { "navigationBarTitleText": "小程序项目工作台" } },
+    { "path": "pages/simulate/miniapp", "style": { "navigationBarTitleText": "小程序项目模拟" } },
+    { "path": "pages/simulate/fde", "style": { "navigationBarTitleText": "工厂 AI 落地" } },
+    { "path": "pages/simulate/video", "style": { "navigationBarTitleText": "AI 视频带货" } },
+    { "path": "pages/simulate/super", "style": { "navigationBarTitleText": "内容创作" } },
+    { "path": "pages/camp/index", "style": { "navigationBarTitleText": "三天体验营" } }
+  ],
+  "globalStyle": { "navigationStyle": "custom", "navigationBarTextStyle": "black", "navigationBarTitleText": "AINPE", "backgroundColor": "#f4f4ef" }
+}

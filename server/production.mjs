@@ -15,6 +15,40 @@ const contentTypes = {
   '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8', '.xml':'application/xml; charset=utf-8',
 };
 
+// Keep previously shared public links usable when switching the frontend to
+// the uni-app hash router. The host is never derived from a request value.
+const legacyRoutes = Object.freeze({
+  '/events':'/#/pages/events/index',
+  '/workspace':'/#/pages/saved/index',
+  '/projects':'/#/pages/simulate/index',
+  '/topics/fde':'/#/pages/topic/index?slug=fde',
+  '/topics/ai-video':'/#/pages/topic/index?slug=ai-video',
+  '/topics/ai-cases':'/#/pages/topic/index?slug=ai-cases',
+  '/join/ai-camp':'/#/pages/camp/index',
+  '/simulate':'/#/pages/simulate/index',
+  '/simulate/fde':'/#/pages/simulate/fde',
+  '/simulate/super-ai':'/#/pages/simulate/super',
+  '/simulate/ai-video':'/#/pages/simulate/video',
+});
+
+function legacyRedirect(rawUrl) {
+  let u;
+  try { u = new URL(rawUrl, 'http://localhost'); } catch { return null; }
+  const pathname = u.pathname.replace(/\/$/, '') || '/';
+  if (pathname === '/source') {
+    const source = u.searchParams.get('url');
+    if (!source) return '/#/pages/camp/index';
+    try {
+      const parsed = new URL(source);
+      if (parsed.protocol === 'https:' && /^(?:www\.)?scys\.com$/i.test(parsed.hostname) && !parsed.username && !parsed.password) {
+        return '/#/pages/camp/index?source=' + encodeURIComponent(parsed.href);
+      }
+    } catch {}
+    return '/#/pages/camp/index';
+  }
+  return legacyRoutes[pathname] || null;
+}
+
 // Test real paths as well as lexical paths so assets cannot escape through symlinks.
 function inside(root, candidate) {
   const relative = path.relative(root, candidate);
@@ -27,9 +61,16 @@ function send(res, status, body, method, headers = {}) {
   res.end(method === 'HEAD' ? undefined : bytes);
 }
 
-export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client')} = {}) {
+export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
+  let reservations=null;
+  if(reservation){
+    const dbParent=await realpath(path.dirname(reservation.dbPath));
+    if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
+    const {createProductionReservationApi}=await import('./production-reservations.mjs');
+    reservations=createProductionReservationApi({root,...reservation});
+  }
   // Capture the release identity at startup, so a symlink swap cannot make an
   // older process report the new release's identity.
   let sourceCommit = null;
@@ -83,8 +124,12 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     res.end(req.method === 'HEAD' ? undefined : asset.body);
   }
 
-  return createServer((req, res) => {
+  const server = createServer((req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    if (['GET', 'HEAD'].includes(req.method)) {
+      const redirect = legacyRedirect(req.url || '/');
+      if (redirect) { res.writeHead(302, {Location:redirect, 'Cache-Control':'no-store'}); return res.end(); }
+    }
     if ((req.url || '').split('?')[0] === '/api/health') {
       if (!['GET', 'HEAD'].includes(req.method)) return send(res, 405, 'Method Not Allowed', req.method, {Allow:'GET, HEAD'});
       return send(res, 200, JSON.stringify({status:'ok', sourceCommit}), req.method,
@@ -94,11 +139,18 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     }); };
+    const afterReservation = () => { void feed(req, res, fallback).catch(() => {
+      if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
+      else res.destroy();
+    }); };
+    if(reservations){reservations.middleware(req,res,afterReservation);return;}
     void feed(req, res, fallback).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     });
   });
+  server.once('close',()=>reservations?.close());
+  return server;
 }
 
 function isMainModule() {
@@ -115,7 +167,8 @@ if (isMainModule()) {
     process.exitCode = 1;
   } else {
     try {
-      const server = await createProductionServer();
+      const reservation = process.env.AINPE_RESERVATION_DB && process.env.AINPE_PUBLIC_ORIGIN ? {dbPath:process.env.AINPE_RESERVATION_DB,publicOrigin:process.env.AINPE_PUBLIC_ORIGIN} : null;
+      const server = await createProductionServer({reservation});
       server.on('error', () => { console.error('Unable to start AINPE server.'); process.exitCode = 1; });
       server.listen(port, host, () => console.log(`AINPE listening on ${host}:${port}`));
     } catch {

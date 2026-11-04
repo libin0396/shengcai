@@ -11,6 +11,18 @@ __pycache__/
 
 # Local feed snapshots and intermediate sync data
 data/
+# Only the reviewed uni app's allowlisted source and intentionally empty
+# placeholders belong in git; never include a local feed or database.
+!uni-app/src/data/
+uni-app/src/data/*
+!uni-app/src/data/content.js
+!uni-app/src/data/storage.js
+!uni-app/src/data/article-categories.js
+!uni-app/src/data/site-config.json
+!uni-app/src/data/feed.json
+!uni-app/src/data/article-summaries.json
+!uni-app/src/data/event-reviews.json
+!uni-app/src/data/verified-offline-events.json
 资料库/
 sync/RUNBOOK.md
 
