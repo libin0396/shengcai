@@ -2,7 +2,7 @@
 
 This document is a rollout plan. Do not apply it until the reviewed, attested release is ready.
 
-- Import only the app's approved source and assets with `python3 deploy/import_uni_source.py <local-uni-app-path>`. It excludes local databases, credentials, feed snapshots, article extracts and the materials library. The empty bundled feed loads the server's read-only `/api/feed` at runtime.
+- Import only the app's approved source and assets with `python3 deploy/import_uni_source.py <local-uni-app-path>`. It excludes local databases, credentials, feed snapshots, unreviewed article extracts and the materials library. The user-approved short article summaries, activity records and attributed feedback are schema-checked and pinned to their reviewed content hashes. The empty bundled feed loads the server's read-only `/api/feed` at runtime.
 - CI must pass the existing React/backend/deployer tests first, then build `uni-app`, replace only `dist/client`, run the uni release and CSP checks, and package/attest as before. Preserve the persistent data symlink and existing server.
 - Add the following systemd drop-in for `ainpe.service` only after the new release and writable storage are staged. The directory must be an actual non-symlink directory owned by `ainpe:ainpe`, mode `0700`; do not use the static directory or overwrite existing data.
 

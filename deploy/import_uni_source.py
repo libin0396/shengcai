@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import shutil
 import sys
+from curated_content import EXPECTED,validate
 
 root = Path(__file__).resolve().parent.parent
 source = Path(sys.argv[1]).resolve(strict=True)
@@ -12,6 +13,10 @@ if target.exists():
     raise SystemExit('uni-app already exists: review and remove it manually before importing')
 if not (source / 'package-lock.json').is_file() or not (source / 'src/pages.json').is_file():
     raise SystemExit('source is not the expected uni app')
+for name in EXPECTED:
+    file=source/'src/data'/name
+    if file.is_symlink() or not file.is_file(): raise ValueError('missing curated source or symlink')
+    validate(name,file.read_text(encoding='utf-8'))
 target.mkdir()
 def copy_file(rel):
     src=source / rel
@@ -37,7 +42,6 @@ for sub in ['src/pages','src/components','src/static']:
             copy_file(src.relative_to(source))
 data=target/'src/data'
 (data/'feed.json').write_text(json.dumps({'articles':[],'events':[],'comments':[],'trendingTopics':[],'hotArticleIds':[],'topicGuides':{}})+'\n')
-for name in ['event-reviews.json','verified-offline-events.json']:
-    (data/name).write_text('[]\n')
-(data/'article-summaries.json').write_text('{}\n')
-print('Imported uni source; private snapshots and local databases excluded.')
+for name in EXPECTED:
+    copy_file(Path('src/data')/name)
+print('Imported uni source and reviewed short content; private snapshots and local databases excluded.')

@@ -11,8 +11,8 @@ __pycache__/
 
 # Local feed snapshots and intermediate sync data
 data/
-# Only the reviewed uni app's allowlisted source and intentionally empty
-# placeholders belong in git; never include a local feed or database.
+# Only reviewed uni app data belongs in git. The bundled feed must remain empty;
+# short curated material is pinned and validated by deploy/check_uni_source.py.
 !uni-app/src/data/
 uni-app/src/data/*
 !uni-app/src/data/content.js

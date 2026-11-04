@@ -3,17 +3,15 @@
 from pathlib import Path
 import json
 import re
+from curated_content import EXPECTED,validate
 
 root=Path(__file__).resolve().parent.parent/'uni-app/src'
 data=root/'data'
 expected={'articles':[],'events':[],'comments':[],'trendingTopics':[],'hotArticleIds':[],'topicGuides':{}}
 if json.loads((data/'feed.json').read_text()) != expected:
     raise SystemExit('The embedded feed must remain empty; use the server API.')
-for name in ['event-reviews.json','verified-offline-events.json']:
-    if json.loads((data/name).read_text()) != []:
-        raise SystemExit(f'{name} must remain empty in the release source')
-if json.loads((data/'article-summaries.json').read_text()) != {}:
-    raise SystemExit('Embedded article summaries must remain empty')
+for name in EXPECTED:
+    validate(name,(data/name).read_text(encoding='utf-8'))
 secret=re.compile(r'(?:sk-proj-[A-Za-z0-9_-]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)')
 for file in root.rglob('*'):
     if file.is_symlink(): raise SystemExit('Unexpected symlink in uni source')
@@ -22,4 +20,4 @@ for file in root.rglob('*'):
         raise SystemExit('Unexpected local artifact in uni source')
     if file.suffix.lower() in {'.vue','.js','.json','.html','.css'} and secret.search(file.read_text(encoding='utf8')):
         raise SystemExit('Possible credential in uni source; inspect locally')
-print('Uni source contains no private feed snapshots or known local artifacts.')
+print('Uni source contains only reviewed short curated content and no private feed snapshots or known local artifacts.')

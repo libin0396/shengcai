@@ -28,6 +28,7 @@ jobs:
       - run: python3 tests/deploy-attestation.test.py
       - run: python3 tests/deploy-download.test.py
       - run: python3 deploy/check_uni_source.py
+      - run: python3 tests/curated-content.test.py
       - run: npm ci --prefix uni-app
       - run: npm run build:h5 --prefix uni-app
       - run: python3 deploy/install_uni_h5.py
