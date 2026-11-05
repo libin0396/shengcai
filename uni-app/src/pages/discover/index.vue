@@ -9,10 +9,15 @@
         <view class="hero-step"><text>01</text> 你现在是？ <text class="hero-small">可选，带入游戏后仍可修改</text></view>
         <view class="life-options"><button v-for="person in people" :key="person.value" :class="{selected:life===person.value}" :aria-pressed="life===person.value" @click="life=life===person.value?'':person.value">{{person.label}}</button></view>
         <view class="hero-step"><text>02</text> 选一个项目，马上开始</view>
+        <view v-if="life" class="recommendation-note" aria-live="polite">根据你的选择推荐入门方向，仅供参考；你也可以选择其他项目。</view>
         <view class="hero-games">
-          <view class="hero-game featured"><text class="hero-game-tag">新手可以先试</text><view class="hero-game-title">AI 小程序副业</view><view class="hero-game-copy">从需求到上线推广，看看关键环节怎么衔接。</view><button @click="goGame('miniapp')">开始模拟 →</button></view>
-          <view class="hero-game"><view class="hero-game-title">AI 视频定制</view><view class="hero-game-copy">接一单，从客户需求走到作品交付。</view><button class="game-secondary" @click="goGame('video')">开始模拟 →</button></view>
-          <view class="hero-game"><view class="hero-game-title">小红书教育 PPT</view><view class="hero-game-copy">当一次课件质检员，找出需要修正的地方。</view><button class="game-secondary" @click="goGame('education-ppt')">开始模拟 →</button></view>
+          <view v-for="(game,index) in recommendedGames" :key="game.id" class="hero-game" :class="{featured:index===0}">
+            <text v-if="index===0" class="hero-game-tag">{{life ? '为你推荐先试' : '新手可以先试'}}</text>
+            <view class="hero-game-title">{{game.title}}</view>
+            <view class="hero-game-copy">{{game.description}}</view>
+            <view v-if="index===0 && recommendationReason" class="recommendation-reason">推荐理由：{{recommendationReason}}</view>
+            <button :class="{'game-secondary':index!==0}" @click="goGame(game.id)">开始模拟 →</button>
+          </view>
         </view>
         <view class="hero-footnote-v2">数值与事件均为游戏设定，不是收入预测。<text @click="navigate('/pages/simulate/index')"> 查看全部六个项目 →</text></view>
       </view>
@@ -41,6 +46,22 @@ import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
+const games=[
+  {id:'miniapp',title:'AI 小程序副业',description:'从需求到上线推广，看看关键环节怎么衔接。'},
+  {id:'video',title:'AI 视频定制',description:'接一单，从客户需求走到作品交付。'},
+  {id:'education-ppt',title:'小红书教育 PPT',description:'当一次课件质检员，找出需要修正的地方。'},
+];
+// 按身份给出不同的探索起点，不作为技能、时间或收益判断。
+const recommendations={
+  '全职上班':{order:['education-ppt','miniapp','video'],reason:'从选题、检查到上架，先体验一遍内容制作流程。'},
+  '学生':{order:['video','education-ppt','miniapp'],reason:'从一份客户需求开始，看看如何制作样片并交付。'},
+  '全职宝妈宝爸':{order:['education-ppt','video','miniapp'],reason:'先试着整理一份教育资料，再看看如何检查和上架。'},
+  '自由职业':{order:['video','miniapp','education-ppt'],reason:'用模拟订单体验需求沟通、样片制作和交付。'},
+  '待业':{order:['miniapp','video','education-ppt'],reason:'从需求到上线推广，完整了解一个产品项目的关键环节。'},
+};
+const recommendation=computed(()=>recommendations[life.value] || null);
+const recommendedGames=computed(()=>recommendation.value ? recommendation.value.order.map(id=>games.find(game=>game.id===id)).filter(Boolean) : games);
+const recommendationReason=computed(()=>recommendation.value?.reason || '');
 const categories=[{id:'all',label:'全部 AI'},{id:'cases',label:'实战案例'},{id:'tools',label:'工具与教程'},{id:'content',label:'内容创作'},{id:'development',label:'开发与 FDE'}];
 const selectedCategory=ref('all');
 const query=ref('');
@@ -101,4 +122,5 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 
 /* 先体验的首页结构，保留真实情报与线下活动入口 */
 .home-hero{background:#0b3021;color:#f4f8ed}.hero-v2{max-width:1120px;margin:auto;padding:45px 24px 38px;box-sizing:border-box}.hero-kicker{font-size:13px;font-weight:800;color:#ffcf59}.hero-headline{font-size:44px;line-height:1.18;font-weight:850;margin-top:12px}.hero-sub{font-size:15px;line-height:1.7;color:#bcd0c2;margin-top:12px}.hero-step{font-size:15px;font-weight:750;margin-top:26px}.hero-step>text:first-child{display:inline-block;color:#0b3021;background:#ffcf59;border-radius:50%;width:25px;height:25px;text-align:center;line-height:25px;margin-right:6px;font-size:12px}.hero-small{color:#a4bbaa;font-weight:400;font-size:12px;margin-left:7px}.life-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.life-options button{margin:0;border:1px solid #749381;border-radius:25px;background:transparent;color:#d9e8db;font-size:13px;line-height:34px;padding:0 16px}.life-options button.selected{background:#ffcf59;color:#163529;border-color:#ffcf59}.hero-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.hero-game{position:relative;background:#fff;color:#173528;border-radius:9px;padding:21px;display:flex;flex-direction:column;gap:11px}.hero-game.featured{outline:2px solid #ffcf59}.hero-game-tag{align-self:flex-start;color:#715407;background:#fff1c3;font-size:11px;padding:4px 8px;border-radius:4px}.hero-game-title{font-size:19px;font-weight:800}.hero-game-copy{font-size:13px;line-height:1.65;color:#6f8074;flex:1}.hero-game button{margin:5px 0 0;background:#ee5a24;color:#fff;font-size:14px;font-weight:750;line-height:42px}.hero-game button.game-secondary{background:#fff;color:#1b6040;border:1px solid #27734d}.hero-footnote-v2{font-size:12px;color:#a4bcaa;margin-top:16px}.hero-footnote-v2 text{color:#f8d471;margin-left:8px}.how-v2{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.how-v2 view{background:#fff;border:1px solid #e7e3db;border-radius:8px;padding:16px}.how-v2 text{display:block}.how-v2 text{color:#d35b2c;font-size:11px;font-weight:750}.how-v2 .how-title{font-size:15px;font-weight:750;color:#183328;margin:6px 0}.how-v2 .how-copy{color:#8b9a8e;font-size:12px}.intel-entry{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e4e5dd;border-radius:8px;padding:20px;margin-bottom:20px;color:#226542}.intel-entry view>text{font-size:11px;color:#86a388}.intel-entry view>view{font-weight:800;font-size:19px;margin:5px 0}.intel-entry .intel-copy{font-size:12px;color:#869787}.intel-entry>text{font-size:13px;font-weight:700}.hero-v2 button:after{border:0}@media(max-width:700px){.hero-v2{padding:30px 16px}.hero-headline{font-size:32px}.hero-games{grid-template-columns:1fr;gap:9px}.hero-game{padding:16px}.hero-game-copy{font-size:12px}.how-v2{grid-template-columns:1fr 1fr;gap:8px}.intel-entry{gap:12px}.intel-entry>text{white-space:nowrap}}
+.recommendation-note{margin-top:10px;color:#c0d2c4;font-size:12px;line-height:1.6}.recommendation-reason{padding:9px 10px;border-radius:6px;background:#f8f5e9;color:#526857;font-size:12px;line-height:1.6}.hero-game.featured .hero-game-copy{flex:0}.hero-game.featured button{margin-top:auto}
 </style>
