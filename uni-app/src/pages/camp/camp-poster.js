@@ -40,23 +40,36 @@ export async function createCampSharePoster(url) {
   function text(str, x, y, size, color, weight = 700) {
     ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`; ctx.fillText(str, x, y);
   }
+  function rounded(x, y, width, height, radius, color) {
+    ctx.fillStyle = color; ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') ctx.roundRect(x, y, width, height, radius);
+    else ctx.rect(x, y, width, height);
+    ctx.fill();
+  }
   ctx.fillStyle = '#0b2e20'; ctx.fillRect(0, 0, 750, 1334);
-  ctx.fillStyle = '#ffc94d'; ctx.fillRect(52, 44, 44, 44);
+  const glow = ctx.createRadialGradient(600, 120, 0, 600, 120, 350);
+  glow.addColorStop(0, 'rgba(255,201,77,.22)'); glow.addColorStop(1, 'rgba(255,201,77,0)');
+  ctx.fillStyle = glow; ctx.fillRect(250, 0, 500, 480);
+  rounded(52, 44, 44, 44, 10, '#ffc94d');
   text('↗', 60, 76, 29, '#0b2e20', 900);
   text('AINPE · AI 实战情报站', 110, 75, 22, '#f7f3ea');
-  text('3 天，迈出', 52, 190, 72, '#ffc94d', 900);
+  rounded(462, 44, 236, 42, 21, '#ee5a24');
+  text('生财有术 · AI 成万事', 478, 72, 19, '#fff', 800);
+  text('3 天', 52, 190, 80, '#ffc94d', 900);
+  text('，迈出', 216, 190, 80, '#fff', 900);
   text('AI 实战第一步', 52, 280, 72, '#fff', 900);
-  text('没方向？没路径？没人带？', 52, 339, 29, '#ffb394', 800);
-  text('先了解体验营，再决定下一步。', 52, 379, 25, '#d5e5d8', 600);
-  ctx.drawImage(illustration, 52, 390, 646, 530);
-  text('2 场直播大课', 52, 994, 26, '#fff', 800);
-  text('3 天答疑群', 268, 994, 26, '#fff', 800);
-  text('1 张体验卡', 478, 994, 26, '#fff', 800);
+  text('没方向？没路径？没人带？这次有人拉你一把。', 52, 335, 25, '#ffb394', 800);
+  ctx.drawImage(illustration, 52, 356, 646, 530);
+  text('2', 52, 963, 40, '#fff', 900); text('场直播大课', 82, 963, 21, '#c7dacd');
+  text('3', 265, 963, 40, '#fff', 900); text('天答疑群', 295, 963, 21, '#c7dacd');
+  text('1', 466, 963, 40, '#fff', 900); text('张体验卡', 496, 963, 21, '#c7dacd');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 1046, 750, 288);
   ctx.imageSmoothingEnabled = false; ctx.drawImage(qr, 48, 1071, 218, 218); ctx.imageSmoothingEnabled = true;
-  text('微信扫码了解', 294, 1132, 31, '#13241b', 900);
-  text('AI 成万事 · 3 天体验营', 294, 1177, 25, '#13241b', 800);
-  text('不保证收入，费用与时间以入口说明为准。', 294, 1221, 18, '#718477', 500);
-  text('先体验项目：ainpe.aisen.xin', 294, 1256, 18, '#718477', 500);
+  text('微信扫码', 294, 1125, 32, '#13241b', 900);
+  text('加入 3 天体验营', 294, 1170, 32, '#13241b', 900);
+  rounded(294, 1184, 235, 34, 9, '#ee5a24');
+  text('企业微信 · 生财有术', 306, 1208, 19, '#fff', 800);
+  text('不保证收入；费用和开营时间以入口说明为准。', 294, 1251, 16, '#718477', 500);
+  text('还没想好方向？先体验：ainpe.aisen.xin', 294, 1278, 16, '#718477', 500);
   return canvas.toDataURL('image/png');
 }

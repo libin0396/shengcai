@@ -37,6 +37,7 @@ import {onLoad, onShow} from '@dcloudio/uni-app';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
 import {track} from '../../data/track.js';
+import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
@@ -49,7 +50,7 @@ const saved=ref([]);
 const allArticles=Array.isArray(articles)?articles:[];
 const aiArticles=computed(()=>allArticles.filter(isAiArticle));
 const aiTotal=computed(()=>aiArticles.value.length);
-const featuredArticles=computed(()=>[...aiArticles.value].filter(a=>!/白嫖|反代|薅羊毛|绕过(?:限制|审核|封禁)/i.test(`${a.title||''} ${a.summary||''}`)).sort((a,b)=>Number(b.publishedAt||0)-Number(a.publishedAt||0)).slice(0,3));
+const featuredArticles=computed(()=>caseStudies.map(caseAsArticle).slice(0,4));
 const eventAI=/(?:^|[^a-z])ai(?=$|[^a-z]|ppt|agent|video)|人工智能|智能体|大模型|生成式|AIGC|GPT|Claude|Codex|Gemini|Grok|Cursor|Copilot|OpenAI|DeepSeek|豆包|通义千问|文心一言|(?:^|[^a-z])(?:FDE|Agent|MCP|LLM)(?=$|[^a-z])|workbuddy|seedance|comfyui|minimax/i;
 const upcomingEvents=computed(()=>{const seen=new Set();return [...events].filter(e=>e&&e.city&&Number(e.startTime)*1000>Date.now()&&!/CANCEL|ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||'')&&eventAI.test(`${e.name||''} ${e.typeText||''}`)).sort((a,b)=>Number(a.startTime)-Number(b.startTime)).filter(e=>{if(seen.has(e.city))return false;seen.add(e.city);return true}).slice(0,3)});
 function eventDate(t){return new Date(Number(t)*1000+8*3600000)}

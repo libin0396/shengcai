@@ -53,12 +53,23 @@ function choices(n){var c=D.choices[n];$('#stepv').textContent='3/'+NSTEP+' 决�
 function next(n){if(D.task&&D.task.after==n){S.task=null;taskScr(n)}else if(n+1<D.choices.length)choices(n+1);else daysPick()}
 
 /* ---------- 动手环节 ---------- */
+// 草稿选项是各项目的模拟示例，只影响展示，不改变项目数据或结算规则。
+var workOptions={
+ opening:['每天忙到很晚，却总觉得时间不够用？','想养成阅读习惯，却总是坚持不下来？','工作总被打断，不知道该先做什么？'],
+ selling:['这本书提供可填写的每日计划模板。','书中把阅读习惯拆成每天可执行的小步骤。','书中用案例介绍如何安排优先级。'],
+ action:['可以先看看书籍介绍，判断是否适合自己。','先翻阅目录，找找你最想解决的问题。','了解书中方法后，再决定是否需要。'],
+ source:['模拟访谈：个体经营者如何整理信息','模拟阅读笔记：信息整理方法','模拟观察：新手使用 AI 的常见问题'],
+ topic:['信息整理与回查','AI 工具入门','内容创作与选题'],
+ insight:['记录出处方便回查，可整理成新手指南。','把常见问题归类，可作为系列选题的起点。','先明确读者需求，再筛选和组织素材。'],
+ title:['Beginner Guide to Daily Word Puzzles','How to Solve a Daily Word Puzzle','Daily Word Puzzle Tips for New Players'],
+ description:['Simple tips to understand and enjoy daily word puzzles.','Learn a practical approach to solving today’s puzzle.','Explore beginner tips and common puzzle strategies.']
+};
 function taskScr(){var T=D.task,sel=[];$('#stepv').textContent='4/'+NSTEP+' 动手：'+T.node;wide(0);top0();
  function draw(){app.innerHTML='<div class="kick"><span>动手环节 · '+UI.nodeLabel+'：<b>'+T.node+'</b></span></div><h2>'+T.title+'</h2><p class="mute" style="margin:0;font-size:14px;color:var(--sub)">'+T.desc+'</p><div class="task">'+T.preview+'</div><div class="q" style="margin-top:16px">'+T.prompt+'</div>'+
-  '<div class="grp"><div class="q">'+esc(D.workspace.title)+'</div><p class="mute">使用模拟素材写下你的想法；只保留在本页面，不会真实发布。</p>'+D.workspace.fields.map(function(f){return '<label style="display:block;font-weight:600;margin:14px 0 6px" for="work-'+f[0]+'">'+esc(f[1])+'</label><textarea id="work-'+f[0]+'" data-work="'+f[0]+'" maxlength="300" placeholder="'+esc(f[2])+'" style="width:100%;min-height:66px;padding:12px;border:1px solid #c9d8ca;border-radius:8px;font:inherit">'+esc(S.work[f[0]]||'')+'</textarea>'}).join('')+'</div>'+T.items.map(function(it){var on=sel.indexOf(it.id)>=0;return '<button class="chk'+(on?' on':'')+'" aria-pressed="'+on+'" data-id="'+it.id+'"><span class="bx">'+(on?'✓':'')+'</span><span>'+it.t+'</span></button>'}).join('')+
+  '<div class="grp"><div class="q">'+esc(D.workspace.title)+'</div><p class="mute">为每一项选择一个模拟示例，组合成草稿；内容仅保留在本页面，不会真实发布或影响收益。</p>'+D.workspace.fields.map(function(f){return '<div style="font-weight:600;margin:16px 0 6px" id="label-'+f[0]+'">'+esc(f[1])+'</div><div role="group" aria-labelledby="label-'+f[0]+'">'+(workOptions[f[0]]||[]).map(function(v,i){var on=S.work[f[0]]===v;return '<button type="button" class="chk'+(on?' on':'')+'" aria-pressed="'+on+'" data-work="'+f[0]+'" data-index="'+i+'"><span class="bx">'+(on?'✓':'')+'</span><span>'+esc(v)+'</span></button>'}).join('')+'</div>'}).join('')+'</div>'+T.items.map(function(it){var on=sel.indexOf(it.id)>=0;return '<button class="chk'+(on?' on':'')+'" aria-pressed="'+on+'" data-id="'+it.id+'"><span class="bx">'+(on?'✓':'')+'</span><span>'+it.t+'</span></button>'}).join('')+
   cta('<button class="btn" id="sub" '+(sel.length?'':'disabled')+'>提交检查</button><div class="links"><button class="tlink" id="bk">上一个决策</button></div>',sel.length?'已勾选 '+sel.length+' 项，想好了就提交':'至少勾选 1 项');
-  app.querySelectorAll('[data-work]').forEach(function(el){el.oninput=function(){S.work[el.dataset.work]=el.value}});app.querySelectorAll('.chk').forEach(function(b){b.onclick=function(){var id=b.dataset.id,k=sel.indexOf(id);if(k>=0)sel.splice(k,1);else sel.push(id);var y=window.scrollY;draw();window.scrollTo(0,y)}});
-  $('#sub').onclick=function(){var missing=D.workspace.fields.find(function(f){return !(S.work[f[0]]||'').trim()});if(missing){$('#hint').textContent='请先完成草稿中的“'+missing[1]+'”。';document.getElementById('work-'+missing[0]).focus();return}S.task={sel:sel.slice(),fixed:[]};review()};$('#bk').onclick=function(){choices(T.after)}}
+  app.querySelectorAll('[data-work]').forEach(function(el){el.onclick=function(){S.work[el.dataset.work]=workOptions[el.dataset.work][Number(el.dataset.index)];var y=window.scrollY;draw();window.scrollTo(0,y)}});app.querySelectorAll('[data-id]').forEach(function(b){b.onclick=function(){var id=b.dataset.id,k=sel.indexOf(id);if(k>=0)sel.splice(k,1);else sel.push(id);var y=window.scrollY;draw();window.scrollTo(0,y)}});
+  $('#sub').onclick=function(){var missing=D.workspace.fields.find(function(f){return !(S.work[f[0]]||'').trim()});if(missing){$('#hint').textContent='请先选择“'+missing[1]+'”。';var first=app.querySelector('[data-work="'+missing[0]+'"]');if(first)first.focus();return}S.task={sel:sel.slice(),fixed:[]};review()};$('#bk').onclick=function(){choices(T.after)}}
  draw()}
 function review(){var T=D.task;top0();
  function draw(){var R=Engine.task(D,S),miss=R.rows.filter(function(x){return x.st=='miss'}).length,ok=R.rows.filter(function(x){return x.st=='ok'}).length,need=T.items.filter(function(x){return x.need}).length,fp=R.rows.filter(function(x){return x.st=='fp'}).length;
@@ -153,7 +164,7 @@ function caseHtml(c,full){return '<div class="real"><div class="ch"><b>'+esc(c.a
  '<div class="kv"><span>起点：</span>'+esc(c.cond.life_context)+' '+esc(c.cond.technical_background)+' <span>每天时间：</span>'+esc(c.cond.daily_time)+'</div>'+
  '<div class="kv" style="color:var(--ink)"><span>项目：</span>'+esc(c.project)+'</div><div class="kv"><span>踩过的坑：</span></div><ul>'+c.pits.map(function(p){return '<li>'+esc(p)+'</li>'}).join('')+'</ul>'+
  c.results.map(function(r){return '<div class="res"><b>自述结果：'+esc(r.amount_text)+'</b><div class="mute">周期：'+esc(r.period)+'</div><div class="mute">口径：'+esc(r.scope)+'</div>'+(full?'<div class="mute">'+esc(r.description)+'</div>':'')+'</div>'}).join('')+
- '<div class="src">来源：<a href="'+c.url+'" rel="noopener">查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
+ '<div class="src">来源：<a href="/#/pages/camp/index?from=game-case&amp;source='+encodeURIComponent(c.url)+'" rel="noopener">了解体验营并查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
 function realBlock(){if(!D.cases.length)return '<div class="grp"><div class="q">真实案例</div><p class="mute">目前还没有核实可展示的同方向案例；模拟数值不代表真实收益。</p></div>';var M=matchCases(),top=M.filter(function(x){return x.sc>0}).slice(0,2);if(!top.length)top=M.slice(0,1);
  return '<div class="h2s"><h2>可参考的真实案例</h2><span class="tag real">作者自述</span></div><p class="mute">'+D.dataNote+' 仅供了解作者的个人经历，不代表你会得到相同结果。</p>'+
  top.map(function(x){return caseHtml(x.c,false)}).join('')+'<details class="all"><summary>看全部 '+D.cases.length+' 个案例</summary>'+D.cases.map(function(c){return caseHtml(c,true)}).join('')+'</details>'}

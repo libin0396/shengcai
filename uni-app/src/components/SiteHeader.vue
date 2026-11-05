@@ -85,4 +85,6 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
 .site-contact { font-size:10px; padding:0 6px; }
 /* #endif */
 @media(max-width:900px) { .site-header-main { padding:10px 16px 0; gap:8px; flex-wrap:wrap; justify-content:space-between; } .site-brand-cn { font-size:15px; } .site-brand-en { display:none; } .site-actions { margin-left:auto; } .site-nav-scroll { flex:0 0 100%; order:3; } .site-nav { gap:23px; } .site-nav-item { padding:12px 0 10px; } .site-contact { font-size:11px; } }
+@media(max-width:480px) { .site-nav { width:100%; gap:8px; justify-content:space-between; } .site-nav-item { flex-shrink:0; white-space:nowrap; font-size:12px; } }
+@media(max-width:360px) { .site-header-main { padding-left:12px; padding-right:12px; gap:4px; } .site-brand { gap:6px; } .site-brand-mark { width:30px; height:30px; font-size:20px; } .site-brand-cn { font-size:13px; } .site-actions { gap:4px; } .site-contact { padding:0 2px; font-size:10px; } .site-camp { padding:0 9px; font-size:11px; } }
 </style>

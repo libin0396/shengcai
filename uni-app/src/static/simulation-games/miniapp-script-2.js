@@ -152,7 +152,7 @@ function caseHtml(c,full){return '<div class="real"><div class="ch"><b>'+esc(c.a
  '<div class="kv"><span>起点：</span>'+esc(c.cond.life_context)+' '+esc(c.cond.technical_background)+' <span>每天时间：</span>'+esc(c.cond.daily_time)+'</div>'+
  '<div class="kv" style="color:var(--ink)"><span>项目：</span>'+esc(c.project)+'</div><div class="kv"><span>踩过的坑：</span></div><ul>'+c.pits.map(function(p){return '<li>'+esc(p)+'</li>'}).join('')+'</ul>'+
  c.results.map(function(r){return '<div class="res"><b>自述结果：'+esc(r.amount_text)+'</b><div class="mute">周期：'+esc(r.period)+'</div><div class="mute">口径：'+esc(r.scope)+'</div>'+(full?'<div class="mute">'+esc(r.description)+'</div>':'')+'</div>'}).join('')+
- '<div class="src">来源：<a href="'+c.url+'" rel="noopener">查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
+ '<div class="src">来源：<a href="/#/pages/camp/index?from=game-case&amp;source='+encodeURIComponent(c.url)+'" rel="noopener">了解体验营并查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
 function realBlock(){var M=matchCases(),top=M.filter(function(x){return x.sc>0}).slice(0,2);if(!top.length)top=M.slice(0,1);
  return '<div class="h2s"><h2>和你条件最像的真实案例</h2><span class="tag real">作者自述</span></div><p class="mute">'+D.dataNote+' 匹配只按生活情况、技术经验和你踩的坑粗略对照，不代表你会得到同样结果。</p>'+
  top.map(function(x){return caseHtml(x.c,false)}).join('')+'<details class="all"><summary>看全部 '+D.cases.length+' 个案例</summary>'+D.cases.map(function(c){return caseHtml(c,true)}).join('')+'</details>'}

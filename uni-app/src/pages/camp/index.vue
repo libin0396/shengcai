@@ -10,7 +10,12 @@
             <text class="title">AI 成万事<br /><text class="accent">3 天体验营</text></text>
             <text class="lead">从看懂 AI 机会，到亲手做出成果。</text>
             <text class="description">想更系统地了解 AI 实战？先看看体验营的介绍和参与方式。</text>
+            <!-- #ifdef H5 -->
+            <a class="primary-button hero-button hero-join" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">加入体验营企业微信 ↗</a>
+            <!-- #endif -->
+            <!-- #ifndef H5 -->
             <button class="primary-button hero-button" @tap="showCampPoster">查看完整报名海报 <text>↗</text></button>
+            <!-- #endif -->
             <text class="schedule">{{ campaign.scheduleLabel }}</text>
           </view>
           <view class="hero-side">
@@ -81,7 +86,14 @@
         </view>
       </view>
     </view>
-    <view class="mobile-camp-bar"><view><text>AI 成万事 · 三天体验营</text><small>查看完整海报及报名方式</small></view><button @tap="showCampPoster">查看海报</button></view>
+    <view class="mobile-camp-bar"><view><text>AI 成万事 · 三天体验营</text><small>了解报名方式与最新安排</small></view>
+      <!-- #ifdef H5 -->
+      <a class="mobile-join" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">了解体验营</a>
+      <!-- #endif -->
+      <!-- #ifndef H5 -->
+      <button @tap="showCampPoster">查看海报</button>
+      <!-- #endif -->
+    </view>
     <!-- #ifdef H5 -->
     <view v-if="shareOpen" class="share-overlay" @click="shareOpen=false">
       <view class="share-modal" role="dialog" aria-modal="true" aria-label="体验营分享海报" @click.stop>
@@ -154,6 +166,8 @@ function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages
 .primary-button::after,.outline-button::after,.copy-button::after { border:0; }
 .primary-button text { margin-left:12px; }
 .hero-button { width:216px; margin-top:23px; }
+.hero-join { display:inline-block; text-align:center; text-decoration:none; }
+.mobile-join { display:inline-block; padding:0 16px; border-radius:8px; background:#f25a20; color:#fff; line-height:42px; font-size:13px; font-weight:700; text-decoration:none; white-space:nowrap; }
 .schedule { display:block; color:#a3bcaa; font-size:11px; line-height:1.7; margin-top:12px; }
 .hero-side { display:flex; align-items:center; flex-direction:column; }
 .hero-poster { display:block; width:100%; max-width:215px; border:5px solid #fff; border-radius:8px; box-sizing:border-box; box-shadow:0 14px 34px #0003; }
