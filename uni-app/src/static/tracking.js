@@ -1,6 +1,6 @@
 (function(root){
   'use strict';
-  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','versus_finish','versus_share','board_view','board_join','board_share'];
+  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share'];
   var KEY='ainpe:anonymous-device', ID=/^[a-z0-9][a-z0-9_-]{0,39}$/, did='';
   function device(){
     if(did)return did;

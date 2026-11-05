@@ -16,6 +16,7 @@
 import {computed,ref,onMounted,onUnmounted} from 'vue';import {onShow} from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';import CampFooter from '../../components/CampFooter.vue';
 import {articles,events} from '../../data/content.js';import {getSaved,setSaved} from '../../data/storage.js';import personas from '../../data/personas.json';
+import {caseStudies,caseAsArticle} from '../../data/case-studies.js';
 const tab=ref('article'),saved=ref([]),history=ref([]),selectedRecord=ref(null);
 function readLocal(key){try{let v=uni.getStorageSync(key);if(typeof v==='string')return v?JSON.parse(v):null;return v||null}catch{return null}}
 onShow(()=>{saved.value=getSaved();let v=readLocal('ainpe:history');if(!Array.isArray(v)){const last=readLocal('ainpe:played');v=last&&typeof last==='object'?[last]:[]}history.value=v.filter(x=>x&&typeof x==='object').slice(0,50)});
@@ -26,7 +27,7 @@ onMounted(()=>window.addEventListener('keydown',dismissRecord));onUnmounted(()=>
 const unlocked=computed(()=>new Set(history.value.filter(h=>h.personaIndex!==null&&h.personaIndex!==undefined).map(h=>Number(h.personaIndex)).filter(n=>Number.isInteger(n)&&n>=0&&n<24)));
 function gameName(record){const raw=String(record?.game||'').replace(/\.html$/,'');if(raw==='voyage-lab'){const p=String(record?.project||'');return /带货/.test(p)?'books':/第二大脑/.test(p)?'brain':/热词/.test(p)?'trends':''}return raw}
 const remainingGames=computed(()=>Math.max(0,6-new Set(history.value.map(gameName).filter(x=>['miniapp','video','education-ppt','books','brain','trends'].includes(x))).size));
-const savedArticles=computed(()=>articles.filter(a=>saved.value.includes(`article:${a.id}`)));
+const savedArticles=computed(()=>{const curated=caseStudies.map(caseAsArticle),ids=new Set(curated.map(a=>a.id));return [...curated,...articles.filter(a=>!ids.has(String(a.id)))].filter(a=>saved.value.includes(`article:${a.id}`))});
 const savedEvents=computed(()=>events.filter(e=>saved.value.includes(`event:${e.id}`)));
 function formatPlayed(value){const d=new Date(value);return Number.isNaN(d.getTime())?'时间未记录':`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
 function remove(t,item){saved.value=saved.value.filter(k=>k!==`${t}:${item.id}`);setSaved(saved.value)}

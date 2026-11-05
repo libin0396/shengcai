@@ -34,6 +34,12 @@ test('valid same-origin events persist with hashed identifiers and no raw IP',as
   }finally{await x.close()}
 });
 
+test('challenge replay events accept the share and poster entry sources',async()=>{
+  const x=await setup();try{
+    for(const from of ['poster_qr','share_link'])assert.equal((await x.post({...sample(),event:'replay_same_seed',from})).status,202);
+  }finally{await x.close()}
+});
+
 test('rejects cross-origin, untrusted proxy, oversized and unapproved data',async()=>{
  const x=await setup();try{
   assert.equal((await x.post(sample(),{origin:'https://evil.example'})).status,403);

@@ -47,7 +47,7 @@ try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } 
 const links = [
   { key: 'discover', label: '首页', url: '/pages/discover/index' },
   { key: 'simulate', label: '模拟体验', url: '/pages/simulate/index' },
-  { key: 'intelligence', label: 'AI 情报', url: '/pages/intelligence/index' },
+  { key: 'intelligence', label: '案例库', url: '/pages/intelligence/index' },
   { key: 'events', label: '线下活动', url: '/pages/events/index' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];

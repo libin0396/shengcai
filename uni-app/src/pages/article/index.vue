@@ -1,19 +1,27 @@
 <template>
   <view class="detail-page">
-    <SiteHeader active="discover" />
+    <SiteHeader active="intelligence" />
     <view class="detail-shell">
       <view class="back" @click="goBack">← 返回文章</view>
       <view v-if="article" class="article-layout">
         <view class="main-column">
           <view class="article-header"><view class="source-label">● 来源：生财有术 <text>{{ article.isDigested ? '精华文章' : '圈友分享' }}</text></view><view class="headline">{{ article.title }}</view><view class="byline">{{ article.author || '生财圈友' }} · {{ formatDate(article.publishedAt) }} · {{ article.kind || '分享' }}</view></view>
-          <view class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">已收录摘要</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
+          <template v-if="study">
+            <view class="intro-card case-overview"><view class="intro-label">案例解读 <text>站方整理 · 作者自述</text></view><view class="intro-title">一句话看懂</view><view class="intro-body">{{study.oneLiner}}</view><view class="number-grid"><view v-for="n in study.numbers" :key="n.label" class="number-card" :class="{'undisclosed':!n.value}"><text class="number-label">{{n.label}}</text><text class="number-value">{{n.value || '未披露'}}</text><text class="number-note">{{n.note}}</text></view></view></view>
+            <view class="intro-card case-section"><view class="intro-label">01 · 项目是什么</view><view class="intro-title">从真实需求出发</view><view v-for="row in projectRows" :key="row[0]" class="fact-row"><text>{{row[0]}}</text><text>{{row[1] || '未披露'}}</text></view></view>
+            <view class="intro-card case-section"><view class="intro-label">02 · 作者从哪里开始</view><view class="intro-title">先看条件，再看结果</view><view v-for="row in startRows" :key="row[0]" class="fact-row"><text>{{row[0]}}</text><text>{{row[1] || '未披露'}}</text></view></view>
+            <view class="intro-card case-section"><view class="intro-label">03 · 具体怎么做</view><view class="intro-title">拆开关键步骤</view><view v-for="(step,i) in study.steps" :key="step.title" class="case-step"><text class="case-step-number">{{String(i+1).padStart(2,'0')}}</text><view><text class="case-step-title">{{step.title}}</text><text class="case-step-detail">{{step.detail}}</text></view></view></view>
+            <view class="intro-card case-section"><view class="intro-label">04 · 结果与踩坑</view><view class="intro-title">过程中的困难</view><view v-for="pit in study.pitfalls" :key="pit.title" class="pitfall"><text class="case-step-title">{{pit.title}}</text><text class="case-step-detail">{{pit.detail}}</text></view></view>
+            <view class="intro-card judgement"><view class="intro-label">05 · 站方判断 · 不是原帖内容</view><view class="intro-title">适合谁，开始前想什么？</view><view v-for="(line,i) in study.judgement.fitFor" :key="'fit'+i" class="judgement-line">适合参考：{{line}}</view><view v-for="(line,i) in study.judgement.thinkFirst" :key="'think'+i" class="judgement-line">开始前：{{line}}</view></view>
+          </template>
+          <view v-else class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">短摘要 · 资料不足</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
           <view v-if="isAiArticle(article)" class="practice"><view class="camp-kicker">从看到做到 · 模拟体验</view><view class="practice-title">{{matchingGame ? `读完，亲手试一次：${matchingGame.name}` : '先体验一个 AI 项目'}}</view><view class="practice-copy">情境与反馈为模拟，可以先动手尝试，再判断下一步。</view><button class="play-action" @click="openSimulation">{{matchingGame ? '玩相关模拟 →' : '查看模拟项目 →'}}</button></view>
-          <view v-if="isProjectArticle" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? (reservationCount > 0 ? `已有 ${reservationCount} 条预约记录。` : '欢迎第一个预约。') + '同一浏览器仅计一次，不收联系方式，也不会自动通知。' : '预约统计暂不可用，请稍后再试。' }}</view></view>
+          <view v-if="isProjectArticle && !(study && matchingGame)" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? (reservationCount > 0 ? `已有 ${reservationCount} 条预约记录。` : '欢迎第一个预约。') + '同一浏览器仅计一次，不收联系方式，也不会自动通知。' : '预约统计暂不可用，请稍后再试。' }}</view></view>
           <view v-else-if="isEventArticle" class="reservation"><view class="section-heading">想了解线下活动？</view><view class="section-hint">在站内浏览已收录的活动信息和参与方式。</view><button class="reserve-button" @click="openEvents">查看线下活动</button></view>
           <view class="actions"><button class="save" @click="toggleSaved">{{ saved ? '★ 已收藏' : '☆ 收藏' }}</button><button class="source" @click="openSource">加入生财，查看完整文章 ↗</button></view>
           <view class="camp" @click="openCamp"><image :src="campaign.posterUrl" mode="aspectFit" class="camp-image"/><view><view class="camp-kicker">下一步 · 动手试试</view><view class="camp-title">把读过的，变成亲手做过的。</view><view class="camp-copy">想开始实践？了解 AI 成万事 · 三天体验营，具体安排以入口说明为准。</view><view class="camp-link">了解体验营 ↗</view></view></view>
           <view v-if="related.length" class="related"><view class="related-label">KEEP EXPLORING</view><view class="section-heading">接着看看相关案例</view><view class="section-hint">根据共同话题推荐</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
-          <view class="footnote">内容基于已收录资料整理，完整语境与参与条件请以原始来源为准。收藏保存在当前设备。</view>
+          <view class="footnote">{{study ? '本页是站方解读，不是原文转载；数字为作者自述，本站未独立核实。' : '内容基于已收录资料整理，完整语境与参与条件请以原始来源为准。'}}收藏保存在当前设备。</view>
         </view>
         <view class="side-column"><view class="side-card"><view class="side-eyebrow">先玩再读，读得更懂</view><view class="side-title">看见机会，<br/>也试着迈出一步。</view><view class="side-copy">从案例中了解做法，再亲手体验项目里的关键步骤。</view><view class="side-link" @click="openSimulation">{{matchingGame ? `玩相关模拟：${matchingGame.name} ↗` : '看看模拟项目 ↗'}}</view></view></view>
       </view>
@@ -31,15 +39,19 @@ import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data
 import summaries from '../../data/article-summaries.json';
 import SiteHeader from '../../components/SiteHeader.vue';
 import {matchArticleGame,simulationUrl} from '../../data/game-matching.js';
+import {caseById,caseAsArticle} from '../../data/case-studies.js';
 
 const id=ref('');
 const savedIds=ref([]);
-const article=computed(()=>(Array.isArray(articles)?articles:[]).find(item=>String(item.id)===id.value));
+const study=computed(()=>caseById(id.value));
+const article=computed(()=>study.value ? caseAsArticle(study.value) : (Array.isArray(articles)?articles:[]).find(item=>String(item.id)===id.value));
+const projectRows=computed(()=>study.value ? [['项目',study.value.project.what],['面向谁',study.value.project.audience],['怎样获客',study.value.project.acquisition],['收入方式',study.value.project.revenueModel]] : []);
+const startRows=computed(()=>study.value ? [['职业与状态',study.value.start.occupation],['相关经验',study.value.start.experience],['每天时间',study.value.start.dailyTime],['启动预算',study.value.start.budget]] : []);
 const storageKey=computed(()=>`article:${id.value}`);
 const saved=computed(()=>savedIds.value.includes(storageKey.value));
 const expandedSummary=computed(()=>summaries[id.value]||null);
 const displaySummary=computed(()=>{const s=String(article.value?.overview||article.value?.summary||'').trim();return s ? /[。！？.!?…]$/.test(s)?s:`${s}…` : '当前暂无可展示的摘要。';});
-const matchingGame=computed(()=>matchArticleGame(article.value));
+const matchingGame=computed(()=>study.value?.simulation || matchArticleGame(article.value));
 const isEventArticle=computed(()=>/(线下|聚会|组局|大会|沙龙|夜话)/i.test(String(article.value?.title||'')));
 const isProjectArticle=computed(()=>!!article.value && isAiArticle(article.value) && !isEventArticle.value && (article.value.kind==='案例'||/(项目|副业|变现|获客|带货|接单|营收|收入|小程序|工具|工作流|智能体|开发|搭建|视频制作|创作)/i.test(`${article.value.title||''} ${article.value.summary||''}`)));
 const reserveLoading=ref(false), reserved=ref(false), reservationCount=ref(0), reservationAvailable=ref(false);
@@ -52,6 +64,7 @@ async function loadReservation(){reservationAvailable.value=false;reserved.value
 async function reserve(){if(!reservationAvailable.value||reserveLoading.value||reserved.value)return;reserveLoading.value=true;const current=id.value;try{const key=`article:${current}`;const d=await api({url:'/api/reservations',method:'POST',header:{'Content-Type':'application/json'},data:{projectId:key}});if(d?.projectId!==key||d.reserved!==true||d.countUnit!=='browser'||!Number.isInteger(d.count)||d.count<0)throw Error();if(id.value!==current)return;reservationCount.value=d.count;reserved.value=true;}catch{reservationAvailable.value=false;uni.showToast({title:'预约未完成，请稍后再试',icon:'none'});}finally{reserveLoading.value=false;}}
 const related=computed(()=>{
   if(!article.value)return [];
+  if(study.value)return study.value.related.map(x=>caseById(x)).filter(Boolean).map(caseAsArticle);
   const topics=new Set((Array.isArray(article.value.topics)?article.value.topics:[]).filter(topic=>topic!=='community'));
   if(!topics.size)return [];
   return (Array.isArray(articles)?articles:[]).filter(item=>String(item.id)!==id.value&&isAiArticle(item)&&(item.topics||[]).some(topic=>topics.has(topic))).slice(0,3);
@@ -69,6 +82,7 @@ function goBack(){const pages=getCurrentPages();if(pages.length>1)uni.navigateBa
 function openCamp(){uni.navigateTo({url:'/pages/camp/index?from=article'});}
 function openEvents(){uni.navigateTo({url:'/pages/events/index'});}
 function openSimulation(){
+if(study.value?.simulation?.url){uni.navigateTo({url:study.value.simulation.url});return;}
 // #ifdef H5
 if(matchingGame.value){const url=simulationUrl(matchingGame.value.file);if(url){window.location.href=url;return;}}
 // #endif
@@ -85,4 +99,5 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 @media(min-width:768px){.back,.source-label,.byline,.intro-label,.intro-label text,.intro-note,.section-heading text,.section-hint,.comment-meta,.comment-angle,.personal-hint,.camp-kicker,.related-label,.related-meta,.footnote,.side-eyebrow{font-size:12px}.intro-title,.section-heading,.camp-title,.side-title{font-size:20px}.practice-title{font-size:18px}.practice-copy,.comment-text,.notes,.personal-row,.picker-value,.actions button,.camp-copy,.camp-link,.related-title,.side-copy,.side-link{font-size:14px}}
 
 .play-action{display:inline-block;margin:12px 0 0;padding:0 16px;line-height:40px;background:#ee5a24;color:#fff;font-size:13px;font-weight:750;border-radius:6px}.play-action:after{border:0}
+.number-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:22px}.number-card{display:flex;flex-direction:column;gap:6px;padding:15px;border-radius:7px;background:#f1f7ee;min-width:0}.number-card.undisclosed{border:1px dashed #cfd8c8;background:#fbfbf8}.number-label,.number-note,.number-value{display:block;overflow-wrap:anywhere}.number-label,.number-note{font-size:12px;line-height:1.5;color:#738674}.number-value{font-size:18px;line-height:1.35;font-weight:800;color:#155d3c}.case-section{padding:24px}.fact-row{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid #edf1eb;font-size:14px;line-height:1.7}.fact-row:first-of-type{margin-top:16px}.fact-row>text:first-child{color:#7f9180}.case-step{display:flex;gap:14px;margin-top:18px}.case-step-number{flex:0 0 30px;color:#ce6a36;font-weight:800;font-size:13px}.case-step-title,.case-step-detail{display:block}.case-step-title{font-size:15px;font-weight:750;color:#294b35;line-height:1.5}.case-step-detail,.judgement-line{font-size:14px;line-height:1.8;color:#526e59;margin-top:7px}.pitfall{background:#fff5e9;border-left:3px solid #ef9c5d;padding:15px;margin-top:14px}.judgement{background:#f5f2fb;border-color:#e4dcf4}.judgement .intro-label{color:#77629b}.judgement-line{margin-top:12px}@media(max-width:700px){.number-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.number-card{padding:12px}.number-value{font-size:16px}.case-section{padding:20px 16px}.fact-row{grid-template-columns:78px minmax(0,1fr)}}
 </style>

@@ -65,6 +65,9 @@
             <text class="join-description">打开企业微信了解参与方式，也可以查看完整海报并扫码。具体安排以入口说明为准。</text>
             <!-- #ifdef H5 -->
             <a class="join-link" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">打开企业微信了解 ↗</a>
+            <view v-if="campQr" class="direct-qr"><img :src="campQr" alt="体验营报名二维码" /><text>微信扫码了解体验营</text></view>
+            <button class="outline-button share-poster-button" :disabled="sharing" @tap="showSharePoster">{{sharing ? '正在生成海报…' : '生成分享海报'}}</button>
+            <text v-if="shareError" class="share-error" role="status">{{shareError}}</text>
             <!-- #endif -->
             <image class="join-poster" :src="campaign.posterUrl" mode="widthFix" @tap="showCampPoster" />
             <button class="primary-button" @tap="showCampPoster">查看完整海报 <text>↗</text></button>
@@ -79,17 +82,37 @@
       </view>
     </view>
     <view class="mobile-camp-bar"><view><text>AI 成万事 · 三天体验营</text><small>查看完整海报及报名方式</small></view><button @tap="showCampPoster">查看海报</button></view>
+    <!-- #ifdef H5 -->
+    <view v-if="shareOpen" class="share-overlay" @click="shareOpen=false">
+      <view class="share-modal" role="dialog" aria-modal="true" aria-label="体验营分享海报" @click.stop>
+        <view class="share-head"><text>体验营分享海报</text><button aria-label="关闭" @click="shareOpen=false">×</button></view>
+        <text class="share-help">电脑可保存图片；手机可长按图片保存或识别二维码。</text>
+        <img v-if="shareImage" :src="shareImage" alt="体验营分享海报，底部二维码用于了解体验营" class="share-preview" />
+        <a v-if="shareImage" :href="shareImage" download="AINPE-体验营.png" class="join-link">保存分享海报</a>
+      </view>
+    </view>
+    <!-- #endif -->
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
 import { campaign, contact } from '../../data/content.js';
 import {track} from '../../data/track.js';
+// #ifdef H5
+import {makeCampQr,createCampSharePoster} from './camp-poster.js';
+// #endif
 
 const source = ref(''), played=ref(null), from=ref('direct');
+const campQr=ref(''), shareOpen=ref(false), shareImage=ref(''), sharing=ref(false), shareError=ref('');
+// #ifdef H5
+function closeOnEscape(event){if(event.key==='Escape')shareOpen.value=false}
+onMounted(()=>{try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{shareError.value='二维码暂时无法生成，请查看完整海报。'}window.addEventListener('keydown',closeOnEscape)});
+onUnmounted(()=>window.removeEventListener('keydown',closeOnEscape));
+async function showSharePoster(){if(sharing.value)return;sharing.value=true;shareError.value='';try{shareImage.value=await createCampSharePoster(campaign.targetUrl);shareOpen.value=true}catch{shareError.value='分享海报生成失败，请稍后重试。'}finally{sharing.value=false}}
+// #endif
 function playedState(){try{return !!uni.getStorageSync('ainpe:played')}catch{return false}}
 function showCampPoster(){preview(campaign.posterUrl)}
 function trackCampJoin(){track('camp_join_click',{page:'camp',from:from.value,played:playedState()})}
@@ -165,6 +188,9 @@ function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages
 .join-description { display:block; color:#788b7b; font-size:12px; line-height:1.7; margin-top:7px; }
 .join-poster { display:block; width:100%; max-width:170px; margin:16px auto; border-radius:5px; }
 .join-link { display:block; box-sizing:border-box; text-align:center; margin-top:14px; padding:12px; border-radius:6px; background:#ee5a24; color:white; font-size:14px; font-weight:750; text-decoration:none; }
+.direct-qr {display:flex;flex-direction:column;align-items:center;gap:6px;margin:16px 0;color:#627766;font-size:12px}.direct-qr img{display:block;width:180px;height:180px;max-width:100%;object-fit:contain;image-rendering:pixelated;background:#fff}
+.share-poster-button {width:100%;height:43px;line-height:41px;margin-top:7px;border:1px solid #7c9a80;background:#fff;color:#245b3e;font-size:13px}.share-error{display:block;color:#a74223;font-size:12px;margin-top:8px;line-height:1.6}
+.share-overlay{position:fixed;inset:0;z-index:10000;background:rgba(4,19,12,.72);display:flex;align-items:center;justify-content:center;padding:16px}.share-modal{width:min(100%,430px);max-height:92vh;overflow:auto;box-sizing:border-box;background:white;color:#183b29;border-radius:12px;padding:20px}.share-head{display:flex;align-items:center;justify-content:space-between;font-size:17px;font-weight:750}.share-head button{margin:0;padding:0 5px;height:32px;line-height:32px;background:transparent;color:#315943;font-size:25px}.share-help{display:block;color:#718477;font-size:12px;line-height:1.7;margin:8px 0 12px}.share-preview{display:block;width:100%;height:auto;border-radius:5px}
 .join-hint { display:block; color:#9ba99b; text-align:center; font-size:11px; margin-top:10px; }
 .contact-header { display:flex; align-items:center; gap:11px; }
 .contact-icon { display:flex; justify-content:center; align-items:center; width:37px; height:37px; flex-shrink:0; background:#e4f0e6; color:#24643e; border-radius:8px; font-weight:700; }
