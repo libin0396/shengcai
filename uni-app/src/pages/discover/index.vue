@@ -8,44 +8,57 @@
         <view class="hero-sub">选一个方向，做几次关键决策，看看过程中的机会和难题。</view>
         <view class="hero-step"><text>01</text> 你现在是？ <text class="hero-small">可选，带入游戏后仍可修改</text></view>
         <view class="life-options"><button v-for="person in people" :key="person.value" :class="{selected:life===person.value}" :aria-pressed="life===person.value" @click="life=life===person.value?'':person.value">{{person.label}}</button></view>
-        <view class="hero-step"><text>02</text> 选一个项目，马上开始</view>
-        <view v-if="life" class="recommendation-note" aria-live="polite">根据你的选择推荐入门方向，仅供参考；你也可以选择其他项目。</view>
-        <view class="hero-games">
-          <view v-for="(game,index) in recommendedGames" :key="game.id" class="hero-game" :class="{featured:index===0}">
-            <text v-if="index===0" class="hero-game-tag">{{life ? '为你推荐先试' : '新手可以先试'}}</text>
-            <view class="hero-game-title">{{game.title}}</view>
-            <view class="hero-game-copy">{{game.description}}</view>
-            <view v-if="index===0 && recommendationReason" class="recommendation-reason">推荐理由：{{recommendationReason}}</view>
-            <button :class="{'game-secondary':index!==0}" @click="goGame(game.id)">开始模拟 →</button>
-          </view>
-        </view>
-        <view class="hero-footnote-v2">数值与事件均为游戏设定，不是收入预测。<text @click="navigate('/pages/simulate/index')"> 查看全部六个项目 →</text></view>
+        <view class="report-example"><view class="report-caption">示例战报 · 游戏模拟</view><view class="report-money">¥2,482</view><view class="report-stamp">稳步回本</view><view class="report-persona">✦ &nbsp;你的副业人格与项目复盘</view><view class="report-note">玩完后你也会得到一张战报 · 金额为模拟</view></view>
       </view>
     </view>
     <view class="content-shell">
-      <view class="how-v2"><view><text>01 · 体验</text><text class="how-title">跑一遍项目</text><text class="how-copy">完成关键决策</text></view><view><text>02 · 复盘</text><text class="how-title">看你卡在哪</text><text class="how-copy">回看每一步的影响</text></view><view><text>03 · 对照</text><text class="how-title">了解真实案例</text><text class="how-copy">参考作者自述的经历</text></view><view @click="navigate('/pages/camp/index?from=home')"><text>04 · 下一步</text><text class="how-title">了解三天体验营 →</text><text class="how-copy">想实践时，再看看参与方式</text></view></view>
+      <view class="home-section-head"><view><view class="section-title">选一个项目，马上开局</view><view class="section-subtitle">{{life ? '已根据你的身份调整推荐，你也可以自由选择。' : '先试一次，再决定下一步。'}}</view></view><text @click="navigate('/pages/simulate/index')">全部 6 个项目 →</text></view>
+      <scroll-view scroll-x class="home-deck-scroll"><view class="home-deck"><GameCover v-for="(game,index) in recommendedGames" :key="game.id" :game="game" :tag="index===0?(life ? '为你推荐先试' : '新手可以先试'):''" :reason="index===0 ? recommendationReason : ''" :played="playedGames.includes(game.id)" @start="goGame" /></view></scroll-view>
+      <view class="home-deck-note">左右滑动选择项目 · 金额和事件都是游戏设定，不是收入预测。</view>
       <view class="highlights-grid">
-        <view class="highlight-block"><view class="block-title"><view><view class="section-title">AI 案例与实战情报</view><view class="section-subtitle">来自真实分享，看看别人正在探索什么。</view></view><text @click="scrollToIntelligence">更多案例 →</text></view><view class="highlight-list"><view v-for="(item,index) in featuredArticles" :key="item.id" class="highlight-row" @click="openArticle(item)"><text class="rank">{{ index+1 }}</text><view class="highlight-content"><view class="highlight-title">{{ item.title }}</view><view class="highlight-meta">{{ item.author || '生财圈友' }} · {{ formatDate(item.publishedAt) }}</view></view><text class="row-arrow">›</text></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view></view>
+        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">站方整理的完整解读 · 数字为作者自述</view></view><text @click="scrollToIntelligence">进入案例库 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in item.numbers.slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view><text>亲手试试项目中的关键环节</text></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view><view class="section-subtitle">看看不同城市的同行在交流什么。</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="conference-link" @click="navigate('/pages/events/index?view=conference')"><view><text>线下大会报名</text><view>查看报名二维码与购票说明</view></view><text>查看 →</text></view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <view class="topic-strip" @click="navigate('/pages/topic/index?topic=fde')"><view><text>本期关注 · 企业 AI 落地</text><view>FDE 实战与同行交流</view></view><text>进入专题 →</text></view>
-      <view class="intel-entry" @click="scrollToIntelligence"><view><text>继续探索</text><view>更多 AI 案例与实战情报</view><text class="intel-copy">按方向筛选、搜索，发现值得看的内容</text></view><text>进入案例库 →</text></view>
-      <view class="camp" @click="navigate('/pages/camp/index?from=home')"><image class="camp-image" :src="campaign.posterUrl" mode="aspectFit" /><view class="camp-text"><view class="camp-title">看了案例，想自己动手做一次？</view><view class="camp-copy">了解 AI 成万事三天体验营，活动安排以入口说明为准。</view></view><view class="camp-cta">了解三天体验营 →</view></view>
+      <view class="camp">
+        <image class="camp-image" :src="campaign.posterUrl" mode="aspectFit" @click="openCamp" />
+        <view class="camp-text"><view class="camp-title">看了案例，想自己动手做一次？</view><view class="camp-copy">了解 AI 成万事三天体验营，活动安排以入口说明为准。</view></view>
+        <view class="home-camp-actions">
+          <!-- #ifdef H5 -->
+          <a class="home-camp-primary" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">加入体验营企业微信 ↗</a>
+          <!-- #endif -->
+          <!-- #ifndef H5 -->
+          <button class="home-camp-primary" @click="openCamp">查看体验营二维码</button>
+          <!-- #endif -->
+          <button class="home-camp-detail" @click="openCamp">了解体验营 →</button>
+        </view>
+      </view>
       <view class="footer-note">内容来自生财有术 · 展示已收录摘要与导读，具体语境请以原帖为准</view>
     </view>
+    <JoinOffer variant="bar" from="home_bar" :visible="showJoinBar" />
   </view>
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
-import {onLoad, onShow} from '@dcloudio/uni-app';
+import {computed, ref, onMounted, onUnmounted} from 'vue';
+import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
+import JoinOffer from '../../components/JoinOffer.vue';
+import GameCover from '../../components/GameCover.vue';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
 import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
+const showJoinBar=ref(false);
+onPageScroll(e=>{showJoinBar.value=e.scrollTop>600});
+// #ifdef H5
+function updateJoinBar(){showJoinBar.value=window.scrollY>600}
+onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
+onUnmounted(()=>window.removeEventListener('scroll',updateJoinBar));
+// #endif
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
+const playedGames=ref([]);
 const games=[
   {id:'miniapp',title:'AI 小程序副业',description:'从需求到上线推广，看看关键环节怎么衔接。'},
   {id:'video',title:'AI 视频定制',description:'接一单，从客户需求走到作品交付。'},
@@ -71,7 +84,7 @@ const saved=ref([]);
 const allArticles=Array.isArray(articles)?articles:[];
 const aiArticles=computed(()=>allArticles.filter(isAiArticle));
 const aiTotal=computed(()=>aiArticles.value.length);
-const featuredArticles=computed(()=>caseStudies.map(caseAsArticle).slice(0,4));
+const featuredArticles=computed(()=>caseStudies.slice(0,3));
 const eventAI=/(?:^|[^a-z])ai(?=$|[^a-z]|ppt|agent|video)|人工智能|智能体|大模型|生成式|AIGC|GPT|Claude|Codex|Gemini|Grok|Cursor|Copilot|OpenAI|DeepSeek|豆包|通义千问|文心一言|(?:^|[^a-z])(?:FDE|Agent|MCP|LLM)(?=$|[^a-z])|workbuddy|seedance|comfyui|minimax/i;
 const upcomingEvents=computed(()=>{const seen=new Set();return [...events].filter(e=>e&&e.city&&Number(e.startTime)*1000>Date.now()&&!/CANCEL|ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||'')&&eventAI.test(`${e.name||''} ${e.typeText||''}`)).sort((a,b)=>Number(a.startTime)-Number(b.startTime)).filter(e=>{if(seen.has(e.city))return false;seen.add(e.city);return true}).slice(0,3)});
 function eventDate(t){return new Date(Number(t)*1000+8*3600000)}
@@ -79,9 +92,19 @@ function eventMonth(t){return eventDate(t).getUTCMonth()+1}
 function eventDay(t){return eventDate(t).getUTCDate()}
 function eventTime(t){const d=eventDate(t);return `${d.getUTCMonth()+1}月${d.getUTCDate()}日 ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`}
 function scrollToIntelligence(){navigate('/pages/intelligence/index')}
+function goCaseGame(item){
+  const id=item.simulation?.file;
+  // #ifdef H5
+  const url=['books','brain','trends'].includes(id)?`voyage-lab.html?project=${encodeURIComponent(id)}&start=1`:`${encodeURIComponent(id)}.html?start=1`;
+  window.location.href=`/static/simulation-games/${url}`;return;
+  // #endif
+  // #ifndef H5
+  navigate('/pages/simulate/index');
+  // #endif
+}
 function goGame(name){
   // #ifdef H5
-  window.location.href=`/static/simulation-games/${name}.html${life.value?'?life='+encodeURIComponent(life.value):''}`;return;
+  window.location.href=`/static/simulation-games/${name}.html?start=1${life.value?'&life='+encodeURIComponent(life.value):''}`;return;
   // #endif
   // #ifndef H5
   navigate('/pages/simulate/index');
@@ -97,12 +120,14 @@ const filteredArticles=computed(()=>{
 });
 const visibleArticles=computed(()=>filteredArticles.value.slice(0,limit.value));
 const freshness=computed(()=>`${feedMeta.source||'已保存资料'} · ${feedMeta.lastSuccessLabel?`上次成功 ${feedMeta.lastSuccessLabel}`:'成功时间未记录'} · ${feedMeta.statusText||'等待连接'}`);
-function refreshSaved(){try{const value=uni.getStorageSync('ainpe:saved');saved.value=Array.isArray(value)?value:[];}catch{saved.value=[];}}
+function refreshSaved(){try{const value=uni.getStorageSync('ainpe:saved');saved.value=Array.isArray(value)?value:[];let history=uni.getStorageSync('ainpe:history');if(typeof history==='string')history=JSON.parse(history);playedGames.value=Array.isArray(history)?history.map(item=>item.game):[];}catch{saved.value=[];playedGames.value=[];}}
 onShow(refreshSaved);
 function selectCategory(category){selectedCategory.value=category;limit.value=20;}
 function isSaved(a){return saved.value.includes(`article:${a.id}`);}
 function toggleSaved(a){const key=`article:${a.id}`;const next=isSaved(a)?saved.value.filter(x=>x!==key):[...saved.value,key];try{uni.setStorageSync('ainpe:saved',next);saved.value=next;uni.showToast({title:isSaved(a)?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
 function navigate(url){uni.navigateTo({url});}
+function openCamp(){navigate('/pages/camp/index?from=home')}
+function trackCampJoin(){track('camp_join_click',{page:'home'});track('outbound_click',{target:'camp',from:'home'})}
 function openArticle(a){try{uni.setStorageSync('ainpe:last-article',{id:String(a.id),openedAt:Date.now()});}catch{}uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(String(a.id))}`});}
 function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return Number.isNaN(d.getTime())?'时间待确认':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`;}
 </script>
@@ -123,4 +148,10 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 /* 先体验的首页结构，保留真实情报与线下活动入口 */
 .home-hero{background:#0b3021;color:#f4f8ed}.hero-v2{max-width:1120px;margin:auto;padding:45px 24px 38px;box-sizing:border-box}.hero-kicker{font-size:13px;font-weight:800;color:#ffcf59}.hero-headline{font-size:44px;line-height:1.18;font-weight:850;margin-top:12px}.hero-sub{font-size:15px;line-height:1.7;color:#bcd0c2;margin-top:12px}.hero-step{font-size:15px;font-weight:750;margin-top:26px}.hero-step>text:first-child{display:inline-block;color:#0b3021;background:#ffcf59;border-radius:50%;width:25px;height:25px;text-align:center;line-height:25px;margin-right:6px;font-size:12px}.hero-small{color:#a4bbaa;font-weight:400;font-size:12px;margin-left:7px}.life-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.life-options button{margin:0;border:1px solid #749381;border-radius:25px;background:transparent;color:#d9e8db;font-size:13px;line-height:34px;padding:0 16px}.life-options button.selected{background:#ffcf59;color:#163529;border-color:#ffcf59}.hero-games{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.hero-game{position:relative;background:#fff;color:#173528;border-radius:9px;padding:21px;display:flex;flex-direction:column;gap:11px}.hero-game.featured{outline:2px solid #ffcf59}.hero-game-tag{align-self:flex-start;color:#715407;background:#fff1c3;font-size:11px;padding:4px 8px;border-radius:4px}.hero-game-title{font-size:19px;font-weight:800}.hero-game-copy{font-size:13px;line-height:1.65;color:#6f8074;flex:1}.hero-game button{margin:5px 0 0;background:#ee5a24;color:#fff;font-size:14px;font-weight:750;line-height:42px}.hero-game button.game-secondary{background:#fff;color:#1b6040;border:1px solid #27734d}.hero-footnote-v2{font-size:12px;color:#a4bcaa;margin-top:16px}.hero-footnote-v2 text{color:#f8d471;margin-left:8px}.how-v2{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.how-v2 view{background:#fff;border:1px solid #e7e3db;border-radius:8px;padding:16px}.how-v2 text{display:block}.how-v2 text{color:#d35b2c;font-size:11px;font-weight:750}.how-v2 .how-title{font-size:15px;font-weight:750;color:#183328;margin:6px 0}.how-v2 .how-copy{color:#8b9a8e;font-size:12px}.intel-entry{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid #e4e5dd;border-radius:8px;padding:20px;margin-bottom:20px;color:#226542}.intel-entry view>text{font-size:11px;color:#86a388}.intel-entry view>view{font-weight:800;font-size:19px;margin:5px 0}.intel-entry .intel-copy{font-size:12px;color:#869787}.intel-entry>text{font-size:13px;font-weight:700}.hero-v2 button:after{border:0}@media(max-width:700px){.hero-v2{padding:30px 16px}.hero-headline{font-size:32px}.hero-games{grid-template-columns:1fr;gap:9px}.hero-game{padding:16px}.hero-game-copy{font-size:12px}.how-v2{grid-template-columns:1fr 1fr;gap:8px}.intel-entry{gap:12px}.intel-entry>text{white-space:nowrap}}
 .recommendation-note{margin-top:10px;color:#c0d2c4;font-size:12px;line-height:1.6}.recommendation-reason{padding:9px 10px;border-radius:6px;background:#f8f5e9;color:#526857;font-size:12px;line-height:1.6}.hero-game.featured .hero-game-copy{flex:0}.hero-game.featured button{margin-top:auto}
+.hero-game-tag{font-size:12px}
+.highlights-grid{display:block}.highlights-grid>.highlight-block+.highlight-block{margin-top:42px}.home-cases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.home-case{display:flex;flex-direction:column;overflow:hidden;background:#fff;border:1px solid #e5decf;border-radius:16px}.home-case-main{padding:15px;cursor:pointer;flex:1}.home-case-tags{display:flex;gap:6px}.home-case-tags text{font-size:11px;font-weight:800;color:#0e5a3a;background:#e2f1e7;padding:3px 7px;border-radius:5px}.home-case-tags text+text{background:#e4eef8;color:#2b5c8a}.home-case-title{font-weight:850;font-size:16px;line-height:1.45;margin-top:9px}.home-case-start,.home-case-by{font-size:12px;color:#829387;line-height:1.5;margin-top:8px}.home-case-numbers{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px}.home-case-numbers view{background:#f7f3ea;border-radius:8px;padding:8px;min-width:0}.home-case-numbers text{display:block;font-size:11px;color:#788c7d;line-height:1.4}.home-case-numbers text:first-child{color:#193c29;font-size:15px;font-weight:850}.home-case-play{display:flex;align-items:center;gap:9px;padding:12px 14px;background:#0b2e20;color:#fff;cursor:pointer}.home-case-play>text:first-child{width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:#ee5a24;font-size:12px}.home-case-play>view{flex:1;font-size:13px;font-weight:800}.home-case-play>view>text{display:block;font-size:11px;font-weight:400;color:#bad0c0;margin-top:3px}.home-case-play>text:last-child{font-size:12px;color:#ffc94d;font-weight:800}
+.hero-v2{position:relative}.report-example{display:none}.home-section-head{display:flex;justify-content:space-between;align-items:end;gap:12px}.home-section-head>text{color:#0e5a3a;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer}.home-deck-scroll{width:100%;margin-top:16px}.home-deck{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.home-deck-note{color:#84968a;font-size:12px;margin-top:12px}.highlights-grid{margin-top:48px}
+@media(min-width:900px){.hero-v2{padding-right:470px;min-height:315px}.report-example{display:block;position:absolute;right:42px;top:31px;width:320px;box-sizing:border-box;padding:20px;background:#fff;border-radius:20px;color:#173b2a;transform:rotate(2deg);box-shadow:0 20px 40px #0003}.report-caption,.report-note{font-size:12px;color:#819386}.report-money{font-size:42px;line-height:1.1;font-weight:900;margin-top:10px}.report-stamp{display:inline-block;margin-top:8px;border:2px solid #ee5a24;color:#d94b1a;border-radius:8px;padding:3px 10px;font-weight:850;transform:rotate(-3deg)}.report-persona{margin:14px 0 10px;padding:12px;border-radius:10px;background:#0b2e20;color:#ffc94d;font-weight:800}}
+@media(max-width:700px){.home-deck{display:flex;width:max-content;gap:12px;padding:0 2px 6px}.home-deck>*{width:280px;flex:none}.home-deck-note{font-size:11px}.home-section-head .section-title{font-size:20px}.home-section-head>text{font-size:12px}.highlights-grid{margin-top:32px}.home-cases{grid-template-columns:1fr}.home-case.third-case{display:none}}
+.home-camp-actions{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}.home-camp-primary{display:block;box-sizing:border-box;margin:0;padding:11px 15px;border-radius:7px;background:#f15a24;color:white;font-size:13px;font-weight:750;line-height:20px;text-align:center;text-decoration:none;white-space:nowrap}.home-camp-detail{margin:0;padding:0;background:transparent;color:#dcebd5;font-size:13px;line-height:26px;font-weight:700}.home-camp-detail:after{border:0}@media(max-width:700px){.home-camp-actions{width:calc(100% - 67px);align-items:stretch;margin-left:67px}.home-camp-primary,.home-camp-detail{width:100%}}
 </style>

@@ -1,46 +1,45 @@
 <template>
   <view class="camp-page">
-    <SiteHeader />
+    <SiteHeader hide-camp />
     <view class="hero">
       <view class="hero-inner">
         <text class="crumb" @tap="goBack">← 返回上页</text>
         <view class="hero-layout">
           <view class="hero-copy">
-            <text class="eyebrow">AI 实战 · 从了解开始</text>
+            <text class="status-pill">具体排期以入口说明为准</text>
             <text class="title">AI 成万事<br /><text class="accent">3 天体验营</text></text>
-            <text class="lead">从看懂 AI 机会，到亲手做出成果。</text>
-            <text class="description">想更系统地了解 AI 实战？先看看体验营的介绍和参与方式。</text>
+            <text class="lead">没方向 · 没路径 · 没人带 · 没结果？</text>
+            <text class="description">从看懂 AI 机会，到亲手做出成果。</text>
+            <view class="hero-promises">
+              <view v-for="step in steps" :key="step.title" class="hero-promise"><text>{{ step.title }}</text><text>{{ step.description }}</text></view>
+            </view>
+          </view>
+          <view class="hero-join-card">
+            <text class="join-title">加入体验营</text>
+            <text class="join-description">通过生财有术企业微信了解报名方式</text>
             <!-- #ifdef H5 -->
-            <a class="primary-button hero-button hero-join" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">加入体验营企业微信 ↗</a>
+            <a class="join-link" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">打开企业微信加入 ↗</a>
+            <button class="qr-toggle" @tap="qrExpanded=!qrExpanded">{{qrExpanded ? '收起二维码 ↑' : '显示二维码 ↓'}}</button>
+            <view v-if="campQr" :class="['direct-qr', {'qr-expanded':qrExpanded}]"><a :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin"><img :src="campQr" alt="体验营报名二维码，点击了解" /></a><view><text class="qr-title">微信扫一扫</text><text>手机可长按识别<br />打开生财有术企业微信</text></view></view>
             <!-- #endif -->
             <!-- #ifndef H5 -->
-            <button class="primary-button hero-button" @tap="showCampPoster">查看完整报名海报 <text>↗</text></button>
+            <button class="primary-button" @tap="showCampPoster">查看完整报名海报 <text>↗</text></button>
             <!-- #endif -->
-            <text class="schedule">{{ campaign.scheduleLabel }}</text>
-          </view>
-          <view class="hero-side">
-            <image class="hero-poster" :src="campaign.posterUrl" mode="widthFix" @tap="showCampPoster" />
-            <text class="poster-caption">点击查看完整海报 · 微信扫码了解体验营</text>
+            <text class="join-card-note">费用和下一期时间以入口说明为准 · 有问题可联系站长</text>
+            <text v-if="shareError" class="share-error" role="status">{{shareError}}</text>
           </view>
         </view>
       </view>
     </view>
 
     <view class="content-wrap">
-      <view v-if="played && played.project" class="played-note"><text>你刚体验了 {{played.project}}</text><text v-if="played.issues && played.issues.length">回顾：{{played.issues.slice(0,2).join('、')}}</text><text>下面可以了解体验营的内容，再决定是否参与。</text></view>
+      <view v-if="showPlayedNote" class="played-note"><text>你刚体验了 {{played.project}}</text><text v-if="played.issues && played.issues.length">回顾：{{played.issues.slice(0,2).join('、')}}</text><text>下面可以了解体验营的内容，再决定是否参与。</text></view>
       <view class="main-grid">
         <view class="main-column">
           <view class="panel intro-panel">
             <text class="section-kicker">体验营介绍</text>
-            <text class="section-title">3 天，迈出 AI 实战第一步</text>
-            <text class="section-description">以下内容来自体验营海报，具体安排和参与方式以报名入口说明为准。</text>
-            <view class="steps">
-              <view v-for="(step, index) in steps" :key="step.title" class="step">
-                <text class="step-number">0{{ index + 1 }}</text>
-                <view class="step-copy"><text class="step-title">{{ step.title }}</text><text class="step-text">{{ step.description }}</text></view>
-              </view>
-            </view>
-            <view class="benefits-head"><text class="section-title small-title">海报介绍</text><text class="section-description">实际内容以入口说明为准</text></view>
+            <text class="section-title">你将获得</text>
+            <text class="section-description">以下内容来自体验营海报，具体安排以报名入口说明为准。</text>
             <view class="benefits">
               <view v-for="benefit in benefits" :key="benefit.title" class="benefit"><text class="benefit-title">{{ benefit.title }}</text><text class="benefit-description">{{ benefit.description }}</text></view>
             </view>
@@ -53,11 +52,12 @@
             <view class="faq-item"><text class="faq-question">会保证赚钱吗？</text><text class="faq-answer">不会。体验营介绍和个人实际结果不同，不保证收入。</text></view>
             <view class="faq-item"><text class="faq-question">报名后有问题怎么办？</text><text class="faq-answer">可以添加站长微信交流，微信号 {{ contact.wechatId }}。</text></view>
           </view>
+          <JoinCompare />
           <view v-if="source" class="panel source-panel">
             <text class="section-title small-title">查看资料来源</text>
-            <text class="section-description">了解体验营后，可以继续查看生财原文；访问原文可能需要生财账号。</text>
+            <text class="section-description">{{from === 'event' ? '了解体验营后，可以继续查看活动报名方式；访问活动页面可能需要生财账号。' : '了解体验营后，可以继续查看生财原文；访问原文可能需要生财账号。'}}</text>
             <!-- #ifdef H5 -->
-            <a class="source-direct" :href="source" rel="noopener noreferrer">继续查看生财原文 ↗</a>
+            <a class="source-direct" :href="source" rel="noopener noreferrer" @click="trackSource">{{from === 'event' ? '继续查看活动报名方式 ↗' : '继续查看生财原文 ↗'}}</a>
             <!-- #endif -->
             <button class="outline-button source-button" @tap="copySource">复制原文链接</button>
           </view>
@@ -65,14 +65,11 @@
 
         <view class="side-column">
           <view class="panel join-panel">
-            <text class="join-label">了解体验营</text>
-            <text class="join-title">准备好动手试试？</text>
-            <text class="join-description">打开企业微信了解参与方式，也可以查看完整海报并扫码。具体安排以入口说明为准。</text>
+            <text class="section-kicker">活动海报</text>
+            <text class="join-title">查看完整海报</text>
+            <text class="join-description">海报中的二维码可用于了解体验营；海报所示日期不代表当前排期。</text>
             <!-- #ifdef H5 -->
-            <a class="join-link" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">打开企业微信了解 ↗</a>
-            <view v-if="campQr" class="direct-qr"><img :src="campQr" alt="体验营报名二维码" /><text>微信扫码了解体验营</text></view>
             <button class="outline-button share-poster-button" :disabled="sharing" @tap="showSharePoster">{{sharing ? '正在生成海报…' : '生成分享海报'}}</button>
-            <text v-if="shareError" class="share-error" role="status">{{shareError}}</text>
             <!-- #endif -->
             <image class="join-poster" :src="campaign.posterUrl" mode="widthFix" @tap="showCampPoster" />
             <button class="primary-button" @tap="showCampPoster">查看完整海报 <text>↗</text></button>
@@ -85,14 +82,6 @@
           </view>
         </view>
       </view>
-    </view>
-    <view class="mobile-camp-bar"><view><text>AI 成万事 · 三天体验营</text><small>了解报名方式与最新安排</small></view>
-      <!-- #ifdef H5 -->
-      <a class="mobile-join" :href="campaign.targetUrl" target="_blank" rel="noopener noreferrer" @click="trackCampJoin">了解体验营</a>
-      <!-- #endif -->
-      <!-- #ifndef H5 -->
-      <button @tap="showCampPoster">查看海报</button>
-      <!-- #endif -->
     </view>
     <!-- #ifdef H5 -->
     <view v-if="shareOpen" class="share-overlay" @click="shareOpen=false">
@@ -108,9 +97,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
+import JoinCompare from '../../components/JoinCompare.vue';
 import { campaign, contact } from '../../data/content.js';
 import {track} from '../../data/track.js';
 // #ifdef H5
@@ -118,7 +108,8 @@ import {makeCampQr,createCampSharePoster} from './camp-poster.js';
 // #endif
 
 const source = ref(''), played=ref(null), from=ref('direct');
-const campQr=ref(''), shareOpen=ref(false), shareImage=ref(''), sharing=ref(false), shareError=ref('');
+const showPlayedNote=computed(()=>{const timestamp=Date.parse(played.value?.time||'');const age=Date.now()-timestamp;return ['game-result','game-case'].includes(from.value)&&!!played.value?.project&&Number.isFinite(age)&&age>=0&&age<2*60*60*1000});
+const campQr=ref(''), qrExpanded=ref(false), shareOpen=ref(false), shareImage=ref(''), sharing=ref(false), shareError=ref('');
 // #ifdef H5
 function closeOnEscape(event){if(event.key==='Escape')shareOpen.value=false}
 onMounted(()=>{try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{shareError.value='二维码暂时无法生成，请查看完整海报。'}window.addEventListener('keydown',closeOnEscape)});
@@ -127,7 +118,8 @@ async function showSharePoster(){if(sharing.value)return;sharing.value=true;shar
 // #endif
 function playedState(){try{return !!uni.getStorageSync('ainpe:played')}catch{return false}}
 function showCampPoster(){preview(campaign.posterUrl)}
-function trackCampJoin(){track('camp_join_click',{page:'camp',from:from.value,played:playedState()})}
+function trackCampJoin(){track('camp_join_click',{page:'camp',from:from.value,played:playedState()});track('outbound_click',{target:'camp',from:'camp'})}
+function trackSource(){track('outbound_click',{target:from.value==='event'?'event':'source',from:'camp'})}
 onShow(()=>{try{let p=uni.getStorageSync('ainpe:played');if(typeof p==='string')p=JSON.parse(p);played.value=p&&typeof p==='object'?p:null}catch{played.value=null}});
 const steps = [
   { title: '看机会', description: '找到适合你的方向' },
@@ -142,7 +134,7 @@ const benefits = [
 ];
 onLoad((opts) => {const f=String(opts?.from||'direct');from.value=/^[a-z0-9_-]{1,40}$/.test(f)?f:'direct';track('camp_view',{page:'camp',from:from.value,played:playedState()});try { const u = decodeURIComponent(opts.source || ''); if (/^https:\/\/(?:www\.)?scys\.com\//i.test(u)) source.value = u; } catch {} });
 function preview(url) { uni.previewImage({ current: url, urls: [url] }); }
-function copyId() { uni.setClipboardData({ data: contact.wechatId }); }
+function copyId() { uni.setClipboardData({ data: contact.wechatId, success:()=>track('contact_copy',{from:'camp'}) }); }
 function copySource() { if (source.value) uni.setClipboardData({ data: source.value }); }
 function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages/discover/index' }) }); }
 </script>
@@ -229,6 +221,7 @@ function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages
   .main-column,.side-column { width:100%; }
   .side-column { display:contents; }
   .join-panel { order:-1; }
+  .contact-panel,.join-panel { width:100%; }
   .panel { padding:20px; }
   .section-title { font-size:21px; }
   .small-title { font-size:18px; }
@@ -238,5 +231,50 @@ function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages
   .benefit-description { font-size:10px; }
 }
 
-.played-note{background:#fff4ce;border:1px solid #f1e0a0;border-radius:8px;padding:16px 18px;margin:0 0 18px;color:#695920;font-size:13px;line-height:1.7}.played-note text{display:block}.played-note text:first-child{font-weight:800;color:#453e1d}.mobile-camp-bar{display:none}@media(max-width:700px){.content-wrap{padding-bottom:100px}.mobile-camp-bar{display:flex;position:fixed;z-index:90;bottom:0;left:0;right:0;align-items:center;justify-content:space-between;gap:10px;background:#0b3021;color:white;padding:9px 16px calc(9px + env(safe-area-inset-bottom))}.mobile-camp-bar view>text,.mobile-camp-bar small{display:block}.mobile-camp-bar view>text{font-size:13px;font-weight:750}.mobile-camp-bar small{font-size:11px;color:#bdd0c1;margin-top:3px}.mobile-camp-bar button{margin:0;padding:0 15px;background:#ee5a24;color:white;font-size:13px;font-weight:750;line-height:38px}}
+.played-note{background:#fff4ce;border:1px solid #f1e0a0;border-radius:8px;padding:16px 18px;margin:0 0 18px;color:#695920;font-size:13px;line-height:1.7}.played-note text{display:block}.played-note text:first-child{font-weight:800;color:#453e1d}.mobile-camp-bar{display:none}@media(max-width:700px){.content-wrap{padding-bottom:100px}.mobile-camp-bar{display:flex;position:fixed;z-index:90;bottom:calc(52px + env(safe-area-inset-bottom));left:0;right:0;align-items:center;justify-content:space-between;gap:10px;background:#0b3021;color:white;padding:9px 16px}.mobile-camp-bar view>text,.mobile-camp-bar small{display:block}.mobile-camp-bar view>text{font-size:13px;font-weight:750}.mobile-camp-bar small{font-size:11px;color:#bdd0c1;margin-top:3px}.mobile-camp-bar button{margin:0;padding:0 15px;background:#ee5a24;color:white;font-size:13px;font-weight:750;line-height:38px}}
+
+/* V28: keep the signup action beside the promises, with a compact mobile QR reveal. */
+.hero-inner{padding-top:24px;padding-bottom:44px}
+.hero-layout{grid-template-columns:minmax(0,1fr) 370px;gap:40px;padding-top:30px}
+.status-pill{display:inline-block;padding:6px 12px;border-radius:999px;background:#ffffff18;color:#ffd8c6;font-size:12px;font-weight:700}
+.status-pill::before{content:'●';color:#ee5a24;margin-right:7px}
+.title{font-size:46px;margin:17px 0 12px}
+.lead{color:#ffd4c0;font-size:19px}
+.description{margin-top:7px;font-size:15px}
+.hero-promises{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px}
+.hero-promise{padding:12px 14px;background:#ffffff12;border-radius:12px;min-width:0}
+.hero-promise text{display:block;color:#c7dacd;font-size:13px;line-height:1.45}
+.hero-promise text:first-child{color:#ffc94d;font-size:15px;font-weight:800;margin-bottom:3px}
+.hero-join-card{box-sizing:border-box;background:#fff;color:#13241b;border-radius:18px;padding:22px;box-shadow:0 20px 50px #0003}
+.hero-join-card .join-title{font-size:21px;margin:0}
+.hero-join-card .join-description{font-size:13px;margin-top:6px}
+.hero-join-card .join-link{padding:15px 12px;border-radius:10px;font-size:15px}
+.hero-join-card .direct-qr{display:flex;flex-direction:row;justify-content:center;gap:14px;margin:18px 0 10px;color:#728377;line-height:1.6}
+.hero-join-card .direct-qr img{width:120px;height:120px}
+.hero-join-card .direct-qr text{display:block}
+.hero-join-card .qr-title{color:#244936;font-size:14px;font-weight:800}
+.qr-toggle{display:none}
+.join-card-note{display:block;border-top:1px dashed #e7e0d5;margin-top:15px;padding-top:13px;color:#8a998b;font-size:11px;line-height:1.6}
+.content-wrap{padding-top:32px;padding-bottom:65px}
+.benefits{margin-top:18px}
+.join-panel .join-poster{max-width:190px}
+@media(max-width:700px){
+  .hero-inner{padding-top:18px;padding-bottom:25px}
+  .hero-layout{display:grid;grid-template-columns:1fr;gap:20px;padding-top:22px}
+  .title{font-size:34px;margin:14px 0 9px}
+  .lead{font-size:16px}
+  .description{font-size:13px}
+  .hero-promises{gap:8px;margin-top:17px}
+  .hero-promise{padding:10px 12px}
+  .hero-promise text{font-size:12px}
+  .hero-promise text:first-child{font-size:14px}
+  .hero-join-card{padding:19px;border-radius:16px}
+  .qr-toggle{display:block;width:100%;margin:10px 0 0;padding:0;border:0;background:transparent;color:#286548;font-size:12px;line-height:28px}
+  .qr-toggle::after{border:0}
+  .hero-join-card .direct-qr{display:none}
+  .hero-join-card .direct-qr.qr-expanded{display:flex}
+  .content-wrap{padding-top:20px;padding-bottom:80px}
+  .side-column{display:flex}
+  .join-panel{order:initial}
+}
 </style>

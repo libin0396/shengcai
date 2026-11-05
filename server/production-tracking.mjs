@@ -6,11 +6,13 @@ import path from 'node:path';
 
 // A bounded, same-origin event log. Raw IPs, URLs, user-entered content and
 // browser identifiers are never written to the database.
-const EVENTS = new Set(['site_view', 'sim_start', 'sim_finish', 'camp_view', 'camp_join_click', 'share_open', 'share_save', 'challenge_open', 'replay_same_seed', 'versus_finish', 'versus_share', 'board_view', 'board_join', 'board_share']);
+const EVENTS = new Set(['site_view', 'sim_start', 'sim_finish', 'camp_view', 'camp_join_click', 'share_open', 'share_save', 'challenge_open', 'replay_same_seed', 'versus_finish', 'versus_share', 'board_view', 'board_join', 'board_share', 'outbound_click', 'contact_copy']);
+const TARGETS = new Set(['camp', 'join', 'source', 'event']);
+const SOURCES = new Set(['article', 'camp', 'result', 'mine', 'home', 'home_bar', 'event', 'header']);
 const ID = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const DEVICE = /^[a-f0-9]{32}$/;
 const MAX_BODY = 1024;
-const FIELDS = new Set(['event', 'page', 'from', 'game', 'tier', 'played', 'ts', 'did']);
+const FIELDS = new Set(['event', 'page', 'from', 'game', 'tier', 'played', 'ts', 'did', 'target']);
 
 function send(res, status, value) {
   res.writeHead(status, {'Content-Type':'application/json; charset=utf-8', 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff'});
@@ -28,6 +30,9 @@ function valid(v) {
   if(!v || typeof v!=='object' || Array.isArray(v) || Object.keys(v).some(k=>!FIELDS.has(k)))return false;
   if(!EVENTS.has(v.event) || !DEVICE.test(v.did || '') || !Number.isSafeInteger(v.ts) || Math.abs(Date.now()-v.ts)>86400000)return false;
   if(typeof v.played!=='boolean')return false;
+  if(v.event==='outbound_click') { if(!TARGETS.has(v.target) || !SOURCES.has(v.from))return false; }
+  else if(v.target!==undefined)return false;
+  if(v.event==='contact_copy' && !SOURCES.has(v.from))return false;
   return ['page','from','game','tier'].every(k=>v[k]===undefined || (typeof v[k]==='string' && ID.test(v[k])));
 }
 function openDb(filename) {
@@ -38,9 +43,10 @@ function openDb(filename) {
   db.exec(`PRAGMA busy_timeout=3000; PRAGMA journal_mode=WAL;
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY, event TEXT NOT NULL, page TEXT, source TEXT, game TEXT, tier TEXT,
-      played INTEGER NOT NULL, created_at INTEGER NOT NULL, device_hash TEXT NOT NULL
+      played INTEGER NOT NULL, created_at INTEGER NOT NULL, device_hash TEXT NOT NULL, target TEXT
     );
     CREATE INDEX IF NOT EXISTS event_created_idx ON events(created_at);`);
+  if(!db.prepare('PRAGMA table_info(events)').all().some(column=>column.name==='target'))db.exec('ALTER TABLE events ADD COLUMN target TEXT');
   return db;
 }
 export function createProductionTrackingApi({root,dbPath,publicOrigin}={}) {
@@ -81,8 +87,8 @@ export function createProductionTrackingApi({root,dbPath,publicOrigin}={}) {
     const now=Date.now();
     cleanup();
     const hash=createHash('sha256').update(data.did).digest('hex');
-    db.prepare('INSERT INTO events(event,page,source,game,tier,played,created_at,device_hash) VALUES(?,?,?,?,?,?,?,?)')
-      .run(data.event,data.page||null,data.from||null,data.game||null,data.tier||null,data.played?1:0,now,hash);
+    db.prepare('INSERT INTO events(event,page,source,game,tier,played,created_at,device_hash,target) VALUES(?,?,?,?,?,?,?,?,?)')
+      .run(data.event,data.page||null,data.from||null,data.game||null,data.tier||null,data.played?1:0,now,hash,data.target||null);
     return send(res,202,{ok:true});
   }
   return {

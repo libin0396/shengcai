@@ -40,6 +40,15 @@ test('challenge replay events accept the share and poster entry sources',async()
   }finally{await x.close()}
 });
 
+test('homepage camp clicks are accepted with a bounded source and target',async()=>{
+ const x=await setup();try{
+  assert.equal((await x.post({...sample(),event:'outbound_click',from:'home',target:'camp'})).status,202);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   const row=db.prepare('SELECT source,target FROM events').get();assert.equal(row.source,'home');assert.equal(row.target,'camp');
+  }finally{db.close()}
+ }finally{await x.close()}
+});
+
 test('rejects cross-origin, untrusted proxy, oversized and unapproved data',async()=>{
  const x=await setup();try{
   assert.equal((await x.post(sample(),{origin:'https://evil.example'})).status,403);
@@ -81,5 +90,37 @@ test('local funnel report returns bounded browser cohorts and safe empty denomin
   assert.equal(result.status,0);const data=JSON.parse(result.stdout);
   assert.equal(data.simulation_completion.denominator,0);assert.equal(data.simulation_completion.percent,null);
   assert.equal(data.newcomer_direct_click.denominator,1);assert.equal(data.newcomer_direct_click.numerator,0);
+ }finally{await x.close()}
+});
+
+test('new events accept only anonymous bounded categories and aggregate without identifiers',async()=>{
+ const x=await setup();try{
+  const event={...sample(),event:'outbound_click',from:'article',target:'camp'};
+  assert.equal((await x.post(event)).status,202);
+  assert.equal((await x.post({...event,target:'join'})).status,202);
+  assert.equal((await x.post({...event,event:'contact_copy',target:undefined})).status,202);
+  assert.equal((await x.post({...event,event:'contact_copy',from:'header',target:undefined})).status,202);
+  for(const invalid of [{...event,target:'https://example.com'}, {...event,target:undefined}, {...event,from:'private'}, {...event,url:'https://example.com'}, {...event,event:'contact_copy'}, {...sample(),target:'camp'}])assert.equal((await x.post(invalid)).status,400);
+  const report=spawnSync(process.execPath,['scripts/tracking-report.mjs',x.dbPath,'30'],{encoding:'utf8'});
+  assert.equal(report.status,0);const result=JSON.parse(report.stdout);
+  assert.deepEqual(result.outbound_clicks.camp,{clicks:1,anonymous_browsers:1});
+  assert.deepEqual(result.outbound_clicks.join,{clicks:1,anonymous_browsers:1});
+  assert.deepEqual(result.contact_copies,{copies:2,anonymous_browsers:1});
+  assert.equal(report.stdout.includes('a'.repeat(32)),false);
+  assert.equal(report.stdout.includes('https://'),false);
+ }finally{await x.close()}
+});
+
+test('old databases migrate without losing records and old reports remain readable',async()=>{
+ const x=await setup();try{
+  const {writeFile,chmod}=await import('node:fs/promises');await writeFile(x.dbPath,'',{mode:0o600});await chmod(x.dbPath,0o600);
+  let db=new DatabaseSync(x.dbPath);db.exec(`CREATE TABLE events (id INTEGER PRIMARY KEY,event TEXT NOT NULL,page TEXT,source TEXT,game TEXT,tier TEXT,played INTEGER NOT NULL,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)`);
+  db.prepare('INSERT INTO events(event,played,created_at,device_hash) VALUES(?,?,?,?)').run('site_view',0,Date.now(),'0'.repeat(64));db.close();
+  let report=spawnSync(process.execPath,['scripts/tracking-report.mjs',x.dbPath,'30'],{encoding:'utf8'});assert.equal(report.status,0);assert.equal(JSON.parse(report.stdout).outbound_clicks.camp.clicks,0);
+  assert.equal((await x.post({...sample(),event:'outbound_click',from:'camp',target:'join'})).status,202);
+  x.api.close();assert.equal((await x.post(sample(),{'x-real-ip':'198.51.100.2'})).status,202);
+  db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   const rows=db.prepare('SELECT event,target FROM events ORDER BY id').all();assert.equal(rows.length,3);assert.equal(rows[0].event,'site_view');assert.equal(rows[0].target,null);assert.equal(rows[1].target,'join');
+  }finally{db.close()}
  }finally{await x.close()}
 });

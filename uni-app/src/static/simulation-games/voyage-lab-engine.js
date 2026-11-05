@@ -2,6 +2,7 @@
 var D=JSON.parse(document.getElementById('game-data').textContent),$=function(q){return document.querySelector(q)},app=$('#app'),UI=D.ui;
 var S;
 function reset(){var raw=new URLSearchParams(location.search).get("seed"),seed=raw!==null&&/^\d{1,6}$/.test(raw)?Number(raw):(Math.random()*1e6)|0;S={cond:{},talents:[],choice:{},task:null,work:{},days:30,seed:seed};var requested=new URLSearchParams(location.search).get('life');var life=D.conditions.find(function(c){return c.id==='life'});var aliases={'上班族':'全职上班','宝妈宝爸':'全职宝妈宝爸','待业中':'待业'};if(life&&requested){var target=aliases[requested]||requested;var idx=life.opts.findIndex(function(o){return o.t===target});if(idx<0&&['全职宝妈宝爸','待业'].indexOf(target)>=0)idx=life.opts.findIndex(function(o){return o.t==='其他'});if(idx>=0)S.cond.life=idx}}
+function setGameCampVisible(show){var link=document.querySelector('.ainpe-game-camp');if(link)link.hidden=!show}
 function money(n){return(n<0?'-¥':'¥')+Math.abs(Math.round(n)).toLocaleString()}
 function prog(k){var b=document.getElementById('progb');if(b)b.style.width=(k*100)+'%'}
 var BR='AINPE · AI 实战情报站';
@@ -13,7 +14,7 @@ function top0(){window.scrollTo(0,0)}
 var NSTEP=D.task?5:4;
 var CK='<i class="ck" aria-hidden="true"></i>';
 
-function intro(){reset();$('#top').hidden=true;wide(0);top0();
+function intro(){setGameCampVisible(true);reset();$('#top').hidden=true;wide(0);top0();
  app.innerHTML='<div style="margin-top:22px"><span class="brand">'+BR+'</span></div><h1>'+UI.title+'</h1><p class="lead">'+UI.intro+'</p>'+
  '<ol class="flow">'+UI.steps.map(function(x,i){return '<li><span class="fn">'+(i+1)+'</span><span>'+x+'</span></li>'}).join('')+'</ol>'+
  '<div class="note"><div class="nh"><b>'+UI.refLabel+'</b><span class="num">'+money(D.baseRef)+'</span><span class="tag">游戏假设</span></div><p>'+D.baseRefNote+'</p></div>'+
@@ -22,7 +23,7 @@ function intro(){reset();$('#top').hidden=true;wide(0);top0();
  var incoming=window.AINPEShare&&window.AINPEShare.challenge();if(incoming){var banner=document.createElement('div');banner.className='ainpe-challenge-intro';banner.textContent=window.AINPEShare.challengeText(incoming,UI.titles);app.insertBefore(banner,app.firstChild);$('#go').textContent='接受挑战，开始模拟';if(window.AINPETrack)window.AINPETrack.track('challenge_open',{game:window.AINPEShare.gameKey(),from:incoming.from,played:window.AINPEShare.hasPlayed()})}
  $('#go').onclick=function(){if(window.AINPETrack)window.AINPETrack.track('sim_start',{game:window.AINPEShare.gameKey(),played:window.AINPEShare.hasPlayed()});conds()}}
 
-function conds(){top0();$('#top').hidden=false;wide(0);$('#stepv').textContent='1/'+NSTEP+' 开局条件';prog(.15);
+function conds(){setGameCampVisible(false);top0();$('#top').hidden=false;wide(0);$('#stepv').textContent='1/'+NSTEP+' 开局条件';prog(.15);
  var h='<div class="kick"><span>第 1 步</span></div><h2>开局条件</h2><p class="mute" style="margin:0">按实际情况选择；计算过程为游戏设定，不是现实收益预测。</p>';
  D.conditions.forEach(function(c){var sel=S.cond[c.id]!=null;
   h+='<div class="sec"><div class="sec-h"><span>'+c.q+'</span><span class="st'+(sel?' ok':'')+'" id="st_'+c.id+'">'+(sel?'已选':'未选')+'</span></div><div class="opts">'+c.opts.map(function(o,i){return '<button class="opt'+(S.cond[c.id]==i?' on':'')+'" aria-pressed="'+(S.cond[c.id]==i)+'" data-c="'+c.id+'" data-i="'+i+'">'+o.t+(o.n?'<span class="n">'+o.n+'</span>':'')+CK+'</button>'}).join('')+'</div></div>'});
@@ -44,7 +45,7 @@ function talents(just){$('#stepv').textContent='2/'+NSTEP+' 天赋';prog(.3);wid
  $('#nx').onclick=function(){top0();choices(0)};$('#bk').onclick=function(){top0();conds()};if($('#clr'))$('#clr').onclick=function(){S.talents=[];talents()}}
 
 function dots(n){return '<span class="dots" aria-hidden="true">'+D.choices.map(function(c,i){return '<i class="'+(i<n?'d':i==n?'c':'')+'"></i>'}).join('')+'</span>'}
-function choices(n){var c=D.choices[n];$('#stepv').textContent='3/'+NSTEP+' 决策 '+(n+1)+'/'+D.choices.length;prog(.4+n*.4/D.choices.length);wide(0);top0();
+function choices(n){setGameCampVisible(false);var c=D.choices[n];$('#stepv').textContent='3/'+NSTEP+' 决策 '+(n+1)+'/'+D.choices.length;prog(.4+n*.4/D.choices.length);wide(0);top0();
  if(D.task&&D.task.after==n-1&&!S.task){taskScr();return}
  app.innerHTML='<div class="kick"><span>决策 '+(n+1)+'/'+D.choices.length+' · '+UI.nodeLabel+'：<b>'+c.node+'</b></span>'+dots(n)+'</div><h2>'+c.q+'</h2><div class="opts list" style="margin-top:14px">'+c.opts.map(function(o,i){return '<button class="opt'+(S.choice[c.id]==i?' on':'')+'" data-i="'+i+'"><span class="ab">'+String.fromCharCode(65+i)+'</span><span class="tx">'+o.t+(o.n?'<span class="n">'+o.n+'</span>':'')+'</span>'+CK+'</button>'}).join('')+'</div>'+
  cta('<button class="btn ghost" id="bk">'+(n?'上一个决策':'上一步：改天赋')+'</button>','选一项后自动进入下一题');
@@ -127,7 +128,7 @@ function verdict(R){var F=R.flags,good=[],bad=[],life=D.conditions[0].opts[S.con
  (D.specials||[]).forEach(function(x){if(F[x.f]&&p<x.lt)title=x.t});
  return {v:v,title:title,good:good.slice(0,3),bad:bad.slice(0,3),allBad:bad,lv:ok?'good':mid?'mid':'bad'}}
 
-function ending(R){$('#stepv').textContent='复盘';prog(1);wide(1);top0();var V=verdict(R);
+function ending(R){setGameCampVisible(true);$('#stepv').textContent='复盘';prog(1);wide(1);top0();var V=verdict(R);
  var lifeO=D.conditions.map(function(c){return c.opts[S.cond[c.id]].t}),pc=R.profit>=0?'var(--good)':'var(--bad)';
  var slip='<div class="slip'+(RMQ.matches?'':' in')+'"><div class="sh"><span class="brand">'+BR+' · 模拟复盘</span><span class="tag">模拟</span></div>'+
   '<div class="lbl">'+S.days+' 天模拟收益（'+UI.profitNote+'）</div><div class="big" style="color:'+pc+'">'+money(R.profit)+'</div>'+
@@ -164,7 +165,7 @@ function caseHtml(c,full){return '<div class="real"><div class="ch"><b>'+esc(c.a
  '<div class="kv"><span>起点：</span>'+esc(c.cond.life_context)+' '+esc(c.cond.technical_background)+' <span>每天时间：</span>'+esc(c.cond.daily_time)+'</div>'+
  '<div class="kv" style="color:var(--ink)"><span>项目：</span>'+esc(c.project)+'</div><div class="kv"><span>踩过的坑：</span></div><ul>'+c.pits.map(function(p){return '<li>'+esc(p)+'</li>'}).join('')+'</ul>'+
  c.results.map(function(r){return '<div class="res"><b>自述结果：'+esc(r.amount_text)+'</b><div class="mute">周期：'+esc(r.period)+'</div><div class="mute">口径：'+esc(r.scope)+'</div>'+(full?'<div class="mute">'+esc(r.description)+'</div>':'')+'</div>'}).join('')+
- '<div class="src">来源：<a href="/#/pages/camp/index?from=game-case&amp;source='+encodeURIComponent(c.url)+'" rel="noopener">了解体验营并查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
+ '<div class="src">来源：<a href="/#/pages/camp/index?from=game-case&amp;source='+encodeURIComponent(c.url)+'" rel="noopener">查看原帖</a> · '+c.date+'（北京时间）</div></div>'}
 function realBlock(){if(!D.cases.length)return '<div class="grp"><div class="q">真实案例</div><p class="mute">目前还没有核实可展示的同方向案例；模拟数值不代表真实收益。</p></div>';var M=matchCases(),top=M.filter(function(x){return x.sc>0}).slice(0,2);if(!top.length)top=M.slice(0,1);
  return '<div class="h2s"><h2>可参考的真实案例</h2><span class="tag real">作者自述</span></div><p class="mute">'+D.dataNote+' 仅供了解作者的个人经历，不代表你会得到相同结果。</p>'+
  top.map(function(x){return caseHtml(x.c,false)}).join('')+'<details class="all"><summary>看全部 '+D.cases.length+' 个案例</summary>'+D.cases.map(function(c){return caseHtml(c,true)}).join('')+'</details>'}

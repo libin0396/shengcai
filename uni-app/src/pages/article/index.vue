@@ -2,31 +2,41 @@
   <view class="detail-page">
     <SiteHeader active="intelligence" />
     <view class="detail-shell">
-      <view class="back" @click="goBack">← 返回文章</view>
+      <view class="back" role="link" tabindex="0" @click="goBack" @keydown.enter.prevent="goBack">← 返回案例库</view>
       <view v-if="article" class="article-layout">
         <view class="main-column">
           <view class="article-header">
             <view v-if="study" class="case-tags"><text>{{study.direction}}</text><text v-for="tag in study.startTags" :key="tag">{{tag}}</text><text class="verified-tag">完整解读 · 数字已核对</text></view>
             <view v-else class="source-label">● 来源：生财有术 <text>{{ article.isDigested ? '精华文章' : '圈友分享' }}</text></view>
-            <view class="headline">{{ article.title }}</view>
+            <view class="headline">{{ cleanCaseTitle(article.title) }}</view>
             <view class="byline">原帖作者：{{ article.author || '生财圈友' }} · 来源：生财有术 · {{ formatDate(article.publishedAt) }} <text v-if="study" class="inline-source" @click="openSource">查看原帖 ↗</text></view>
+            <button v-if="study && study.simulation" class="case-play-top" @click="openSimulation"><text>▶ 先体验相关模拟，再读更有感觉</text><text>开始 →</text></button>
           </view>
           <template v-if="study">
             <view class="case-overview"><view class="case-lead"><view class="lead-label">一句话看懂 · 站方整理</view><view class="lead-body">{{study.oneLiner}}</view></view><view class="number-grid"><view v-for="n in study.numbers" :key="n.label" class="number-card" :class="{'undisclosed':!n.value}"><text class="number-label">{{n.label}}</text><text class="number-value">{{n.value || '未披露'}}</text><text class="number-note">{{n.note}}</text></view></view></view>
             <view class="case-block"><view class="case-heading"><text>1</text>这是什么项目</view><view class="fact-card"><view v-for="row in projectRows" :key="row[0]" class="fact-row"><text>{{row[0]}}</text><text>{{row[1] || '未披露'}}</text></view></view></view>
             <view class="case-block"><view class="case-heading"><text>2</text>作者从什么条件开始</view><view class="fact-card"><view v-for="row in startRows" :key="row[0]" class="fact-row"><text>{{row[0]}}</text><text :class="{'not-disclosed':!row[1]}">{{row[1] || '未披露'}}</text></view></view></view>
-            <view class="case-block"><view class="case-heading"><text>3</text>具体怎么做</view><view class="case-timeline"><view v-for="step in study.steps" :key="step.title" class="case-step"><view><text class="case-step-title">{{step.title}}</text><text class="case-step-detail">{{step.detail}}</text></view></view></view></view>
+            <view id="case-steps" class="case-block"><view class="case-heading"><text>3</text>具体怎么做</view><view class="case-timeline"><view v-for="step in study.steps" :key="step.title" class="case-step"><view><text class="case-step-title">{{step.title}}</text><text class="case-step-detail">{{step.detail}}</text></view></view></view></view>
             <view class="case-block"><view class="case-heading"><text>4</text>结果与踩坑</view><view class="fact-card result-card"><view v-for="n in study.numbers.filter(n=>n.value)" :key="n.label" class="fact-row"><text>{{n.label}}</text><text>{{n.value}} · {{n.note}}</text></view></view><view v-for="pit in study.pitfalls" :key="pit.title" class="pitfall"><text class="case-step-title">坑：{{pit.title}}</text><text class="case-step-detail">{{pit.detail}}</text></view></view>
             <view class="case-block"><view class="case-heading"><text>5</text>适合谁、开始前要想什么</view><view class="judge-card"><text class="judge-label">站方判断 · 不是原帖内容</text><view class="judge-title">可能适合</view><view v-for="(line,i) in study.judgement.fitFor" :key="'fit'+i" class="judgement-line">• {{line}}</view><view class="judge-title">开始前想清楚</view><view v-for="(line,i) in study.judgement.thinkFirst" :key="'think'+i" class="judgement-line">• {{line}}</view></view></view>
           </template>
           <view v-else class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">短摘要 · 资料不足</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
           <view v-if="isAiArticle(article)" :class="['practice', {'study-practice':study}]"><view class="camp-kicker">从看到做到 · 模拟体验</view><view class="practice-title">{{matchingGame ? `读完，亲手试一次：${matchingGame.name}` : '先体验一个 AI 项目'}}</view><view class="practice-copy">情境与反馈为模拟，可以先动手尝试，再判断下一步。</view><button class="play-action" @click="openSimulation">{{matchingGame ? '玩相关模拟 →' : '查看模拟项目 →'}}</button></view>
-          <view class="camp-feature"><view class="camp-content"><view class="camp-badges"><text>生财有术 · AI 成万事</text><text>具体时间以入口说明为准</text></view><view class="camp-title">{{study?.campHook || '想把这篇里的做法用到自己身上？'}}</view><view class="camp-copy">3 天体验营，从了解机会到尝试做出成果。</view><view class="camp-benefits"><view><text>看机会</text>找到适合你的方向</view><view><text>学路径</text>从零启动完整步骤</view><view><text>有人带</text>老师 + AI Agent 答疑</view><view><text>出成果</text>亲手做出第一个成果</view></view><view class="camp-gets">2 场直播大课 · 3 天答疑群 · 1 张体验卡</view><view class="camp-join"><button class="camp-action" @click="openCamp">了解三天体验营 →</button><image v-if="campQr" :src="campQr" mode="aspectFit" class="camp-qr" @click="openCamp" /></view><view class="camp-note">不保证收入 · 时间和参与方式以入口说明为准</view></view><view class="camp-art" @click="previewCampPoster"><image :src="campaign.posterUrl" mode="aspectFit" class="camp-full-poster"/><text>点击查看完整海报</text></view></view>
+          <view class="camp-feature"><view class="camp-content"><view class="camp-badges"><text>生财有术 · AI 成万事</text><text>具体时间以入口说明为准</text></view><view class="camp-title">{{study?.campHook || '想把这篇里的做法用到自己身上？'}}</view><view class="camp-copy">3 天体验营，从了解机会到尝试做出成果。</view><view class="camp-benefits"><view><text>看机会</text>找到适合你的方向</view><view><text>学路径</text>从零启动完整步骤</view><view><text>有人带</text>老师 + AI Agent 答疑</view><view><text>出成果</text>亲手做出第一个成果</view></view><view class="camp-gets">2 场直播大课 · 3 天答疑群 · 1 张体验卡</view><view class="camp-join">
+              <!-- #ifdef H5 -->
+              <a class="camp-action" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">加入体验营 ↗</a>
+              <!-- #endif -->
+              <!-- #ifndef H5 -->
+              <button class="camp-action" @click="openCamp">查看体验营二维码</button>
+              <!-- #endif -->
+              <image v-if="campQr" :src="campQr" mode="aspectFit" class="camp-qr" @click="openCamp" />
+            </view><button class="camp-detail-link" @click="openCamp">了解体验营 →</button><view class="camp-note">不保证收入 · 时间和参与方式以入口说明为准</view></view><view class="camp-art" @click="previewCampPoster"><image :src="campaign.posterUrl" mode="aspectFit" class="camp-full-poster"/><text>点击查看完整海报</text></view></view>
+          <JoinOffer variant="inline" from="article" />
           <view v-if="isProjectArticle && !(study && matchingGame)" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? (reservationCount >= 10 ? `已有 ${reservationCount} 条预约记录。` : '想体验的人多了，我们会优先考虑。') + ' 同一浏览器仅计一次，不收联系方式，也不会自动通知。' : '预约统计暂不可用，请稍后再试。' }}</view></view>
           <view v-else-if="isEventArticle" class="reservation"><view class="section-heading">想了解线下活动？</view><view class="section-hint">在站内浏览已收录的活动信息和参与方式。</view><button class="reserve-button" @click="openEvents">查看线下活动</button></view>
           <view class="actions"><button class="save" @click="toggleSaved">{{ saved ? '★ 已收藏' : '☆ 收藏' }}</button><button class="source" @click="openSource">加入生财，查看完整文章 ↗</button></view>
 
-          <view v-if="related.length" class="related"><view class="related-label">KEEP EXPLORING</view><view class="section-heading">接着看看相关案例</view><view class="section-hint">根据共同话题推荐</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
+          <view v-if="related.length" class="related"><view class="related-label">继续探索</view><view class="section-heading">接着看看相关案例</view><view class="section-hint">根据共同话题推荐</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
           <view class="footnote">{{study ? '本页是站方解读，不是原文转载；数字为作者自述，本站未独立核实。' : '内容基于已收录资料整理，完整语境与参与条件请以原始来源为准。'}}收藏保存在当前设备。</view>
         </view>
         <view class="side-column"><view class="side-card"><view class="side-eyebrow">读完，亲手试一次</view><view class="side-title">{{matchingGame ? matchingGame.name : '找到适合自己的方向'}}</view><view class="side-copy">从案例中了解做法，再亲手体验项目里的关键步骤。过程和金额均为模拟。</view><button class="side-action" @click="openSimulation">{{matchingGame ? '体验这个项目 →' : '看看模拟项目 →'}}</button></view><view v-if="related.length" class="side-related"><view class="side-related-title">其他方向的案例</view><view v-for="item in related" :key="item.id" class="side-related-item" @click="openArticle(item)">{{item.title}}<text>{{item.author}} · 生财有术</text></view></view><view class="side-camp" @click="openCamp"><image :src="campaign.posterUrl" mode="aspectFit" class="side-poster"/><view class="side-camp-content"><text>AI 成万事 · 3 天体验营</text><view>看机会、学路径，亲手试一试。</view><button>了解体验营 →</button></view></view></view>
@@ -35,22 +45,40 @@
       <view v-else-if="feedMeta.loadFailed" class="not-found"><view>暂时无法加载文章</view><text>请检查网络连接后重试。</text><button @click="refreshFeed">重新加载</button></view>
       <view v-else class="not-found"><view>暂未找到这篇文章</view><text>它可能不在当前已收录的资料中。</text><button @click="goBack">返回文章列表</button></view>
     </view>
+    <view v-if="study && study.simulation && showPlayBar && !dismissPlayBar" class="case-play-sticky"><view><text>{{study.simulation.name}} · 模拟</text><text>读到这里，亲手试一次</text></view><button @click="openSimulation">玩相关模拟 ▶</button><button class="case-play-close" aria-label="关闭模拟推荐" @click="dismissPlayBar=true">×</button></view>
   </view>
 </template>
 
 <script setup>
-import {computed, ref, onMounted, onUnmounted} from 'vue';
-import {onLoad, onShow} from '@dcloudio/uni-app';
+import {computed, ref, watch, onMounted, onUnmounted, getCurrentInstance} from 'vue';
+import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
 import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';
 import summaries from '../../data/article-summaries.json';
 import SiteHeader from '../../components/SiteHeader.vue';
+import JoinOffer from '../../components/JoinOffer.vue';
+import {track} from '../../data/track.js';
 import {matchArticleGame,simulationUrl} from '../../data/game-matching.js';
-import {caseById,caseAsArticle} from '../../data/case-studies.js';
+import {caseStudies,caseById,caseAsArticle} from '../../data/case-studies.js';
+import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary,relatedReviewedCases} from '../../data/case-library.mjs';
 // #ifdef H5
 import {makeCampQr} from '../camp/camp-poster.js';
 // #endif
 
-const id=ref(''), campQr=ref('');
+const id=ref(''), campQr=ref(''), showPlayBar=ref(false), dismissPlayBar=ref(false);
+const pageInstance=getCurrentInstance();
+let playBarTimer;
+function updatePlayBar(){
+  if(!study.value?.simulation){showPlayBar.value=false;return;}
+  // #ifdef H5
+  const section=document.getElementById('case-steps');
+  showPlayBar.value=!!section&&section.getBoundingClientRect().bottom<90;
+  // #endif
+  // #ifndef H5
+  uni.createSelectorQuery().in(pageInstance.proxy).select('#case-steps').boundingClientRect(rect=>{showPlayBar.value=!!rect&&rect.bottom<90;}).exec();
+  // #endif
+}
+onPageScroll(()=>{clearTimeout(playBarTimer);playBarTimer=setTimeout(updatePlayBar,80);});
+onUnmounted(()=>clearTimeout(playBarTimer));
 const savedIds=ref([]);
 const study=computed(()=>caseById(id.value));
 const article=computed(()=>study.value ? caseAsArticle(study.value) : (Array.isArray(articles)?articles:[]).find(item=>String(item.id)===id.value));
@@ -59,8 +87,8 @@ const startRows=computed(()=>study.value ? [['职业与状态',study.value.start
 const storageKey=computed(()=>`article:${id.value}`);
 const saved=computed(()=>savedIds.value.includes(storageKey.value));
 const expandedSummary=computed(()=>summaries[id.value]||null);
-const displaySummary=computed(()=>{const s=String(article.value?.overview||article.value?.summary||'').trim();return s ? /[。！？.!?…]$/.test(s)?s:`${s}…` : '当前暂无可展示的摘要。';});
-const matchingGame=computed(()=>study.value?.simulation || matchArticleGame(article.value));
+const displaySummary=computed(()=>shortCaseSummary(article.value?.overview||article.value?.summary));
+const matchingGame=computed(()=>study.value ? study.value.simulation : matchArticleGame(article.value));
 const isEventArticle=computed(()=>/(线下|聚会|组局|大会|沙龙|夜话)/i.test(String(article.value?.title||'')));
 const isProjectArticle=computed(()=>!!article.value && isAiArticle(article.value) && !isEventArticle.value && (article.value.kind==='案例'||/(项目|副业|变现|获客|带货|接单|营收|收入|小程序|工具|工作流|智能体|开发|搭建|视频制作|创作)/i.test(`${article.value.title||''} ${article.value.summary||''}`)));
 const reserveLoading=ref(false), reserved=ref(false), reservationCount=ref(0), reservationAvailable=ref(false);
@@ -73,28 +101,30 @@ async function loadReservation(){reservationAvailable.value=false;reserved.value
 async function reserve(){if(!reservationAvailable.value||reserveLoading.value||reserved.value)return;reserveLoading.value=true;const current=id.value;try{const key=`article:${current}`;const d=await api({url:'/api/reservations',method:'POST',header:{'Content-Type':'application/json'},data:{projectId:key}});if(d?.projectId!==key||d.reserved!==true||d.countUnit!=='browser'||!Number.isInteger(d.count)||d.count<0)throw Error();if(id.value!==current)return;reservationCount.value=d.count;reserved.value=true;}catch{reservationAvailable.value=false;uni.showToast({title:'预约未完成，请稍后再试',icon:'none'});}finally{reserveLoading.value=false;}}
 const related=computed(()=>{
   if(!article.value)return [];
-  if(study.value)return study.value.related.map(x=>caseById(x)).filter(Boolean).map(caseAsArticle);
+  if(study.value)return relatedReviewedCases(study.value,caseStudies).map(caseAsArticle);
   const topics=new Set((Array.isArray(article.value.topics)?article.value.topics:[]).filter(topic=>topic!=='community'));
   if(!topics.size)return [];
-  return (Array.isArray(articles)?articles:[]).filter(item=>String(item.id)!==id.value&&isAiArticle(item)&&(item.topics||[]).some(topic=>topics.has(topic))).slice(0,3);
+  return (Array.isArray(articles)?articles:[]).filter(item=>String(item.id)!==id.value&&isCaseLibraryItem(item)&&(item.topics||[]).some(topic=>topics.has(topic))).slice(0,3);
 });
+watch(()=>article.value?.title,title=>{if(title)uni.setNavigationBarTitle({title:cleanCaseTitle(title)});},{immediate:true});
 function loadLocal(){try{const ids=uni.getStorageSync('ainpe:saved');savedIds.value=Array.isArray(ids)?ids:[];}catch{savedIds.value=[];}}
 onLoad(options=>{id.value=String(options?.id||'');loadLocal();loadReservation();});
-onShow(()=>{if(id.value){loadLocal();loadReservation();}});
+onShow(()=>{if(id.value){loadLocal();loadReservation();if(article.value?.title)uni.setNavigationBarTitle({title:cleanCaseTitle(article.value.title)});}});
 // #ifdef H5
-function syncArticleFromHash(){const hash=window.location.hash;const q=hash.indexOf('?');if(q<0||hash.slice(0,q)!=='#/pages/article/index')return;const next=new URLSearchParams(hash.slice(q+1)).get('id')||'';if(next!==id.value){id.value=next;loadLocal();if(next)loadReservation();}}
-onMounted(()=>{window.addEventListener('hashchange',syncArticleFromHash);try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{campQr.value=''}});
-onUnmounted(()=>window.removeEventListener('hashchange',syncArticleFromHash));
+function syncArticleFromHash(){const hash=window.location.hash;const q=hash.indexOf('?');if(q<0||hash.slice(0,q)!=='#/pages/article/index')return;const next=new URLSearchParams(hash.slice(q+1)).get('id')||'';if(next!==id.value){id.value=next;showPlayBar.value=false;dismissPlayBar.value=false;loadLocal();if(next)loadReservation();}}
+onMounted(()=>{window.addEventListener('hashchange',syncArticleFromHash);window.addEventListener('scroll',updatePlayBar,true);try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{campQr.value=''}});
+onUnmounted(()=>{window.removeEventListener('hashchange',syncArticleFromHash);window.removeEventListener('scroll',updatePlayBar,true)});
 // #endif
 function toggleSaved(){const next=saved.value?savedIds.value.filter(key=>key!==storageKey.value):[...savedIds.value,storageKey.value];try{uni.setStorageSync('ainpe:saved',next);savedIds.value=next;uni.showToast({title:saved.value?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
-function goBack(){const pages=getCurrentPages();if(pages.length>1)uni.navigateBack();else uni.reLaunch({url:'/pages/discover/index'});}
+function goBack(){uni.redirectTo({url:'/pages/intelligence/index'});}
 function openCamp(){uni.navigateTo({url:'/pages/camp/index?from=article'});}
+function trackCampJoin(){track('camp_join_click',{page:'article'});track('outbound_click',{target:'camp',from:'article'})}
 function previewCampPoster(){uni.previewImage({urls:[campaign.posterUrl],current:campaign.posterUrl});}
 function openEvents(){uni.navigateTo({url:'/pages/events/index'});}
 function openSimulation(){
-if(study.value?.simulation?.url){uni.navigateTo({url:study.value.simulation.url});return;}
+if(study.value?.simulation?.url){const url=study.value.simulation.url;uni.navigateTo({url:url+(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+id.value)});return;}
 // #ifdef H5
-if(matchingGame.value){const url=simulationUrl(matchingGame.value.file);if(url){window.location.href=url;return;}}
+if(matchingGame.value){let url=simulationUrl(matchingGame.value.file);if(url){url+=(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+id.value);window.location.href=url;return;}}
 // #endif
 uni.navigateTo({url:'/pages/simulate/index'});
 }
@@ -115,5 +145,7 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 /* V14 案例解读：数据卡、编号章节与时间线 */
 .detail-page{background:#f7f3ea;color:#13241b}.detail-shell{max-width:1160px;box-sizing:border-box;padding:24px 24px 70px}.back{font-size:13px;color:#83958a;margin:0 0 14px;cursor:pointer}.article-layout{gap:36px;align-items:flex-start}.article-header{padding:0 0 18px}.case-tags{display:flex;flex-wrap:wrap;gap:6px}.case-tags text{padding:3px 9px;border-radius:6px;background:#e2f1e7;color:#0e5a3a;font-size:12px;font-weight:800}.case-tags .verified-tag{background:#e6f1fb;color:#0c447c}.headline{font-size:32px;line-height:1.35;font-weight:850;margin:10px 0 8px;color:#13241b}.byline{font-size:13px;line-height:1.6;color:#83958a}.inline-source{color:#0e5a3a;font-weight:700;cursor:pointer}.case-lead{background:#004630;border-radius:18px;padding:18px 20px}.lead-label{font-size:12px;color:#ffc94d}.lead-body{font-size:17px;line-height:1.6;margin-top:4px}.number-grid{gap:10px;margin-top:14px}.number-card{padding:12px 14px;border-radius:14px;border-color:#e5decf;gap:2px}.number-label{color:#0e5a3a;font-weight:800}.number-value{font-size:24px;color:#13241b}.number-note{font-size:12px;line-height:1.45}.number-card.undisclosed .number-value{font-size:19px;color:#83958a}.case-block{margin-top:30px}.case-heading{display:flex;align-items:center;gap:10px;font-size:21px;line-height:1.35;font-weight:850;color:#13241b}.case-heading>text{display:flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;border-radius:8px;background:#ee5a24;color:white;font-size:14px;font-weight:900}.fact-card{margin-top:10px;padding:4px 18px;background:#fff;border:1px solid #e5decf;border-radius:16px}.fact-row{grid-template-columns:96px minmax(0,1fr);gap:12px;padding:12px 0;border-color:#e5decf;font-size:15px;line-height:1.6}.fact-row:first-child{border-top:0;margin-top:0}.fact-row>text:first-child{font-size:14px;color:#83958a;font-weight:700}.fact-row>text:nth-child(2){min-width:0;overflow-wrap:anywhere}.fact-row .not-disclosed{justify-self:start;align-self:center;border:1px dashed #a8b7ac;border-radius:5px;padding:0 7px;font-size:12px;color:#83958a;font-weight:700}.case-timeline{position:relative;margin-top:10px;padding-left:22px}.case-timeline:before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:#e5decf}.case-step{position:relative;display:block;margin:0;padding:8px 0 14px}.case-step:before{content:'';position:absolute;left:-19px;top:14px;width:12px;height:12px;box-sizing:border-box;border:3px solid #0e5a3a;border-radius:50%;background:#f7f3ea}.case-step-title{font-size:16px;color:#13241b;font-weight:800}.case-step-detail{font-size:14px;line-height:1.65;color:#647b6e;margin-top:3px}.pitfall{margin-top:10px;padding:14px 18px;border:1px solid #f6c9b5;border-radius:16px;background:#fde9df}.pitfall .case-step-title{color:#c9481a}.judge-card{margin-top:10px;padding:16px 18px;background:#eef0fb;border:1px solid #cdd2f0;border-radius:16px}.judge-label{display:inline-block;padding:2px 8px;background:#dcdaF8;border-radius:6px;color:#3c3489;font-size:12px;font-weight:800}.judge-title{font-size:15px;font-weight:800;margin-top:10px}.judgement-line{font-size:14px;line-height:1.75;color:#647b6e;margin-top:3px}.camp-feature{grid-template-columns:1.25fr 1fr;margin:30px 0 24px;border-radius:24px;background:linear-gradient(135deg,#ff7a3d 0%,#ee5a24 55%,#d9481a 100%)}.camp-content{padding:26px}.camp-badges text:last-child{background:#0b2e20;color:#ffd9c8}.camp-feature .camp-title{font-size:25px;line-height:1.3;margin-top:12px}.camp-feature .camp-copy{font-size:15px}.camp-benefits{gap:8px;margin-top:14px}.camp-benefits view{border-radius:12px;padding:8px 10px;font-size:13px}.camp-benefits text{font-size:15px}.camp-gets{margin-top:12px}.camp-join{display:flex;align-items:center;gap:12px;margin-top:16px}.camp-action{flex:1;display:block;margin:0;min-width:0;line-height:50px;text-align:center}.camp-qr{width:64px;height:64px;flex:none;padding:2px;background:white;border-radius:8px;image-rendering:pixelated}.camp-art{background:#0b2e20;padding:22px 18px}.camp-full-poster{max-width:240px;height:420px}.side-column{width:300px}.side-card,.side-related{border-color:#e5decf;border-radius:16px}.side-camp{padding:0;overflow:hidden;background:#ee5a24;color:white;border-radius:18px}.side-poster{display:block;width:100%;height:190px;background:#0b2e20}.side-camp-content{padding:14px 16px 16px}.side-camp-content text{color:white;font-weight:800}.side-camp-content view{font-size:13px;font-weight:400;margin:5px 0 10px}.side-camp-content button{width:100%;margin:0;line-height:42px;background:#fff;color:#d9481a;font-size:14px;font-weight:800}.study-practice{display:none}
 @media(max-width:899px){.study-practice{display:block;margin-top:25px}}
-@media(max-width:700px){.detail-shell{padding:18px 16px 80px}.headline{font-size:23px}.article-header{padding-bottom:16px}.article-layout{display:block}.lead-body{font-size:16px}.number-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.number-card{padding:12px}.number-value{font-size:19px}.case-heading{font-size:19px}.fact-card{padding:4px 14px}.fact-row{grid-template-columns:76px minmax(0,1fr);font-size:14px}.case-step-title{font-size:15px}.camp-feature{grid-template-columns:1fr}.camp-content{padding:20px}.camp-art{order:-1;padding:16px;min-height:0}.camp-full-poster{height:250px}.camp-feature .camp-title{font-size:21px}.camp-qr{width:60px;height:60px}}
+@media(max-width:700px){.detail-shell{padding:18px 16px 80px}.headline{font-size:23px}.article-header{padding-bottom:16px}.article-layout{display:block}.lead-body{font-size:16px}.number-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.number-card{padding:12px}.number-value{font-size:19px}.case-heading{font-size:19px}.fact-card{padding:4px 14px}.fact-row{grid-template-columns:76px minmax(0,1fr);font-size:14px}.case-step-title{font-size:15px}.camp-feature{grid-template-columns:1fr}.camp-content{padding:20px}.camp-art{order:-1;padding:16px;min-height:0}.camp-full-poster{height:250px}.camp-feature .camp-title{font-size:21px}.camp-join{flex-wrap:wrap}.camp-action{flex-basis:145px}.camp-qr{width:120px;height:120px;max-width:100%}}
+.case-play-top{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:14px 0 0;padding:11px 14px;border-radius:9px;background:#fff1e8;color:#bd4d1d;font-size:13px;font-weight:800;line-height:1.4;text-align:left}.case-play-top:after,.case-play-sticky button:after{border:0}.case-play-top text:last-child{flex:none}.case-play-sticky{display:none}@media(max-width:700px){.case-play-sticky{position:fixed;z-index:94;left:0;right:0;bottom:calc(52px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-top:1px solid #e3e9df;box-shadow:0 -6px 18px #143a2518}.case-play-sticky view{flex:1;min-width:0}.case-play-sticky view text{display:block;font-size:12px;color:#718879;line-height:1.45}.case-play-sticky view text:first-child{font-weight:800;color:#174932}.case-play-sticky button{flex:none;margin:0;padding:0 12px;line-height:38px;background:#0e5a3a;color:#fff;font-size:12px;font-weight:800}.case-play-sticky .case-play-close{padding:0 5px;background:transparent;color:#718879;font-size:22px}}
+.camp-action{text-decoration:none;border-radius:7px;box-sizing:border-box}.camp-detail-link{display:block;width:auto;margin:8px 0 0;padding:0;background:transparent;color:#fff5ec;font-size:13px;line-height:28px;text-align:left;font-weight:700}.camp-detail-link:after{border:0}
 </style>

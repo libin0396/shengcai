@@ -23,6 +23,7 @@ uni-app/src/data/*
 !uni-app/src/data/case-studies.js
 !uni-app/src/data/case-studies-published.json
 !uni-app/src/data/article-categories.js
+!uni-app/src/data/case-library.mjs
 !uni-app/src/data/site-config.json
 !uni-app/src/data/feed.json
 !uni-app/src/data/article-summaries.json

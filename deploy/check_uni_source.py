@@ -18,6 +18,6 @@ for file in root.rglob('*'):
     if not file.is_file(): continue
     if file.name.startswith('_verify-') or file.suffix.lower() in {'.db','.sqlite','.sqlite3','.pem','.key','.env'}:
         raise SystemExit('Unexpected local artifact in uni source')
-    if file.suffix.lower() in {'.vue','.js','.json','.html','.css'} and secret.search(file.read_text(encoding='utf8')):
+    if file.suffix.lower() in {'.vue','.js','.mjs','.json','.html','.css'} and secret.search(file.read_text(encoding='utf8')):
         raise SystemExit('Possible credential in uni source; inspect locally')
 print('Uni source contains only reviewed short curated content and no private feed snapshots or known local artifacts.')

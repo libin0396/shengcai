@@ -27,7 +27,7 @@ def copy_file(rel):
     shutil.copyfile(src,dst)
 for rel in ['package.json','package-lock.json','index.html','vite.config.js',
             'src/App.vue','src/main.js','src/manifest.json','src/pages.json',
-            'src/data/content.js','src/data/storage.js','src/data/article-categories.js',
+            'src/data/content.js','src/data/storage.js','src/data/article-categories.js','src/data/case-library.mjs',
             'src/data/site-config.json']:
     copy_file(Path(rel))
 for sub in ['src/pages','src/components','src/static']:
@@ -37,7 +37,7 @@ for sub in ['src/pages','src/components','src/static']:
         if src.is_file():
             if src.name.startswith('_verify-'):
                 continue
-            if src.suffix.lower() not in {'.vue','.js','.css','.html','.png','.jpg','.jpeg','.webp','.svg','.json'}:
+            if src.suffix.lower() not in {'.vue','.js','.css','.html','.png','.jpg','.jpeg','.webp','.gif','.svg','.json'}:
                 raise ValueError('unexpected source file type: '+str(src))
             copy_file(src.relative_to(source))
 data=target/'src/data'

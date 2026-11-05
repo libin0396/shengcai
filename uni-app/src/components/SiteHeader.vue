@@ -1,7 +1,7 @@
 <template>
   <view class="site-header" :style="{ paddingTop: statusBarHeight + 'px' }">
     <view class="site-header-main">
-      <view class="site-brand" @tap="go('/pages/discover/index')">
+      <view class="site-brand" role="link" tabindex="0" aria-label="返回首页" @tap="go('/pages/discover/index')" @keydown.enter.prevent="go('/pages/discover/index')" @keydown.space.prevent="go('/pages/discover/index')">
         <view class="site-brand-mark">↗</view>
         <view class="site-brand-name"><text class="site-brand-cn">AI 实战情报站</text><text class="site-brand-en">AINPE.</text></view>
       </view>
@@ -12,7 +12,7 @@
       </scroll-view>
       <view class="site-actions">
         <button class="site-contact" @tap="contactOpen = true">联系站长</button>
-        <button class="site-camp" :class="{played:hasPlayed}" @tap="go('/pages/camp/index?from=header')">{{hasPlayed ? '你的下一步' : '3 天体验营'}}</button>
+        <button v-if="!hideCamp" class="site-camp" @tap="go('/pages/camp/index?from=header')">3 天体验营</button>
       </view>
     </view>
     <view v-if="contactOpen" class="site-contact-overlay" @tap="contactOpen = false">
@@ -28,13 +28,10 @@
 </template>
 
 <script setup>
+import {track} from '../data/track.js';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
-
-defineProps({ active: { type: String, default: '' } });
-const contactOpen = ref(false), hasPlayed=ref(false);
-function readPlayed(){try{const v=uni.getStorageSync('ainpe:played');hasPlayed.value=!!v}catch{hasPlayed.value=false}}
-onShow(readPlayed);
+defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false } });
+const contactOpen = ref(false);
 // #ifdef H5
 function escapeContact(e){if(e.key==='Escape') contactOpen.value=false}
 onMounted(()=>window.addEventListener('keydown',escapeContact));
@@ -52,7 +49,7 @@ const links = [
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
-function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
+function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>track('contact_copy',{from:'header'}) }); }
 </script>
 
 <style scoped>
@@ -87,4 +84,5 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4' }); }
 @media(max-width:900px) { .site-header-main { padding:10px 16px 0; gap:8px; flex-wrap:wrap; justify-content:space-between; } .site-brand-cn { font-size:15px; } .site-brand-en { display:none; } .site-actions { margin-left:auto; } .site-nav-scroll { flex:0 0 100%; order:3; } .site-nav { gap:23px; } .site-nav-item { padding:12px 0 10px; } .site-contact { font-size:11px; } }
 @media(max-width:480px) { .site-nav { width:100%; gap:8px; justify-content:space-between; } .site-nav-item { flex-shrink:0; white-space:nowrap; font-size:12px; } }
 @media(max-width:360px) { .site-header-main { padding-left:12px; padding-right:12px; gap:4px; } .site-brand { gap:6px; } .site-brand-mark { width:30px; height:30px; font-size:20px; } .site-brand-cn { font-size:13px; } .site-actions { gap:4px; } .site-contact { padding:0 2px; font-size:10px; } .site-camp { padding:0 9px; font-size:11px; } }
+@media(max-width:700px) { .site-header-main{padding:9px 16px;min-height:54px;flex-wrap:nowrap}.site-nav-scroll{position:fixed;z-index:95;left:0;right:0;bottom:0;width:100%;background:#082d20;box-shadow:0 -4px 16px #0002;padding:0 8px env(safe-area-inset-bottom);overflow:hidden}.site-nav{display:flex;width:100%;min-width:100%;gap:0;justify-content:space-between}.site-nav-item{flex:1;min-width:0;min-height:52px;padding:8px 2px;border-bottom:0;border-top:3px solid transparent;line-height:20px;text-align:center;font-size:12px}.site-nav-item.is-current{border-top-color:#ffcd55;border-bottom-color:transparent}.site-contact{font-size:11px} }
 </style>

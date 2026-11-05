@@ -11,5 +11,5 @@ button { font-family: inherit; }
 button::after { border: 0; }
 .page-shell { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; }
 .visually-muted { color: #718477; }
-@media (max-width: 700px) { .page-shell { padding: 18px 16px 48px; } }
+@media (max-width: 700px) { .page-shell { padding: 18px 16px 48px; } page, uni-page-body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); } }
 </style>

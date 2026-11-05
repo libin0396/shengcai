@@ -9,11 +9,13 @@
     <view class="tabs"><button :class="{on:tab==='article'}" @click="tab='article'">文章 {{savedArticles.length}}</button><button :class="{on:tab==='event'}" @click="tab='event'">线下活动 {{savedEvents.length}}</button></view>
     <view v-if="tab==='article'"><view v-for="a in savedArticles" :key="a.id" class="row" @click="openArticle(a)"><text class="kind">{{a.kind || '分享'}} · {{a.author}}</text><text class="name">{{a.title}}</text><text class="summary">{{a.overview||a.summary}}</text><view class="row-bottom"><text>查看导读 →</text><text @click.stop="remove('article',a)">取消收藏</text></view></view><view v-if="!savedArticles.length" class="empty">还没有收藏文章。<button @click="goDiscover">去发现</button></view></view>
     <view v-else><view v-for="e in savedEvents" :key="e.id" class="row"><text class="kind">{{e.city}} · {{e.typeText || '活动'}}</text><text class="name">{{e.name}}</text><text class="summary">{{e.summary||e.description}}</text><view class="row-bottom"><text @click="goEvents">在线下活动页查看 →</text><text @click="remove('event',e)">取消收藏</text></view></view><view v-if="!savedEvents.length" class="empty">还没有收藏线下活动。<button @click="goEvents">查看线下活动</button></view></view>
+    <JoinOffer variant="inline" from="mine" />
     <view class="data-notice">为了解模拟体验和体验营入口的使用情况，本网站会记录页面与按钮事件，并在本机保存随机标识；不记录输入内容或完整网址，记录约保留 90 天。</view>
   </view><CampFooter/></view>
 </template>
 <script setup>
 import {computed,ref,onMounted,onUnmounted} from 'vue';import {onShow} from '@dcloudio/uni-app';
+import JoinOffer from '../../components/JoinOffer.vue';
 import SiteHeader from '../../components/SiteHeader.vue';import CampFooter from '../../components/CampFooter.vue';
 import {articles,events} from '../../data/content.js';import {getSaved,setSaved} from '../../data/storage.js';import personas from '../../data/personas.json';
 import {caseStudies,caseAsArticle} from '../../data/case-studies.js';

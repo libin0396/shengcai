@@ -3,7 +3,7 @@
     {
       "path": "pages/discover/index",
       "style": {
-        "navigationBarTitleText": "发现"
+        "navigationBarTitleText": "AI 实战情报站"
       }
     },
     {
@@ -39,7 +39,7 @@
     {
       "path": "pages/saved/index",
       "style": {
-        "navigationBarTitleText": "我的收藏"
+        "navigationBarTitleText": "我的"
       }
     },
     {

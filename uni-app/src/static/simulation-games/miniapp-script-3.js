@@ -10,7 +10,7 @@
     var posterLink=document.createElement('a');posterLink.href='/static/assets/ai-camp-poster.jpg';posterLink.rel='noopener noreferrer';posterLink.setAttribute('aria-label','打开完整体验营海报');
     var poster=document.createElement('img');poster.src='/static/assets/ai-camp-poster.jpg';poster.alt='生财有术三天体验营完整推广海报，含报名二维码';posterLink.appendChild(poster);
     var tip=document.createElement('p');tip.textContent='点击海报可查看大图，手机可长按识别二维码。';
-    var camp=document.createElement('a');camp.className='ainpe-gate-link';camp.href='/#/pages/camp/index'+(original?'?source='+encodeURIComponent(original):'');camp.rel='noopener noreferrer';camp.textContent='了解三天体验营';
+    var camp=document.createElement('a');camp.className='ainpe-gate-link';camp.href='/#/pages/camp/index?from=game-result'+(original?'&source='+encodeURIComponent(original):'');camp.rel='noopener noreferrer';camp.textContent='了解三天体验营';
     box.append(close,title,desc,posterLink,tip,camp);
     if(original){var note=document.createElement('p');note.textContent='了解体验营后，可在介绍页面复制原文链接；查看原文可能需要生财账号。';box.appendChild(note);}
     backdrop.appendChild(box);document.body.appendChild(backdrop);close.focus();

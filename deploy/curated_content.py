@@ -12,7 +12,7 @@ EXPECTED = {
     'article-summaries.json':'a3479ea99b666c7c7c240d4f8786c7a863efccaf41dcfa8f6d2135c31509d3a1',
     'verified-offline-events.json':'b99ce4e1f11b6fbbf8f5bb42b57069c0bb6cf4f7863a8dfd136406aba73be351',
     'event-reviews.json':'655fee60a423172dde417ce182f4cc64359b366b6fc6b731da0bac87d2845df1',
-    'case-studies-published.json':'ef4401d8f4b42b29ea5ee7e98cbd93d609a8219e644f3d17fc6c890dd9b2af18',
+    'case-studies-published.json':'0b56827bdba18fdf92073f273ce2ac09cc262d2584e0d886855fcdee7413fa1e',
 }
 SUMMARY_IDS={'55521424552448144','45548242582124888','82258454581421112',
              '22258454588222581','14425121225548122','82258452211188182',
@@ -22,7 +22,10 @@ SUMMARY_IDS={'55521424552448144','45548242582124888','82258454581421112',
              '82258452224185212','82258452244481412','82258452254141182',
              '55521424552484884'}
 EVENT_IDS={'10157','8925'}
-CASE_IDS={'82258452211188182','45548881815182188','45548854528444458','55521525252258854'}
+CASE_IDS={'82258452211188182','45548881815182188','45548854528444458','55521525252258854',
+          '14588481121824442','22258215525112441','45548855154225128','22258221581184141',
+          '14422114455242422','82255821128414422','55521425885428284','14425125822512542',
+          '22258212425811581','45544522454884258','55521521254555184'}
 SECRET=re.compile(r'(?:sk-proj-[A-Za-z0-9_-]{16,}|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)',re.I)
 
 def short(value,limit):
@@ -47,11 +50,11 @@ def validate(name,raw):
                 raise ValueError('invalid short article summary')
     elif name=='case-studies-published.json':
         fields={'id','title','author','direction','category','startTags','topics','publishedAt','sourceUrl','sourceTitle','oneLiner','project','start','steps','numbers','pitfalls','judgement','simulation','related','campHook'}
-        if not isinstance(value,list) or len(value)!=4 or {x.get('id') for x in value if isinstance(x,dict)}!=CASE_IDS: raise ValueError('invalid case IDs')
+        if not isinstance(value,list) or len(value)!=len(CASE_IDS) or {x.get('id') for x in value if isinstance(x,dict)}!=CASE_IDS: raise ValueError('invalid case IDs')
         for item in value:
             if not isinstance(item,dict) or set(item)!=fields: raise ValueError('invalid case fields')
             if not all(short(item[k],260) for k in ('title','author','direction','category','sourceTitle','oneLiner','campHook')): raise ValueError('invalid case text')
-            if item['category'] not in {'miniapp','video','overseas','fde'} or not isinstance(item['publishedAt'],int) or isinstance(item['publishedAt'],bool): raise ValueError('invalid case category or date')
+            if item['category'] not in {'miniapp','development','video','overseas','fde','content','agent'} or not isinstance(item['publishedAt'],int) or isinstance(item['publishedAt'],bool): raise ValueError('invalid case category or date')
             for k in ('startTags','topics'):
                 if not isinstance(item[k],list) or len(item[k])>8 or not all(short(x,40) for x in item[k]): raise ValueError('invalid case tags')
             if item['sourceUrl']!='https://scys.com/articleDetail/xq_topic/'+item['id']: raise ValueError('invalid case source')
@@ -65,7 +68,7 @@ def validate(name,raw):
             for rows in item['judgement'].values():
                 if not isinstance(rows,list) or not 1<=len(rows)<=6 or not all(short(v,260) for v in rows): raise ValueError('invalid case judgement text')
             sim=item['simulation']
-            if not isinstance(sim,dict) or not short(sim.get('name'),80) or not ((set(sim)=={'name','file'} and sim['file'] in {'miniapp','books','trends'}) or (set(sim)=={'name','url'} and sim['url']=='/pages/simulate/fde')): raise ValueError('invalid case simulation')
+            if sim is not None and (not isinstance(sim,dict) or not short(sim.get('name'),80) or not ((set(sim)=={'name','file'} and sim['file'] in {'miniapp','video','education-ppt','books','brain','trends'}) or (set(sim)=={'name','url'} and sim['url']=='/pages/simulate/fde'))): raise ValueError('invalid case simulation')
             if not isinstance(item['related'],list) or len(item['related'])>3 or not all(x in CASE_IDS and x!=item['id'] for x in item['related']): raise ValueError('invalid related cases')
     elif name=='verified-offline-events.json':
         fields={'id','name','description','city','district','startTime','lifecycleStatus','typeText','source','url'}

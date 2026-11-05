@@ -76,7 +76,7 @@ h2,.h2{font-size:22px;line-height:1.35;font-weight:750;margin:6px 0 8px}
 .opt{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:52px;padding:10px 34px 10px 12px;text-align:left;font-size:15px;font-weight:600;background:var(--bg2);border:1.5px solid var(--line);border-radius:var(--r-sm);cursor:pointer;transition:border-color .15s,background .15s,transform .08s}
 .opt .n{display:block;font-size:12.5px;font-weight:400;color:var(--mute);line-height:1.45}
 .opt .ck{position:absolute;right:10px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;border:1.5px solid var(--line2);transition:all .15s}
-.opt:hover{border-color:var(--line2);background:#14173a}
+@media (hover:hover){.opt:hover{border-color:var(--line2);background:#14173a}}
 .opt:active{transform:scale(.985)}
 .opt.on{border-color:var(--acc);background:var(--accSoft)}
 .opt.on .ck{border-color:var(--acc);background:var(--acc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.4l2.6 2.5L12 5.4' fill='none' stroke='%23241a00' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
@@ -329,7 +329,7 @@ body{background:var(--bg);color:var(--ink)}
 .btn.ghost{background:transparent;color:#126243;border-color:#2d7452}
 .btn.ghost:hover:not(:disabled){background:#edf5ec}
 .btn:disabled{background:#e9ede6;color:#96a298}
-.opt:hover{background:#f6f8f3}.opt.on .ck{background-color:#f35a22}
+@media (hover:hover){.opt:hover{background:#f6f8f3}}.opt.on .ck{background-color:#f35a22}
 .opt.on .ab{color:#fff}.opt.on .n{color:#50665a}
 .tal.r1{background:linear-gradient(160deg,#eef2fa 0%,#fff 55%)}
 .tal.r2{background:linear-gradient(160deg,#fff4e1 0%,#fff 55%)}
@@ -351,7 +351,7 @@ body{background:var(--bg);color:var(--ink)}
 @media(max-width:420px){.camp{padding:18px 100px 18px 16px}.camp:after{right:12px;width:72px;height:118px}.camp .btn.ghost{font-size:14px;padding:9px 12px}}
 
 </style><link rel="stylesheet" href="./share-poster.css"></head><body>
-<nav class="ainpe-game-nav"><a href="/#/pages/simulate/index">← 返回模拟项目</a><a class="ainpe-game-camp" href="/#/pages/camp/index?from=game-header">3 天体验营</a></nav>
+<nav class="ainpe-game-nav"><a id="game-home" href="/#/pages/discover/index">↗ AI 实战情报站</a><a class="ainpe-game-camp" href="/#/pages/camp/index?from=game-header">3 天体验营</a></nav>
 <div class="top" id="top" hidden><div class="in"><span class="gname">AINPE · AI 小程序副业模拟</span><span id="stepv"></span></div><div id="prog"><div id="progb"></div></div></div>
 <div class="wrap" id="app"></div>
 
