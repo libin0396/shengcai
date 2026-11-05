@@ -24,12 +24,7 @@
         <image class="camp-image" :src="campaign.posterUrl" mode="aspectFit" @click="openCamp" />
         <view class="camp-text"><view class="camp-title">看了案例，想自己动手做一次？</view><view class="camp-copy">了解 AI 成万事三天体验营，活动安排以入口说明为准。</view></view>
         <view class="home-camp-actions">
-          <!-- #ifdef H5 -->
-          <a class="home-camp-primary" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">加入体验营企业微信 ↗</a>
-          <!-- #endif -->
-          <!-- #ifndef H5 -->
-          <button class="home-camp-primary" @click="openCamp">查看体验营二维码</button>
-          <!-- #endif -->
+          <CampQr :size="112" light />
           <button class="home-camp-detail" @click="openCamp">了解体验营 →</button>
         </view>
       </view>
@@ -47,6 +42,7 @@ import JoinOffer from '../../components/JoinOffer.vue';
 import GameCover from '../../components/GameCover.vue';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
+import CampQr from '../../components/CampQr.vue';
 import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
@@ -128,7 +124,6 @@ function isSaved(a){return saved.value.includes(`article:${a.id}`);}
 function toggleSaved(a){const key=`article:${a.id}`;const next=isSaved(a)?saved.value.filter(x=>x!==key):[...saved.value,key];try{uni.setStorageSync('ainpe:saved',next);saved.value=next;uni.showToast({title:isSaved(a)?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
 function navigate(url){uni.navigateTo({url});}
 function openCamp(){navigate('/pages/camp/index?from=home')}
-function trackCampJoin(){track('camp_join_click',{page:'home'});track('outbound_click',{target:'camp',from:'home'})}
 function openArticle(a){try{uni.setStorageSync('ainpe:last-article',{id:String(a.id),openedAt:Date.now()});}catch{}uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(String(a.id))}`});}
 function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return Number.isNaN(d.getTime())?'时间待确认':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`;}
 </script>

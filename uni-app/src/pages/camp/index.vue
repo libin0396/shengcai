@@ -17,14 +17,7 @@
           <view class="hero-join-card">
             <text class="join-title">加入体验营</text>
             <text class="join-description">通过生财有术企业微信了解报名方式</text>
-            <!-- #ifdef H5 -->
-            <a class="join-link" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">打开企业微信加入 ↗</a>
-            <button class="qr-toggle" @tap="qrExpanded=!qrExpanded">{{qrExpanded ? '收起二维码 ↑' : '显示二维码 ↓'}}</button>
-            <view v-if="campQr" :class="['direct-qr', {'qr-expanded':qrExpanded}]"><a :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin"><img :src="campQr" alt="体验营报名二维码，点击了解" /></a><view><text class="qr-title">微信扫一扫</text><text>手机可长按识别<br />打开生财有术企业微信</text></view></view>
-            <!-- #endif -->
-            <!-- #ifndef H5 -->
-            <button class="primary-button" @tap="showCampPoster">查看完整报名海报 <text>↗</text></button>
-            <!-- #endif -->
+            <CampQr :size="180" />
             <text class="join-card-note">费用和下一期时间以入口说明为准 · 有问题可联系站长</text>
             <text v-if="shareError" class="share-error" role="status">{{shareError}}</text>
           </view>
@@ -101,25 +94,25 @@ import SiteFooter from '../../components/SiteFooter.vue';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
+import CampQr from '../../components/CampQr.vue';
 import JoinCompare from '../../components/JoinCompare.vue';
 import { campaign, contact } from '../../data/content.js';
 import {track} from '../../data/track.js';
 // #ifdef H5
-import {makeCampQr,createCampSharePoster} from './camp-poster.js';
+import {createCampSharePoster} from './camp-poster.js';
 // #endif
 
 const source = ref(''), played=ref(null), from=ref('direct');
 const showPlayedNote=computed(()=>{const timestamp=Date.parse(played.value?.time||'');const age=Date.now()-timestamp;return ['game-result','game-case'].includes(from.value)&&!!played.value?.project&&Number.isFinite(age)&&age>=0&&age<2*60*60*1000});
-const campQr=ref(''), qrExpanded=ref(false), shareOpen=ref(false), shareImage=ref(''), sharing=ref(false), shareError=ref('');
+const shareOpen=ref(false), shareImage=ref(''), sharing=ref(false), shareError=ref('');
 // #ifdef H5
 function closeOnEscape(event){if(event.key==='Escape')shareOpen.value=false}
-onMounted(()=>{try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{shareError.value='二维码暂时无法生成，请查看完整海报。'}window.addEventListener('keydown',closeOnEscape)});
+onMounted(()=>window.addEventListener('keydown',closeOnEscape));
 onUnmounted(()=>window.removeEventListener('keydown',closeOnEscape));
 async function showSharePoster(){if(sharing.value)return;sharing.value=true;shareError.value='';try{shareImage.value=await createCampSharePoster(campaign.targetUrl);shareOpen.value=true}catch{shareError.value='分享海报生成失败，请稍后重试。'}finally{sharing.value=false}}
 // #endif
 function playedState(){try{return !!uni.getStorageSync('ainpe:played')}catch{return false}}
 function showCampPoster(){preview(campaign.posterUrl)}
-function trackCampJoin(){track('camp_join_click',{page:'camp',from:from.value,played:playedState()});track('outbound_click',{target:'camp',from:'camp'})}
 function trackSource(){track('outbound_click',{target:from.value==='event'?'event':'source',from:'camp'})}
 onShow(()=>{try{let p=uni.getStorageSync('ainpe:played');if(typeof p==='string')p=JSON.parse(p);played.value=p&&typeof p==='object'?p:null}catch{played.value=null}});
 const steps = [

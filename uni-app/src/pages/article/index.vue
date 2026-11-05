@@ -23,13 +23,7 @@
           <view v-else class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">短摘要 · 资料不足</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">目前展示的是已收录导读或部分摘要；具体步骤、结果和完整语境请以原帖为准。</view></view>
           <view v-if="isAiArticle(article)" :class="['practice', {'study-practice':study}]"><view class="camp-kicker">从看到做到 · 模拟体验</view><view class="practice-title">{{matchingGame ? `读完，亲手试一次：${matchingGame.name}` : '先体验一个 AI 项目'}}</view><view class="practice-copy">情境与反馈为模拟，可以先动手尝试，再判断下一步。</view><button class="play-action" @click="openSimulation">{{matchingGame ? '玩相关模拟 →' : '查看模拟项目 →'}}</button></view>
           <view class="camp-feature"><view class="camp-content"><view class="camp-badges"><text>生财有术 · AI 成万事</text><text>具体时间以入口说明为准</text></view><view class="camp-title">{{study?.campHook || '想把这篇里的做法用到自己身上？'}}</view><view class="camp-copy">3 天体验营，从了解机会到尝试做出成果。</view><view class="camp-benefits"><view><text>看机会</text>找到适合你的方向</view><view><text>学路径</text>从零启动完整步骤</view><view><text>有人带</text>老师 + AI Agent 答疑</view><view><text>出成果</text>亲手做出第一个成果</view></view><view class="camp-gets">2 场直播大课 · 3 天答疑群 · 1 张体验卡</view><view class="camp-join">
-              <!-- #ifdef H5 -->
-              <a class="camp-action" :href="campaign.targetUrl" rel="noopener noreferrer" @click="trackCampJoin">加入体验营 ↗</a>
-              <!-- #endif -->
-              <!-- #ifndef H5 -->
-              <button class="camp-action" @click="openCamp">查看体验营二维码</button>
-              <!-- #endif -->
-              <image v-if="campQr" :src="campQr" mode="aspectFit" class="camp-qr" @click="openCamp" />
+              <CampQr :size="140" light />
             </view><button class="camp-detail-link" @click="openCamp">了解体验营 →</button><view class="camp-note">不保证收入 · 时间和参与方式以入口说明为准</view></view><view class="camp-art" @click="previewCampPoster"><image :src="campaign.posterUrl" mode="aspectFit" class="camp-full-poster"/><text>点击查看完整海报</text></view></view>
           <JoinOffer variant="inline" from="article" />
           <view v-if="isProjectArticle && !(study && matchingGame)" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><view class="section-hint">表达兴趣，帮助我们了解下一步想体验的方向。</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? (reservationCount >= 10 ? `已有 ${reservationCount} 条预约记录。` : '想体验的人多了，我们会优先考虑。') + ' 同一浏览器仅计一次，不收联系方式，也不会自动通知。' : '预约统计暂不可用，请稍后再试。' }}</view></view>
@@ -56,16 +50,13 @@ import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
 import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';
 import summaries from '../../data/article-summaries.json';
 import SiteHeader from '../../components/SiteHeader.vue';
+import CampQr from '../../components/CampQr.vue';
 import JoinOffer from '../../components/JoinOffer.vue';
-import {track} from '../../data/track.js';
 import {matchArticleGame,simulationUrl} from '../../data/game-matching.js';
 import {caseStudies,caseById,caseAsArticle} from '../../data/case-studies.js';
 import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary,relatedReviewedCases} from '../../data/case-library.mjs';
-// #ifdef H5
-import {makeCampQr} from '../camp/camp-poster.js';
-// #endif
 
-const id=ref(''), campQr=ref(''), showPlayBar=ref(false), dismissPlayBar=ref(false);
+const id=ref(''), showPlayBar=ref(false), dismissPlayBar=ref(false);
 const pageInstance=getCurrentInstance();
 let playBarTimer;
 function updatePlayBar(){
@@ -113,13 +104,12 @@ onLoad(options=>{id.value=String(options?.id||'');loadLocal();loadReservation();
 onShow(()=>{if(id.value){loadLocal();loadReservation();if(article.value?.title)uni.setNavigationBarTitle({title:cleanCaseTitle(article.value.title)});}});
 // #ifdef H5
 function syncArticleFromHash(){const hash=window.location.hash;const q=hash.indexOf('?');if(q<0||hash.slice(0,q)!=='#/pages/article/index')return;const next=new URLSearchParams(hash.slice(q+1)).get('id')||'';if(next!==id.value){id.value=next;showPlayBar.value=false;dismissPlayBar.value=false;loadLocal();if(next)loadReservation();}}
-onMounted(()=>{window.addEventListener('hashchange',syncArticleFromHash);window.addEventListener('scroll',updatePlayBar,true);try{campQr.value=makeCampQr(campaign.targetUrl).toDataURL('image/png')}catch{campQr.value=''}});
+onMounted(()=>{window.addEventListener('hashchange',syncArticleFromHash);window.addEventListener('scroll',updatePlayBar,true)});
 onUnmounted(()=>{window.removeEventListener('hashchange',syncArticleFromHash);window.removeEventListener('scroll',updatePlayBar,true)});
 // #endif
 function toggleSaved(){const next=saved.value?savedIds.value.filter(key=>key!==storageKey.value):[...savedIds.value,storageKey.value];try{uni.setStorageSync('ainpe:saved',next);savedIds.value=next;uni.showToast({title:saved.value?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
 function goBack(){uni.redirectTo({url:'/pages/intelligence/index'});}
 function openCamp(){uni.navigateTo({url:'/pages/camp/index?from=article'});}
-function trackCampJoin(){track('camp_join_click',{page:'article'});track('outbound_click',{target:'camp',from:'article'})}
 function previewCampPoster(){uni.previewImage({urls:[campaign.posterUrl],current:campaign.posterUrl});}
 function openEvents(){uni.navigateTo({url:'/pages/events/index'});}
 function openSimulation(){
