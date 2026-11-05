@@ -3,15 +3,15 @@
     <SiteHeader active="simulate"/>
     <view class="sim-main">
       <view class="sim-intro">
-        <text class="sim-kicker">AINPE · 模拟项目</text>
+
         <text class="sim-title">想做的项目，先亲手体验一次。</text>
-        <text class="sim-lead">从一个任务开始，体验项目中的关键步骤，再看看不同做法带来的模拟反馈。</text>
-        <text class="sim-note">方向参考生财有术往期航海与真实案例；游戏中的角色、事件和收益均为模拟，真实案例以作者自述为准。</text>
+        <text class="sim-lead">选一个项目，做几个关键决策，看看结果。</text>
+        <text class="sim-note">事件和金额都是模拟。</text>
       </view>
       <!-- #ifdef H5 -->
       <view class="game-section">
         <view class="cover-grid"><GameCover v-for="(game,index) in newGames.slice(0,3)" :key="game.id" :game="game" :compact="index>0" :tag="index===0?'新手可以先试':''" :played="playedGames.includes(game.id)" @start="goGame" /></view>
-        <view class="more-games-heading"><text class="sim-heading">更多项目，也可以直接体验</text><text class="sim-note">每个方向有自己的项目流程和复盘。</text></view>
+        <view class="more-games-heading"><text class="sim-heading">更多项目，也可以直接体验</text></view>
         <view class="game-grid">
           <a v-for="game in newGames.slice(3)" :key="game.file" class="game-card" :href="gameHref(game.file)">
             <span class="game-number">项目模拟</span>
@@ -28,7 +28,7 @@
       <view class="interest-section">
         <text class="interest-eyebrow">更多探索</text>
         <text class="sim-heading">接下来还可以做什么？</text>
-        <text class="sim-note">以下方向的模拟项目尚未开放；支持预约的方向可先表达兴趣。</text>
+        <text class="sim-note">这些方向还在做，想玩可以先点一下。</text>
         <view class="interest-grid">
           <view v-for="item in visibleDirections" :key="item.id" class="interest-card">
             <text class="interest-name">{{item.name}}</text>
@@ -39,7 +39,7 @@
             </view>
           </view>
         </view>
-        <text v-if="remoteMode" class="interest-note">同一浏览器每个方向计一条预约记录；不收联系方式，不自动通知，不是官方航海报名。</text>
+        <text v-if="remoteMode" class="interest-note">不收联系方式，也不是航海报名。</text>
         <text v-else class="interest-note">仅保存在当前设备，站长无法收到或统计；不是官方航海报名。</text>
         <view v-if="error" class="interest-error"><text>{{error}}</text><button @tap="load">重试</button></view>
       </view>

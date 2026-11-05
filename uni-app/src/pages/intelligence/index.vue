@@ -2,7 +2,7 @@
   <view class="intel-page">
     <SiteHeader active="intelligence"/>
     <view class="wrap">
-      <view class="intro"><view><text class="eyebrow">真实经验 · AI 案例库</text><view class="title">案例库</view><view class="subtitle">看懂别人怎么做、判断适不适合自己，再亲手模拟一次。数字均为作者自述。</view></view></view>
+      <view class="intro"><view><view class="title">案例库</view><view class="subtitle">看别人怎么做，再亲手模拟一次。数字为作者自述。</view></view></view>
       <view class="layout"><view class="main">
         <view class="toolbar"><view class="search-field"><input v-model="query" placeholder="搜索标题、作者或关键词" confirm-type="search"/><button v-if="query" class="clear-search" aria-label="清空搜索" @click="query='';limit=20">×</button></view><picker :range="sortLabels" :value="sortIndex" @change="changeSort"><view class="sort">{{sortLabels[sortIndex]}} ⌄</view></picker></view>
         <view class="filter-row"><scroll-view scroll-x class="categories" :show-scrollbar="false"><view class="category-row"><button v-for="c in categories" :key="c.id" :class="{active:category===c.id}" @click="category=c.id;limit=20">{{c.label}}</button></view></scroll-view><button class="filter-toggle" :class="{active:showFilters || activeFilterCount}" :aria-expanded="showFilters" @click="showFilters=!showFilters">筛选{{activeFilterCount ? ' '+activeFilterCount : ''}} {{showFilters?'⌃':'⌄'}}</button></view>
@@ -10,7 +10,7 @@
         <view class="list-head"><text>{{filtered.length}} 篇 AI 内容</text><text>{{feedMeta.lastSuccessLabel?'上次更新 '+feedMeta.lastSuccessLabel:'更新状态待确认'}}</text></view>
         <view v-if="feedMeta.loading && !filtered.length" class="empty">正在加载内容…</view><view v-else-if="!filtered.length" class="empty">{{feedMeta.loadFailed?'暂时无法加载内容，请稍后重试。':'没有找到相关内容，换个方向或关键词试试。'}}</view>
         <template v-if="featured.length">
-          <view class="case-list-label">精选案例 · {{featured.length}} 篇完整解读 <text>根据原帖整理 · 作者自述</text></view>
+          <view class="case-list-label">精选案例 · {{featured.length}} 篇完整解读 </view>
           <view class="featured-grid">
             <view v-for="a in featured" :key="a.id" class="feature-card" @click="openArticle(a)">
               <view class="feature-tags"><text>{{getCase(a).direction}}</text><text>完整解读</text><button class="star" :aria-label="isSaved(a)?'取消收藏':'收藏文章'" @click.stop="toggleSaved(a)">{{isSaved(a)?'★':'☆'}}</button></view>
@@ -18,17 +18,17 @@
               <view class="feature-start">起点：<text>{{getCase(a).start.occupation||getCase(a).start.experience||'未披露'}}</text></view>
               <view class="featured-numbers"><view v-for="n in getCase(a).numbers.slice(0,3)" :key="n.label" :class="['feature-number',{'undisclosed':!n.value}]"><text class="feature-value">{{n.value||'未披露'}}</text><text class="feature-number-note">{{compactNumberNote(n)}}</text></view></view>
               <view class="feature-footer"><text>{{a.author}} · 作者自述</text><text class="read-link">查看解读 ›</text></view>
-              <button v-if="matchingGame(a)" class="case-next playable" @click.stop="play(matchingGame(a),a.id)"><view class="case-next-main"><text class="case-next-icon">▶</text><view><text>玩相关模拟：{{matchingGame(a).name}}</text><text class="case-next-sub">体验这个方向的关键步骤 · 内容为模拟</text></view></view><text class="case-next-arrow">开始 →</text></button>
+              <button v-if="matchingGame(a)" class="case-next playable" @click.stop="play(matchingGame(a),a.id)"><view class="case-next-main"><text class="case-next-icon">▶</text><view><text>玩相关模拟：{{matchingGame(a).name}}</text></view></view><text class="case-next-arrow">开始 →</text></button>
               <view v-else class="case-next reserve-next" @click.stop><view><text>这个方向还没有模拟</text><text class="case-next-sub">{{reservationCounts['article:'+a.id]>=10 ? reservationCounts['article:'+a.id]+' 条预约记录' : '想玩的人多了会优先考虑'}}</text></view><button :disabled="reservationBusy===String(a.id)||reservedCases.includes('article:'+a.id)" @click.stop="reserveCase(a)">{{reservedCases.includes('article:'+a.id)?'已预约':reservationBusy===String(a.id)?'记录中…':'我想玩'}}</button></view>
             </view>
           </view>
         </template>
         <view v-if="short.length" class="more-posts">
-          <button class="more-posts-toggle" :aria-expanded="showShort" @click="showShort=!showShort"><text>更多帖子 <text class="more-posts-hint">（还没解读，只显示标题） · {{short.length}} 篇</text></text><text>{{showShort?'收起 ↑':'展开 ↓'}}</text></button>
+          <button class="more-posts-toggle" :aria-expanded="showShort" @click="showShort=!showShort"><text>更多帖子 <text class="more-posts-hint">（只有标题） · {{short.length}} 篇</text></text><text>{{showShort?'收起 ↑':'展开 ↓'}}</text></button>
           <view v-if="showShort" class="short-list"><view v-for="a in visible" :key="a.id" class="short-row" role="link" tabindex="0" @click="openArticle(a)" @keydown.enter.prevent="openArticle(a)"><text>{{cleanCaseTitle(a.title)}}</text><text class="short-arrow">→</text></view><button v-if="limit<short.length" class="more" @click="limit+=20">继续看更多帖子 ↓</button></view>
         </view>
-      </view><view class="side"><view class="side-title">先玩再读，读得更懂。</view><view class="side-copy">挑一个方向，从真实案例出发，模拟体验关键步骤。</view><button v-for="g in games" :key="g.file" @click="play(g.file)">{{g.name}} →</button><view class="side-note">过程和金额均为模拟，不是收入预测。</view></view></view>
-    </view><CampFooter/>
+      </view><view class="side"><view class="side-title">先玩再读，读得更懂。</view><button v-for="g in games" :key="g.file" @click="play(g.file)">{{g.name}} →</button><view class="side-note">过程和金额均为模拟，不是收入预测。</view></view></view>
+    </view><CampFooter from="library"/>
   <SiteFooter /></view>
 </template>
 <script setup>

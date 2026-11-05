@@ -7,7 +7,7 @@
           <!-- #ifdef H5 -->
           <img v-if="imageFor(record)" :src="imageFor(record)" alt="已保存的模拟战报缩略图" />
           <!-- #endif -->
-          <view v-if="!imageFor(record)" class="poster-placeholder"><text>↗</text><text>{{ loading(record) ? '正在读取战报' : '原图不可用' }}</text></view>
+          <view v-if="!imageFor(record)" class="poster-placeholder"><text>↗</text><text>{{ loading(record) ? '正在读取战报' : (record.persona || '模拟战报') }}</text><text v-if="!loading(record)" class="ph-sub">{{ record.result || '' }}</text></view>
           <text v-if="isHidden(record)" class="hidden-mark">✦ 隐藏</text>
         </view>
         <text class="poster-name">{{ record.persona || '实践探索者' }}</text>
@@ -29,7 +29,7 @@
         <text class="viewer-help">朋友可以扫码体验同一个项目</text>
       </view>
       <view v-else class="record-fallback">
-        <text class="fallback-label">{{ loading(current) ? '正在读取战报…' : '原图不可用' }}</text>
+        <text class="fallback-label">{{ loading(current) ? '正在读取战报…' : '这张战报图片没有保存在本机' }}</text>
         <text class="fallback-note">{{ loading(current) ? '' : '早期记录、浏览器清理或空间限制可能导致图片不可用，模拟记录仍在。' }}</text>
         <text class="fallback-title">{{current.persona || '实践探索者'}} · {{current.result || '体验完成'}}</text>
         <text class="fallback-meta">{{current.project || 'AI 项目模拟'}} · {{formatDate(current.time)}}</text>
@@ -105,5 +105,6 @@ onUnmounted(()=>{pause();
 </script>
 
 <style scoped>
+.poster-placeholder .ph-sub{font-size:11px;opacity:.75;margin-top:2px}
 .collection{background:#fff;border:1px solid #e1e9dc;border-radius:8px;padding:20px;margin:15px 0}.block-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.block-title,.block-sub{display:block}.block-title{font-size:19px;color:#173d2b;font-weight:800}.block-sub{font-size:12px;color:#8a9c8a;margin-top:5px}.poster-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.poster-tile{display:block;width:100%;margin:0;padding:0;background:transparent;text-align:left;line-height:1.5;border:0;min-width:0}.poster-thumb{position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:9px;background:#133d2a;border:1px solid #d8e4d5}.poster-thumb.hidden{border:2px solid #d1a43e}.poster-thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}.poster-placeholder{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(145deg,#123d2b,#0b281d);color:#bfd0bf;font-size:12px}.poster-placeholder text:first-child{font-size:30px;color:#f3c955}.hidden-mark{position:absolute;top:7px;right:7px;padding:2px 7px;border-radius:12px;background:#edc75b;color:#372b10;font-size:11px;font-weight:800}.poster-name,.poster-meta{display:block;overflow-wrap:anywhere}.poster-name{font-size:14px;font-weight:800;color:#214b34;margin-top:7px}.poster-meta{font-size:12px;color:#8a9c8a;margin-top:2px}.more{margin:14px auto 0;padding:0 12px;background:#eef5ec;color:#236342;font-size:12px;line-height:38px}.empty{padding:20px;color:#859a83;background:#fafcf8;font-size:13px;line-height:1.7}.empty button{margin:10px 0 0;display:inline-block;background:#dcebd3;color:#355d3f;font-size:13px;line-height:36px}.viewer{position:fixed;inset:0;z-index:10000;background:#07150df5;display:flex;align-items:center;justify-content:center;padding:16px}.viewer-inner{width:100%;max-width:480px;max-height:100%;position:relative;overflow:auto;text-align:center}.viewer-close{position:sticky;top:0;z-index:1;margin:0 0 8px auto;padding:0;width:40px;height:40px;line-height:40px;border-radius:50%;background:#ffffffed;color:#153b2a;font-size:26px}.viewer-image{display:block;margin:auto;width:auto;max-width:100%;max-height:calc(100vh - 180px);object-fit:contain}.viewer-help{display:block;color:#d0ddd1;font-size:12px;line-height:1.6;margin-top:5px}.viewer-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px;color:white;font-size:12px}.viewer-nav button{margin:0;padding:0 14px;line-height:36px;background:#ffffff24;color:#fff;font-size:12px}.viewer-nav button[disabled]{opacity:.35}.record-fallback{background:#fff;border-radius:10px;padding:24px;text-align:left;color:#173d2b}.fallback-label,.fallback-note,.fallback-title,.fallback-meta,.fallback-amount,.record-issues text{display:block}.fallback-label{font-size:16px;font-weight:800;color:#a25d32}.fallback-note,.fallback-meta{font-size:12px;line-height:1.7;color:#839685;margin-top:8px}.fallback-title{font-size:20px;font-weight:800;margin-top:16px}.fallback-amount{font-size:19px;font-weight:800;margin-top:12px}.record-issues{background:#f2f7ed;padding:12px;margin-top:14px;font-size:13px;line-height:1.6}.record-replay{margin:16px 0 0;padding:0 14px;display:inline-block;background:#e95d28;color:white;font-size:13px;line-height:38px}@media(min-width:701px){.poster-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>

@@ -1,11 +1,11 @@
 <template>
   <view class="page"><SiteHeader active="saved"/><view class="wrap">
-    <text class="title">我的</text><text class="subtitle">回看你的模拟体验，收藏感兴趣的文章和线下活动。</text><text class="hint">记录只保存在当前浏览器，换设备不会自动同步。</text>
+    <text class="title">我的</text><text class="hint">记录只保存在当前浏览器，换设备不会自动同步。</text>
     <view class="my-summary"><view><text>{{history.length}}</text><small>场模拟记录</small></view><view><text>{{unlocked.size}} / 24</text><small>已点亮人格</small></view><view><text>{{remainingGames}}</text><small>个项目尚未体验</small></view><view><text>{{savedArticles.length}}</text><small>篇收藏文章</small></view></view>
     <view class="collection">
-      <view class="block-head"><view><text class="block-title">我的副业人格图鉴</text><text class="block-sub">完成模拟后，点亮属于你的趣味人格。</text></view><text>{{unlocked.size}} / 24</text></view>
+      <view class="block-head"><view><text class="block-title">我的副业人格图鉴</text></view><text>{{unlocked.size}} / 24</text></view>
       <view class="persona-group-head hidden-group-head"><text>✦ 隐藏人格</text><text>{{hiddenUnlocked}} / 6</text></view>
-      <text class="persona-group-note">另有 6 种隐藏人格，特定天赋组合才能解锁。</text>
+      <text class="persona-group-note">{{hiddenUnlocked>=6 ? '6 种隐藏人格已全部解锁！' : (hiddenUnlocked ? `还有 ${6-hiddenUnlocked} 种未解锁，` : '共 6 种隐藏人格，') + '特定天赋组合才能解锁。'}}</text>
       <view class="persona-grid hidden-persona-grid">
         <view v-for="p in hiddenPersonas" :key="p.index" class="persona-cell hidden-persona" :class="{unlocked:unlocked.has(p.index)}">
           <view class="persona-icon"><image v-if="unlocked.has(p.index)" :src="p.icon" mode="aspectFit"/><text v-else>?</text></view>
@@ -20,18 +20,16 @@
       </view>
     </view>
     <PosterGallery ref="gallery" :history="history" @replay="replay" @simulate="goSimulate" />
-    <view class="block-head saved-head"><view><text class="block-title">我的收藏</text><text class="block-sub">随时回来继续看。</text></view></view>
+    <view class="block-head saved-head"><view><text class="block-title">我的收藏</text></view></view>
     <view class="tabs"><button :class="{on:tab==='article'}" @click="tab='article'">文章 {{savedArticles.length}}</button><button :class="{on:tab==='event'}" @click="tab='event'">线下活动 {{savedEvents.length}}</button></view>
     <view v-if="tab==='article'"><view v-for="a in savedArticles" :key="a.id" class="row" @click="openArticle(a)"><text class="kind">{{a.kind || '分享'}} · {{a.author}}</text><text class="name">{{a.title}}</text><text class="summary">{{a.overview||a.summary}}</text><view class="row-bottom"><text>查看导读 →</text><text @click.stop="remove('article',a)">取消收藏</text></view></view><view v-if="!savedArticles.length" class="empty">还没有收藏文章。<button @click="goDiscover">去发现</button></view></view>
     <view v-else><view v-for="e in savedEvents" :key="e.id" class="row"><text class="kind">{{e.city}} · {{e.typeText || '活动'}}</text><text class="name">{{e.name}}</text><text class="summary">{{e.summary||e.description}}</text><view class="row-bottom"><text @click="goEvents">在线下活动页查看 →</text><text @click="remove('event',e)">取消收藏</text></view></view><view v-if="!savedEvents.length" class="empty">还没有收藏线下活动。<button @click="goEvents">查看线下活动</button></view></view>
-    <JoinOffer variant="inline" from="mine" />
-    <view class="data-notice">为了解模拟体验和体验营入口的使用情况，本网站会记录页面与按钮事件，并在本机保存随机标识；不记录输入内容或完整网址，记录约保留 90 天。</view>
-  </view><CampFooter/><SiteFooter /></view>
+    <view class="data-notice">本站只记录匿名的页面和按钮点击，不记录你输入的内容，保留约 90 天。</view>
+  </view><CampFooter from="mine"/><SiteFooter /></view>
 </template>
 <script setup>
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';import {onShow,onHide} from '@dcloudio/uni-app';
-import JoinOffer from '../../components/JoinOffer.vue';
 import PosterGallery from '../../components/PosterGallery.vue';
 import SiteHeader from '../../components/SiteHeader.vue';import CampFooter from '../../components/CampFooter.vue';
 import {articles,events} from '../../data/content.js';import {getSaved,setSaved} from '../../data/storage.js';import personas from '../../data/personas.json';

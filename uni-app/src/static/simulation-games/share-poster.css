@@ -90,3 +90,20 @@
 .ainpe-join-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
 .ainpe-join-benefits li{padding:8px;border-radius:8px;background:#edf5ec;color:#42614b;font-size:12px;line-height:1.4}
 .ainpe-promo-fold>.ainpe-direct-offer>a{min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:1}
+/* V41：结局页精简 + 原帖二选一 */
+.ainpe-share-more[hidden]{display:none!important}
+.ainpe-case-wrap{padding:0 16px 14px}
+.ainpe-case-wrap .ainpe-case-head{display:none!important}
+.ainpe-case-wrap .ainpe-case-head{margin:0 0 4px}
+.ainpe-case-wrap>p.mute{font-size:12.5px;line-height:1.6;margin:0 0 6px}
+.ainpe-ledger-extra{border-top:1px solid #e3e7d9!important;margin:0!important;border-radius:0!important;box-shadow:none!important}
+.src-btns{display:flex;gap:8px;margin-top:8px}
+.src-btns a{flex:1;display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none!important;border:0!important;text-align:center;padding:0 8px}
+.src-btns .src-ref{background:#0b2e20;color:#fff!important}
+.src-btns .src-mem{flex:0 0 32%;border:1.5px solid #e3e7d9!important;color:#45594d!important;background:#fff}
+.ainpe-result-hero strong,.ainpe-result-hero b{white-space:nowrap}
+.acts[hidden],.ainpe-result-actions[hidden]{display:none!important}
+.ainpe-ch-bar{position:sticky;top:0;z-index:60;background:#FFF1C9;color:#5c3d00;font-size:13px;font-weight:700;text-align:center;padding:6px 12px;border-bottom:1px solid #f3db98}.ainpe-ch-bar b{color:#c2410c}
+.ainpe-copyline{display:flex;align-items:center;gap:8px;margin:10px 0 0;background:#f7f3ea;border:1px dashed #d9d2c3;border-radius:12px;padding:9px 12px;font-size:12.5px;color:#45594d;text-align:left}
+.ainpe-copyline-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-user-select:all;user-select:all}
+.ainpe-copyline-btn{flex:none;margin:0;padding:0;border:0;background:none;color:#0e5a3a;font-size:13px;font-weight:800;cursor:pointer}

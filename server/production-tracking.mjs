@@ -7,8 +7,8 @@ import path from 'node:path';
 // A bounded, same-origin event log. Raw IPs, URLs, user-entered content and
 // browser identifiers are never written to the database.
 const EVENTS = new Set(['site_view', 'sim_start', 'sim_finish', 'camp_view', 'camp_join_click', 'share_open', 'share_save', 'challenge_open', 'replay_same_seed', 'versus_finish', 'versus_share', 'board_view', 'board_join', 'board_share', 'outbound_click', 'contact_copy', 'persona_unlock', 'poster_save']);
-const TARGETS = new Set(['camp', 'join', 'source', 'event']);
-const SOURCES = new Set(['article', 'camp', 'result', 'mine', 'home', 'home_bar', 'event', 'header']);
+const TARGETS = new Set(['camp', 'join', 'source', 'event', 'referral']);
+const SOURCES = new Set(['article', 'camp', 'result', 'mine', 'home', 'home_bar', 'event', 'header', 'footer', 'library', 'events', 'simulate', 'bar']);
 const ID = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const DEVICE = /^[a-f0-9]{32}$/;
 const MAX_BODY = 1024;

@@ -6,19 +6,17 @@
         <text class="crumb" @tap="goBack">← 返回上页</text>
         <view class="hero-layout">
           <view class="hero-copy">
-            <text class="status-pill">具体排期以入口说明为准</text>
+
             <text class="title">AI 成万事<br /><text class="accent">3 天体验营</text></text>
             <text class="lead">没方向 · 没路径 · 没人带 · 没结果？</text>
             <text class="description">从看懂 AI 机会，到亲手做出成果。</text>
-            <view class="hero-promises">
-              <view v-for="step in steps" :key="step.title" class="hero-promise"><text>{{ step.title }}</text><text>{{ step.description }}</text></view>
-            </view>
+            <image class="hero-illo" :src="campaign.posterUrl" mode="widthFix" @tap="showCampPoster" /><text class="poster-preview-hint" @tap="showCampPoster">点击查看完整海报</text>
           </view>
           <view id="camp-signup" class="hero-join-card">
             <text class="join-title">加入体验营</text>
             <text class="join-description">通过生财有术企业微信了解报名方式</text>
             <CampQr :size="180" />
-            <text class="join-card-note">费用和下一期时间以入口说明为准 · 有问题可联系站长</text>
+            <text class="join-card-note">费用和开营时间以企业微信里的说明为准</text>
             <text v-if="shareError" class="share-error" role="status">{{shareError}}</text>
           </view>
         </view>
@@ -26,26 +24,25 @@
     </view>
 
     <view class="content-wrap">
-      <view v-if="showPlayedNote" class="played-note"><text>你刚体验了 {{played.project}}</text><text v-if="played.issues && played.issues.length">回顾：{{played.issues.slice(0,2).join('、')}}</text><text>下面可以了解体验营的内容，再决定是否参与。</text></view>
+      <view v-if="showPlayedNote" class="played-note"><text>你刚体验了 {{played.project}}</text><text v-if="played.issues && played.issues.length">回顾：{{played.issues.slice(0,2).join('、')}}</text></view>
       <view class="main-grid">
         <view class="main-column">
           <view class="panel intro-panel">
-            <text class="section-kicker">体验营介绍</text>
+
             <text class="section-title">你将获得</text>
-            <text class="section-description">以下内容来自体验营海报，具体安排以报名入口说明为准。</text>
+
             <view class="benefits">
               <view v-for="benefit in benefits" :key="benefit.title" class="benefit"><text class="benefit-title">{{ benefit.title }}</text><text class="benefit-description">{{ benefit.description }}</text></view>
             </view>
           </view>
           <view class="panel faq-panel">
-            <text class="section-kicker">参加前了解</text>
-            <text class="section-title small-title">参加前，先了解这些</text>
-            <view class="faq-item"><text class="faq-question">费用和下一期时间？</text><text class="faq-answer">以体验营入口的最新说明为准。海报上的日期不代表当前排期。</text></view>
-            <view class="faq-item"><text class="faq-question">和线下活动是一回事吗？</text><text class="faq-answer">不是，线下活动有各自的时间和参与方式，请查看活动详情。</text></view>
-            <view class="faq-item"><text class="faq-question">会保证赚钱吗？</text><text class="faq-answer">不会。体验营介绍和个人实际结果不同，不保证收入。</text></view>
+
+            <text class="section-title small-title">常见问题</text>
+            <view class="faq-item"><text class="faq-question">费用和下一期时间？</text><text class="faq-answer">以企业微信里的最新说明为准。</text></view>
+            <view class="faq-item"><text class="faq-question">和线下活动是一回事吗？</text><text class="faq-answer">不是，线下活动各自报名。</text></view>
+            <view class="faq-item"><text class="faq-question">会保证赚钱吗？</text><text class="faq-answer">不会，结果取决于你自己的投入。</text></view>
             <view class="faq-item"><text class="faq-question">报名后有问题怎么办？</text><text class="faq-answer">可以添加站长微信交流，微信号 {{ contact.wechatId }}。</text></view>
           </view>
-          <JoinCompare />
           <view v-if="source" class="panel source-panel">
             <text class="section-title small-title">查看资料来源</text>
             <text class="section-description">{{from === 'event' ? '了解体验营后，可以继续查看活动报名方式；访问活动页面可能需要生财账号。' : '了解体验营后，可以继续查看生财原文；访问原文可能需要生财账号。'}}</text>
@@ -54,20 +51,10 @@
             <!-- #endif -->
             <button class="outline-button source-button" @tap="copySource">复制原文链接</button>
           </view>
+          <view v-if="joinOn" class="panel join-direct"><text class="section-title small-title">已经想好了？直接加入生财有术</text><JoinCard from="camp" /></view>
         </view>
 
         <view class="side-column">
-          <view class="panel join-panel">
-            <text class="section-kicker">活动海报</text>
-            <text class="join-title">查看完整海报</text>
-            <text class="join-description">海报中的二维码可用于了解体验营；海报所示日期不代表当前排期。</text>
-            <!-- #ifdef H5 -->
-            <button class="outline-button share-poster-button" :disabled="sharing" @tap="showSharePoster">{{sharing ? '正在生成海报…' : '生成分享海报'}}</button>
-            <!-- #endif -->
-            <image class="join-poster" :src="campaign.posterUrl" mode="widthFix" @tap="showCampPoster" />
-            <button class="primary-button" @tap="showCampPoster">查看完整海报 <text>↗</text></button>
-            <text class="join-hint">手机可长按海报识别二维码</text>
-          </view>
           <view class="panel contact-panel">
             <view class="contact-header"><view class="contact-icon">站</view><view><text class="contact-title">有问题？联系站长</text><text class="contact-caption">报名或内容相关问题，欢迎交流</text></view></view>
             <image class="contact-qr" :src="contact.qrUrl" mode="widthFix" @tap="preview(contact.qrUrl)" />
@@ -95,9 +82,11 @@ import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampQr from '../../components/CampQr.vue';
-import JoinCompare from '../../components/JoinCompare.vue';
+import JoinCard from '../../components/JoinCard.vue';
+import {offerActive} from '../../data/offer.js';
 import { campaign, contact } from '../../data/content.js';
 import {track} from '../../data/track.js';
+const joinOn=offerActive();
 // #ifdef H5
 import {createCampSharePoster} from './camp-poster.js';
 // #endif
@@ -134,6 +123,7 @@ function goBack() { uni.navigateBack({ fail: () => uni.redirectTo({ url: '/pages
 </script>
 
 <style scoped>
+.hero-illo{display:block;width:160px;max-width:60%;margin:14px 0 0;border-radius:10px;cursor:pointer}.poster-preview-hint{display:block;margin-top:6px;font-size:12px;color:#d2e4d7;cursor:pointer}.join-direct :deep(.jc){margin-top:12px}
 .camp-page { min-height:100vh; background:#f7f3eb; color:#102f22; }
 .source-direct { display:inline-block; margin:16px 10px 0 0; padding:10px 16px; background:#f25a20; color:#fff; border-radius:6px; font-size:14px; font-weight:700; text-decoration:none; }
 .hero { background:#0b3021; color:#fff; }
