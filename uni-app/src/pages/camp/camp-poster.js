@@ -29,13 +29,18 @@ function imageFromSvg(svg) {
   });
 }
 
-export async function createCampSharePoster(url) {
+export async function createCampSharePoster(url, scale = 3) {
+  try {
   if (document.fonts?.ready) await document.fonts.ready;
-  const illustration = await imageFromSvg(campIllo(646));
-  const qr = makeCampQr(url, 10);
+  // Rasterize the vector illustration at export resolution, not at preview size.
+  const illustration = await imageFromSvg(campIllo(646 * scale));
+  const qrCellSize = 18;
+  const qr = makeCampQr(url, qrCellSize);
   const canvas = document.createElement('canvas');
-  canvas.width = 1500; canvas.height = 2668;
-  const ctx = canvas.getContext('2d'); ctx.scale(2, 2);
+  canvas.width = 750 * scale; canvas.height = 1334 * scale;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('canvas_unavailable');
+  ctx.scale(scale, scale);
   const font = '"PingFang SC", "Microsoft YaHei", sans-serif';
   function text(str, x, y, size, color, weight = 700) {
     ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`; ctx.fillText(str, x, y);
@@ -64,12 +69,21 @@ export async function createCampSharePoster(url) {
   text('3', 265, 963, 40, '#fff', 900); text('天答疑群', 295, 963, 21, '#c7dacd');
   text('1', 466, 963, 40, '#fff', 900); text('张体验卡', 496, 963, 21, '#c7dacd');
   ctx.fillStyle = '#fff'; ctx.fillRect(0, 1046, 750, 288);
-  ctx.imageSmoothingEnabled = false; ctx.drawImage(qr, 48, 1071, 218, 218); ctx.imageSmoothingEnabled = true;
+  // Whole output pixels per module keep QR edges sharp after the canvas scale.
+  const modules = qr.width / qrCellSize;
+  const qrSize = Math.floor(218 * scale / modules) * modules / scale;
+  ctx.imageSmoothingEnabled = false; ctx.drawImage(qr, 48, 1071, qrSize, qrSize); ctx.imageSmoothingEnabled = true;
   text('微信扫码', 294, 1125, 32, '#13241b', 900);
   text('加入 3 天体验营', 294, 1170, 32, '#13241b', 900);
   rounded(294, 1184, 235, 34, 9, '#ee5a24');
   text('企业微信 · 生财有术', 306, 1208, 19, '#fff', 800);
   text('不保证收入；费用和开营时间以入口说明为准。', 294, 1251, 16, '#718477', 500);
   text('还没想好方向？先体验：ainpe.aisen.xin', 294, 1278, 16, '#718477', 500);
-  return canvas.toDataURL('image/png');
+  const result = canvas.toDataURL('image/png');
+  if (!result.startsWith('data:image/png')) throw new Error('poster_unavailable');
+  return result;
+  } catch (error) {
+    if (scale > 2) return createCampSharePoster(url, 2);
+    throw error;
+  }
 }
