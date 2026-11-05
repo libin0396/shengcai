@@ -36,7 +36,7 @@
       <view class="footer-note">内容来自生财有术 · 展示已收录摘要与导读，具体语境请以原帖为准</view>
     </view>
     <JoinOffer variant="bar" from="home_bar" :visible="showJoinBar" />
-  <SiteFooter /></view>
+  <SiteFooter :space-for-promo="true" /></view>
 </template>
 
 <script setup>
