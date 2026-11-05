@@ -31,7 +31,7 @@ function events(dbPath){
  const add=db.prepare('INSERT INTO events(event,source,target,game,created_at,device_hash) VALUES(?,?,?,?,?,?)'),now=Date.now();
  add.run('sim_start',null,null,'miniapp',now-1000,'1'.repeat(64));add.run('sim_start',null,null,'miniapp',now-900,'1'.repeat(64));add.run('sim_start',null,null,'video',now-800,'2'.repeat(64));
  add.run('sim_finish',null,null,'miniapp',now-700,'1'.repeat(64));add.run('camp_view',null,null,null,now-600,'1'.repeat(64));
- add.run('challenge_open','poster_qr',null,null,now-500,'2'.repeat(64));add.run('challenge_open','share_link',null,null,now-400,'1'.repeat(64));
+ add.run('challenge_open','poster_qr',null,null,now-500,'2'.repeat(64));add.run('site_view','persona_qr',null,null,now-450,'2'.repeat(64));add.run('site_view','persona_qr',null,null,now-440,'1'.repeat(64));add.run('challenge_open','share_link',null,null,now-400,'1'.repeat(64));
  add.run('outbound_click','camp','join',null,now-300,'2'.repeat(64));add.run('sim_start',null,null,'miniapp',now-91*86400000,'3'.repeat(64));db.close();
 }
 test('admin requires same-origin HTTPS, a private hash file and an authenticated session',async()=>{
@@ -53,7 +53,9 @@ test('bounded read-only aggregates distinguish poster arrivals and anonymous bro
   events(x.dbPath);await chmod(x.dbPath,0o600);const c=await cookie(x),r=await x.call('/api/admin/stats?days=30',{headers:{cookie:c}});
   assert.equal(r.status,200);assert.equal(r.body.available,true);assert.deepEqual(r.body.metrics.simStarts,{events:3,browsers:2});
   assert.deepEqual(r.body.metrics.simFinishes,{events:1,browsers:1});assert.deepEqual(r.body.metrics.campViews,{events:1,browsers:1});
-  assert.deepEqual(r.body.metrics.posterQrVisits,{events:1,browsers:1});assert.deepEqual(r.body.metrics.shareLinkVisits,{events:1,browsers:1});
+  assert.deepEqual(r.body.metrics.posterQrVisits,{events:3,browsers:2});
+  assert.deepEqual(r.body.metrics.challengePosterVisits,{events:1,browsers:1});assert.deepEqual(r.body.metrics.personaPosterVisits,{events:2,browsers:2});
+  assert.equal(r.body.daily.reduce((sum,row)=>sum+row.posterQrVisits,0),3);assert.deepEqual(r.body.metrics.shareLinkVisits,{events:1,browsers:1});
   assert.deepEqual(r.body.metrics.joinClicks,{events:1,browsers:1});assert.equal(JSON.stringify(r.body).includes('1'.repeat(64)),false);
   assert.deepEqual(r.body.funnel,{unit:'browser_project',started:2,finished:1,campVisitsAfterFinish:1,finishRate:50,campAfterFinishRate:100});
   assert.ok(r.body.daily.every(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.date)));

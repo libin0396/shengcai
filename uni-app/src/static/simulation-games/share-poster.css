@@ -107,3 +107,10 @@
 .ainpe-copyline{display:flex;align-items:center;gap:8px;margin:10px 0 0;background:#f7f3ea;border:1px dashed #d9d2c3;border-radius:12px;padding:9px 12px;font-size:12.5px;color:#45594d;text-align:left}
 .ainpe-copyline-text{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;-webkit-user-select:all;user-select:all}
 .ainpe-copyline-btn{flex:none;margin:0;padding:0;border:0;background:none;color:#0e5a3a;font-size:13px;font-weight:800;cursor:pointer}
+.ainpe-next{background:#fff8e6;border:1.5px solid #f3db98;border-radius:14px;padding:12px;margin:12px 0}
+.ainpe-next h3{margin:0;font-size:15.5px;color:#13241b}
+.ainpe-next-prog{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:12px;color:#6b4e00;font-weight:800}
+.ainpe-next-prog span{flex:1;height:7px;border-radius:4px;background:#f3db98;overflow:hidden}.ainpe-next-prog i{display:block;height:100%;background:#ee5a24}
+.ainpe-next-two{display:flex;gap:8px;margin-top:10px}
+.ainpe-next-two a{flex:1;min-width:0;border-radius:12px;color:#fff;padding:10px;min-height:84px;display:flex;flex-direction:column;text-decoration:none}
+.ainpe-next-two b{font-size:14px;line-height:1.3}.ainpe-next-two small{font-size:11px;opacity:.85;margin-top:2px}.ainpe-next-two i{font-style:normal;margin-top:auto;font-size:12.5px;font-weight:900;color:#ffc94d}

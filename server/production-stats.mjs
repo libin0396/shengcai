@@ -11,7 +11,9 @@ const PARAMS={N:16384,r:8,p:1,maxmem:64*1024*1024};
 const METRICS={
   siteViews:{event:'site_view'}, simStarts:{event:'sim_start'}, simFinishes:{event:'sim_finish'},
   campViews:{event:'camp_view'}, campClicks:{event:'camp_join_click'},
-  posterQrVisits:{event:'challenge_open',source:'poster_qr'}, shareLinkVisits:{event:'challenge_open',source:'share_link'},
+  posterQrVisits:{sources:[['challenge_open','poster_qr'],['site_view','persona_qr']]},
+  challengePosterVisits:{event:'challenge_open',source:'poster_qr'}, personaPosterVisits:{event:'site_view',source:'persona_qr'},
+  shareLinkVisits:{event:'challenge_open',source:'share_link'},
   posterDownloads:{event:'poster_save'}, joinClicks:{event:'outbound_click',target:'join'},
 };
 const emptyMetric=()=>({events:0,browsers:0});
@@ -60,9 +62,15 @@ function summary(dbPath,root,days){
     if(!['event','source','device_hash','created_at'].every(x=>columns.includes(x)))throw new Error('invalid_database');
     for(const [name,spec] of Object.entries(METRICS)){
       if(spec.target&&!columns.includes('target')){result.metrics[name]=null;continue}
-      let sql='SELECT COUNT(*) AS events, COUNT(DISTINCT device_hash) AS browsers FROM events WHERE created_at>=? AND created_at<? AND event=?';
-      const values=[since,until,spec.event];
-      if(spec.source){sql+=' AND source=?';values.push(spec.source)}
+      let sql='SELECT COUNT(*) AS events, COUNT(DISTINCT device_hash) AS browsers FROM events WHERE created_at>=? AND created_at<?';
+      const values=[since,until];
+      if(spec.sources){
+        sql+=' AND ('+spec.sources.map(()=>'(event=? AND source=?)').join(' OR ')+')';
+        for(const [event,source] of spec.sources)values.push(event,source);
+      }else{
+        sql+=' AND event=?';values.push(spec.event);
+        if(spec.source){sql+=' AND source=?';values.push(spec.source)}
+      }
       if(spec.target){sql+=' AND target=?';values.push(spec.target)}
       const row=db.prepare(sql).get(...values);result.metrics[name]={events:Number(row.events),browsers:Number(row.browsers)};
     }
@@ -84,7 +92,7 @@ function summary(dbPath,root,days){
       SUM(CASE WHEN event='sim_start' THEN 1 ELSE 0 END) AS simStarts,
       SUM(CASE WHEN event='sim_finish' THEN 1 ELSE 0 END) AS simFinishes,
       SUM(CASE WHEN event='camp_view' THEN 1 ELSE 0 END) AS campViews,
-      SUM(CASE WHEN event='challenge_open' AND source='poster_qr' THEN 1 ELSE 0 END) AS posterQrVisits
+      SUM(CASE WHEN (event='challenge_open' AND source='poster_qr') OR (event='site_view' AND source='persona_qr') THEN 1 ELSE 0 END) AS posterQrVisits
       FROM events WHERE created_at>=? AND created_at<? GROUP BY date ORDER BY date`).all(since,until).map(x=>Object.fromEntries(Object.entries(x).map(([k,v])=>[k,k==='date'?v:Number(v)])));
     result.available=true;return result;
   }finally{db.close()}

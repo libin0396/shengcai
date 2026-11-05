@@ -38,7 +38,7 @@
               <text class="metric-detail">{{ count(item.key,'events') }} 次{{ item.unit }}</text>
             </view>
           </view>
-          <view class="notice"><text class="notice-title">先看懂这些数字</text><text>人数按匿名浏览器估算，同一人使用不同设备会分别计数；屏蔽统计、清除数据或网络异常也会影响结果。</text><text>“海报来源访问”是带海报来源标记的挑战页访问，无法确认是否实际扫码；长按二维码和实际报名人数目前无法由网站直接统计。</text><text>体验营按钮点击不等于加入或报名，当前二维码长按也不会产生该点击事件。</text></view>
+          <view class="notice"><text class="notice-title">先看懂这些数字</text><text>人数按匿名浏览器估算，同一人使用不同设备会分别计数；屏蔽统计、清除数据或网络异常也会影响结果。</text><text>“海报来源访问”包括人格卡选项目页和挑战或对战卡挑战页的带标记访问；无法确认是否实际扫码或报名。</text><text>体验营按钮点击不等于加入或报名，当前二维码长按也不会产生该点击事件。</text></view>
           <template v-if="stats.funnel"><view class="section-head"><text class="section-title">模拟后的下一步</text><text class="section-note">按浏览器和项目匹配</text></view><view class="funnel-card"><view class="funnel-step"><text>开始模拟</text><strong>{{ funnelCount('started') }}</strong><small>项体验</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成模拟</text><strong>{{ funnelCount('finished') }}</strong><small>完成率 {{ funnelRate('finishRate') }}</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成后访问体验营</text><strong>{{ funnelCount('campVisitsAfterFinish') }}</strong><small>访问率 {{ funnelRate('campAfterFinishRate') }}</small></view></view><text class="funnel-note">同一浏览器按项目分别计数，并按开始、完成、访问体验营的时间顺序匹配；不是实名人数或实际报名，原帖中转也可能产生访问。</text></template>
           <view class="section-head"><text class="section-title">更多入口</text><text class="section-note">浏览器数 / 次数</text></view>
           <view class="extra-list"><view v-for="item in extraMetrics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">{{ item.hint }}</text></view><text class="extra-count">{{ stats.metrics?.[item.key] === null ? '暂不可统计' : `${count(item.key,'browsers')} / ${count(item.key,'events')}` }}</text></view></view>
@@ -64,6 +64,8 @@ const coreMetrics=[
 ];
 const extraMetrics=[
   {key:'siteViews',label:'网站访问',hint:'有记录的页面访问事件'},
+  {key:'personaPosterVisits',label:'人格卡来源访问',hint:'带人格卡来源标记的选项目页访问'},
+  {key:'challengePosterVisits',label:'挑战 / 对战卡来源访问',hint:'带海报来源标记的挑战页访问'},
   {key:'campClicks',label:'体验营按钮点击（旧版）',hint:'当前长按二维码不会触发此事件'},
   {key:'shareLinkVisits',label:'分享链接访问',hint:'通过带分享来源标记的链接进入挑战页'},
   {key:'posterDownloads',label:'战报下载操作',hint:'仅统计下载按钮，不含微信长按保存'},

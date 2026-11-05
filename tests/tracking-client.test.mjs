@@ -40,3 +40,12 @@ test('persona events send only the anonymous hidden flag and require a boolean',
  assert.deepEqual(Object.keys(unlock).sort(),['did','event','hidden','played','ts']);
  assert.equal(save.hidden,false);
 });
+
+
+test('persona poster landing emits the attributed site view without private fields',async()=>{
+ const {window,sent}=setup();
+ assert.equal(window.AINPETrack.track('site_view',{page:'pick',from:'persona_qr'}),true);
+ const payload=JSON.parse(await sent[0].data.text());
+ assert.equal(payload.event,'site_view');assert.equal(payload.page,'pick');assert.equal(payload.from,'persona_qr');
+ assert.deepEqual(Object.keys(payload).sort(),['did','event','from','page','played','ts']);
+});

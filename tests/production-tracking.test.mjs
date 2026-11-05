@@ -40,6 +40,16 @@ test('challenge replay events accept the share and poster entry sources',async()
   }finally{await x.close()}
 });
 
+test('persona poster landing site views reach the tracking store with their source',async()=>{
+ const x=await setup();try{
+  assert.equal((await x.post({event:'site_view',page:'pick',from:'persona_qr',played:false,ts:Date.now(),did:'a'.repeat(32)})).status,202);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   const row=db.prepare('SELECT event,page,source FROM events').get();
+   assert.deepEqual({...row},{event:'site_view',page:'pick',source:'persona_qr'});
+  }finally{db.close()}
+ }finally{await x.close()}
+});
+
 test('homepage camp clicks are accepted with a bounded source and target',async()=>{
  const x=await setup();try{
   assert.equal((await x.post({...sample(),event:'outbound_click',from:'home',target:'camp'})).status,202);
