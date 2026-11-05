@@ -12,7 +12,7 @@
       </scroll-view>
       <view class="site-actions">
         <button class="site-contact" @tap="contactOpen = true">联系站长</button>
-        <button v-if="!hideCamp" class="site-camp" @tap="go('/pages/camp/index?from=header')">3 天体验营</button>
+        <button v-if="!hideCamp" class="site-camp" @tap="go('/pages/camp/index?from=header')">了解生财</button>
       </view>
     </view>
     <view v-if="contactOpen" class="site-contact-overlay" @tap="contactOpen = false">

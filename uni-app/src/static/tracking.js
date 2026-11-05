@@ -3,6 +3,33 @@
   var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save'];
   var TARGETS=['camp','join','source','event','referral'], SOURCES=['article','camp','result','mine','home','home_bar','event','header','footer','library','events','simulate','bar'];
   var KEY='ainpe:anonymous-device', ID=/^[a-z0-9][a-z0-9_-]{0,39}$/, did='';
+  // Only this browser is excluded. Consume the URL control so it isn't shared.
+  var INTERNAL='ainpe:internal', internal=false;
+  try{internal=root.localStorage.getItem(INTERNAL)==='1'}catch(e){}
+  function updateInternal(){
+    try{
+      if(!root.location||!root.location.href)return;
+      var url=new URL(root.location.href), idx=url.hash.indexOf('?');
+      var hashPath=idx<0?url.hash:url.hash.slice(0,idx);
+      var hashParams=new URLSearchParams(idx<0?'':url.hash.slice(idx+1));
+      var values=url.searchParams.getAll('ainpe_internal').concat(hashParams.getAll('ainpe_internal'));
+      if(values.length!==1||!(/^[01]$/).test(values[0]))return;
+      var next=values[0]==='1';
+      // A link can arrive from anyone; never change this browser's setting silently.
+      var message=next?'将此浏览器设为内部设备？此后不会计入网站统计。':'恢复统计此浏览器的访问？浏览器的隐私设置仍然优先。';
+      var approved=next===internal;
+      if(!approved&&typeof root.confirm==='function')try{approved=root.confirm(message)===true}catch(e){}
+      if(approved){
+        internal=next;
+        try{if(internal)root.localStorage.setItem(INTERNAL,'1');else root.localStorage.removeItem(INTERNAL)}catch(e){}
+      }
+      url.searchParams.delete('ainpe_internal');hashParams.delete('ainpe_internal');
+      var rest=hashParams.toString();url.hash=hashPath+(rest?'?'+rest:'');
+      if(root.history&&typeof root.history.replaceState==='function')root.history.replaceState(root.history.state,'',url.pathname+url.search+url.hash);
+    }catch(e){}
+  }
+  updateInternal();
+  if(typeof root.addEventListener==='function')root.addEventListener('hashchange',updateInternal);
   function device(){
     if(did)return did;
     try{did=root.localStorage.getItem(KEY)||'';}catch(e){}
@@ -16,7 +43,7 @@
   }
   function track(event,options){
     try{
-      if(!root.navigator||root.navigator.globalPrivacyControl||root.navigator.doNotTrack==='1'||EVENTS.indexOf(event)<0)return false;
+      if(internal||!root.navigator||root.navigator.globalPrivacyControl||root.navigator.doNotTrack==='1'||EVENTS.indexOf(event)<0)return false;
       options=options||{};
       var isPersonaEvent=event==='persona_unlock'||event==='poster_save';
       if(isPersonaEvent && typeof options.hidden!=='boolean')return false;
@@ -33,5 +60,5 @@
     }catch(e){}
     return false;
   }
-  root.AINPETrack={track:track};
+  root.AINPETrack={track:track,isInternal:function(){return internal}};
 })(typeof window==='undefined'?globalThis:window);

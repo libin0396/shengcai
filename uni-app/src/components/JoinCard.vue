@@ -3,7 +3,7 @@
     <image class="jc-illo" src="/static/assets/join-banner.svg" mode="widthFix" />
     <view class="jc-body">
       <view class="jc-pr"><text class="jc-now">了解加入生财有术</text></view>
-      <view class="jc-list"><text class="jc-li">了解项目、实战内容与圈友交流</text></view>
+      <view class="jc-list"><text class="jc-li">✓ 阅读真实项目案例和实战复盘</text><text class="jc-li">✓ 了解当期航海与实战方向</text><text class="jc-li">✓ 参与符合条件的同行交流</text></view>
       <view class="jc-btn" @tap="go">加入生财有术 ↗</view>
       <text class="jc-f">站长推荐链接 · 费用与权益以入口说明为准</text>
     </view>
