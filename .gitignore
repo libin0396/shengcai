@@ -20,6 +20,7 @@ uni-app/src/data/*
 !uni-app/src/data/personas.json
 !uni-app/src/data/game-matching.js
 !uni-app/src/data/track.js
+!uni-app/src/data/offer.js
 !uni-app/src/data/case-studies.js
 !uni-app/src/data/case-studies-published.json
 !uni-app/src/data/article-categories.js
