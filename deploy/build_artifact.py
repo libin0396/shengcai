@@ -9,7 +9,7 @@ import sys
 import tarfile
 
 ROOT = Path(__file__).resolve().parent.parent
-INCLUDE = ('dist/client', 'server', 'src', 'scripts', 'sync/query-plan.json', 'package.json', 'package-lock.json')
+INCLUDE = ('dist/client', 'dist/runtime', 'server', 'src', 'scripts', 'sync/query-plan.json', 'package.json', 'package-lock.json')
 
 def build(commit, output):
     if not re.fullmatch(r'[0-9a-f]{40}', commit):

@@ -31,8 +31,11 @@ async function main(){
  const input=JSON.parse(text);const previous=await readFeed();
  // Collection time is supplied by the collector; never turn a stale failed query into a fresh success.
  if(typeof input.now!=='string'||!Number.isFinite(Date.parse(input.now))||Math.abs(Date.now()-Date.parse(input.now))>30*60*1000)throw new Error('collection_stale');
- const normalized=normalizeFeed({...input,previous});const published=await publishFeed(normalized);
- let archiveStatus='ok';try{await archive(published);}catch{archiveStatus='retry_needed';}
- process.stdout.write(JSON.stringify({status:published.sync.status,lastSuccessAt:published.sync.lastSuccessAt,counts:published.sync.counts,archiveStatus})+'\n');
+ const normalized=normalizeFeed({...input,previous});
+ // Do not replace the last successful feed if the required topic archive fails.
+ // Archival is idempotent, so a later run can finish any partial archive writes.
+ await archive(normalized);
+ const published=await publishFeed(normalized);
+ process.stdout.write(JSON.stringify({status:published.sync.status,lastSuccessAt:published.sync.lastSuccessAt,counts:published.sync.counts,archiveStatus:'ok'})+'\n');
 }
 main().catch(async()=>{await recordFeedFailure().catch(()=>{});process.stderr.write('同步未完成：已保留上次成功内容。请检查 MCP 查询结果或本机存储。\n');process.exitCode=1;});
