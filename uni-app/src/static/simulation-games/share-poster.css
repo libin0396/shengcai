@@ -53,3 +53,40 @@
 .ainpe-more-review{margin:14px 0;padding:4px 16px 12px;border:1px solid #e3e7d9;border-radius:12px;background:#fff;color:#315c3d}
 .ainpe-more-review>summary{padding:12px 0;font-size:14px;font-weight:700;cursor:pointer}
 .ainpe-more-review .acts{padding-bottom:4px}
+
+/* Result cards retain the complete original poster and readable actions. */
+.ainpe-result-help{color:#6f8375;font-size:12px;font-weight:600}
+.ainpe-result-home{border:1.5px solid #0e5a3a;background:#fff;color:#0e5a3a}
+.ainpe-result-v31 .disc{background:#f4f5f1;border:1px solid #e0e6df;color:#718178;font-size:12px}
+.ainpe-promo-fold>summary{position:relative;display:flex;align-items:flex-start;gap:12px;min-height:0;list-style:none}
+.ainpe-promo-fold>summary::after{display:none!important;content:none!important}
+.ainpe-promo-fold>summary .ainpe-promo-copy{display:block;flex:1;min-width:0}
+.ainpe-promo-fold>summary .ainpe-promo-copy small,.ainpe-promo-fold>summary .ainpe-promo-copy strong,.ainpe-promo-fold>summary .ainpe-promo-copy>span{display:block}
+.ainpe-promo-fold>summary .ainpe-promo-arrow{display:flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;border-radius:50%;background:#ffffff24;color:#fff;font-size:19px;line-height:1}
+.ainpe-promo-fold[open]>summary .ainpe-promo-arrow{transform:rotate(180deg)}
+.ainpe-promo-camp{border-color:#e45a24;background:linear-gradient(135deg,#ff7a3d,#ee5a24 55%,#d9481a);color:#fff}
+.ainpe-promo-camp>summary small,.ainpe-promo-camp>summary strong{color:#fff!important}
+.ainpe-promo-camp>summary span{color:#ffe2d2}
+.ainpe-promo-join>summary .ainpe-promo-copy strong{color:#fff!important}
+.ainpe-promo-join>summary .ainpe-promo-copy strong em{font-style:normal;color:#ffcb4d}
+.ainpe-promo-fold>summary .ainpe-promo-boat{display:flex!important;align-items:center;justify-content:center;flex:none;width:52px;height:52px;border-radius:12px;background:#275c40;color:#ffcb4d;font-size:27px}
+.ainpe-promo-join>summary .ainpe-promo-countdown{display:inline-block!important;margin-top:1px;padding:2px 9px;border-radius:20px;background:#ffc94d;color:#183520;font-size:11px;font-weight:800}
+.ainpe-promo-fold>.ainpe-camp-v2{min-height:0;padding:16px!important;background:#fff!important;color:#173728!important}
+.ainpe-promise-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ainpe-promise-grid .ainpe-promise{display:block;margin:0;padding:9px;border-radius:9px;background:#fff0e8;color:#62361f;font-size:12px;line-height:1.4}
+.ainpe-promise-grid .ainpe-promise b{margin:0;color:#bc481a;font-size:14px;line-height:1.4}
+.ainpe-promise-grid .ainpe-promise small{margin-top:3px;color:#80614f;font-size:11px;line-height:1.4}
+.ainpe-promise-grid .ainpe-promise.on{box-shadow:inset 0 0 0 2px #e8652b;background:#fff5e9;color:#62361f}
+.ainpe-promo-fold>.ainpe-camp-v2 .ainpe-camp-benefits{margin:12px 0;color:#607a69;font-size:12px;line-height:1.7}
+.ainpe-promo-fold>.ainpe-camp-v2 .ainpe-camp-media small,.ainpe-promo-fold>.ainpe-camp-v2>small{color:#6f8375;line-height:1.5}
+.ainpe-promo-fold>.ainpe-camp-v2 .btn{background:#0e5a3a!important;color:#fff!important}
+.ainpe-promo-fold>.ainpe-direct-offer{background:#fff;color:#173728}
+.ainpe-join-content{flex-basis:100%}
+.ainpe-join-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ainpe-direct-offer .ainpe-join-price strong{display:inline;color:#0e5a3a;font-size:27px;line-height:1.2}
+.ainpe-direct-offer .ainpe-join-price strong small{display:inline;color:inherit;font-size:12px}
+.ainpe-join-price s{color:#86978c;font-size:12px}.ainpe-join-price span{padding:3px 7px;border-radius:5px;background:#ee5a24;color:#fff;font-size:11px;font-weight:800}
+.ainpe-join-section{display:block;margin:12px 0 6px;font-size:13px;color:#264b35}
+.ainpe-join-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
+.ainpe-join-benefits li{padding:8px;border-radius:8px;background:#edf5ec;color:#42614b;font-size:12px;line-height:1.4}
+.ainpe-promo-fold>.ainpe-direct-offer>a{min-height:44px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex:1}

@@ -16,7 +16,8 @@ var NSTEP=D.task?5:4;
 var CK='<i class="ck" aria-hidden="true"></i>';
 
 function intro(){setGameCampVisible(true);gameInProgress=false;reset();$('#top').hidden=true;wide(0);top0();
- app.innerHTML='<div style="margin-top:22px"><span class="brand">'+BR+'</span></div><h1>'+UI.title+'</h1><p class="lead">'+UI.intro+'</p>'+
+ var rendered='';try{if(window.AINPEIntroCover)rendered=window.AINPEIntroCover.render(D,UI)}catch(_){}
+ app.innerHTML=rendered || '<div style="margin-top:22px"><span class="brand">'+BR+'</span></div><h1>'+UI.title+'</h1><p class="lead">'+UI.intro+'</p>'+
  '<ol class="flow">'+UI.steps.map(function(x,i){return '<li><span class="fn">'+(i+1)+'</span><span>'+x+'</span></li>'}).join('')+'</ol>'+
  '<div class="note"><div class="nh"><b>'+UI.refLabel+'</b><span class="num">'+money(D.baseRef)+'</span><span class="tag">游戏假设</span></div><p>'+D.baseRefNote+'</p></div>'+
  '<p class="fine">本游戏的数值、事件、客户和平台规则均为模拟设定；模拟结果不是收入预测。</p>'+cta('<button class="btn" id="go">开始模拟</button>');
@@ -192,6 +193,6 @@ function drawCard(R,V,conds){var c=$('#cv'),x=c.getContext('2d'),W=720,P=48,MW=W
  x.textBaseline='alphabetic';
  ops.forEach(function(o){o[1](o[0]+24)});
  $('#ci').src=c.toDataURL('image/png')}
-intro();
 var homeLink=document.getElementById('game-home');if(homeLink)homeLink.addEventListener('click',function(e){if(gameInProgress&&!window.confirm('返回首页会结束当前模拟，确定离开吗？'))e.preventDefault()});
-if(new URLSearchParams(location.search).get('start')==='1'&&!new URLSearchParams(location.search).has('ch')){var start=document.getElementById('go');if(start)start.click()}
+function bootIntro(){intro();if(new URLSearchParams(location.search).get('start')==='1'&&!new URLSearchParams(location.search).has('ch')){var start=document.getElementById('go');if(start)start.click()}}
+var introQuery=new URLSearchParams(location.search);if(introQuery.get('start')==='1'||introQuery.has('ch'))bootIntro();else{var introScript=document.createElement('script');introScript.src='./intro-cover.js';introScript.onload=bootIntro;introScript.onerror=bootIntro;document.head.appendChild(introScript)}

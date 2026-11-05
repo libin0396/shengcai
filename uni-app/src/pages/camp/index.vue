@@ -14,7 +14,7 @@
               <view v-for="step in steps" :key="step.title" class="hero-promise"><text>{{ step.title }}</text><text>{{ step.description }}</text></view>
             </view>
           </view>
-          <view class="hero-join-card">
+          <view id="camp-signup" class="hero-join-card">
             <text class="join-title">加入体验营</text>
             <text class="join-description">通过生财有术企业微信了解报名方式</text>
             <CampQr :size="180" />
