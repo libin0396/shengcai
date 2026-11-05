@@ -17,10 +17,11 @@
       <view v-if="view==='return'" class="panel"><text class="eyebrow">YOUR READING DESK</text><view class="panel-title">回来，接着探索。</view><view class="muted">{{ feedMeta.lastSuccessLabel ? '上次成功更新 '+feedMeta.lastSuccessLabel : '暂无成功同步时间' }} · {{ feedMeta.statusText }}</view><view class="return-box"><view class="subheading">上次读到</view><view v-if="lastArticle" class="reading-link" @click="openArticle(lastArticle)">{{ lastArticle.title }} ↗</view><view v-else class="muted">{{ lastArticleId?'这篇内容暂不在当前收录中。':'打开一篇文章，回来时可以从这里继续。' }}</view></view><view class="subheading">关注你感兴趣的方向</view><view class="topic-buttons"><view v-for="topic in topics" :key="topic.id" :class="['topic-button',{selected:followed.includes(topic.id)}]" @click="toggleTopic(topic.id)">{{ followed.includes(topic.id)?'✓ ':'' }}{{ topic.label }}</view></view><view v-if="freshArticles.length"><view class="output-label">上次访问后发布 · {{ freshArticles.length }} 篇</view><view v-for="item in freshArticles.slice(0,3)" :key="item.id" class="reading-link" @click="openArticle(item)">{{ item.title }} ↗</view></view><view v-else class="muted return-message">{{ freshMessage }}</view><view class="privacy">关注与阅读记录保存在当前设备，专题按标题和已有标签近似匹配。</view></view>
       <view class="camp" @click="goCamp"><image :src="campaign.posterUrl" mode="aspectFit"/><view><text class="eyebrow">下一步 · 动手试试</text><view class="camp-title">想系统了解 AI 实战？</view><view class="muted">了解 AI 成万事三天体验营，具体时间和参与方式以入口说明为准。</view><view class="camp-link">了解体验营 ↗</view></view></view>
     </view>
-  </view>
+  <SiteFooter /></view>
 </template>
 
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, reactive, ref} from 'vue';
 import {onLoad,onShow} from '@dcloudio/uni-app';
 import {articles,campaign,feedMeta,isAiArticle} from '../../data/content.js';

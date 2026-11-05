@@ -45,9 +45,10 @@
       </view>
       <SimCamp/>
     </view>
-  </view>
+  <SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {ref} from 'vue';
 import {onShow} from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';

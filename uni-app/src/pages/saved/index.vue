@@ -11,9 +11,10 @@
     <view v-else><view v-for="e in savedEvents" :key="e.id" class="row"><text class="kind">{{e.city}} · {{e.typeText || '活动'}}</text><text class="name">{{e.name}}</text><text class="summary">{{e.summary||e.description}}</text><view class="row-bottom"><text @click="goEvents">在线下活动页查看 →</text><text @click="remove('event',e)">取消收藏</text></view></view><view v-if="!savedEvents.length" class="empty">还没有收藏线下活动。<button @click="goEvents">查看线下活动</button></view></view>
     <JoinOffer variant="inline" from="mine" />
     <view class="data-notice">为了解模拟体验和体验营入口的使用情况，本网站会记录页面与按钮事件，并在本机保存随机标识；不记录输入内容或完整网址，记录约保留 90 天。</view>
-  </view><CampFooter/></view>
+  </view><CampFooter/><SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref,onMounted,onUnmounted} from 'vue';import {onShow} from '@dcloudio/uni-app';
 import JoinOffer from '../../components/JoinOffer.vue';
 import SiteHeader from '../../components/SiteHeader.vue';import CampFooter from '../../components/CampFooter.vue';

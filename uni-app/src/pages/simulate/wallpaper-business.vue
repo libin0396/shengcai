@@ -55,9 +55,10 @@
       </view>
       <view v-if="state.showResult"><SimCamp /></view>
     </view>
-  </view>
+  <SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, reactive, ref, watch} from 'vue';
 import SiteHeader from '../../components/SiteHeader.vue';
 import SimCamp from './SimCamp.vue';

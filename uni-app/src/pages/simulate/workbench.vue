@@ -26,9 +26,10 @@
       <view v-else class="export-row"><button class="secondary" @tap="copyProject">复制当前项目配置与测试记录</button><text>可随时带走已有进度；模拟规则与数据不会被发布。</text></view>
       <SimCamp v-if="passed" />
     </view>
-  </view>
+  <SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import { computed, reactive, watch } from 'vue';
 import SiteHeader from '../../components/SiteHeader.vue';
 import SimCamp from './SimCamp.vue';

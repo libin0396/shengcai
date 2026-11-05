@@ -46,10 +46,11 @@
       <view v-else class="not-found"><view>暂未找到这篇文章</view><text>它可能不在当前已收录的资料中。</text><button @click="goBack">返回文章列表</button></view>
     </view>
     <view v-if="study && study.simulation && showPlayBar && !dismissPlayBar" class="case-play-sticky"><view><text>{{study.simulation.name}} · 模拟</text><text>读到这里，亲手试一次</text></view><button @click="openSimulation">玩相关模拟 ▶</button><button class="case-play-close" aria-label="关闭模拟推荐" @click="dismissPlayBar=true">×</button></view>
-  </view>
+  <SiteFooter /></view>
 </template>
 
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, watch, onMounted, onUnmounted, getCurrentInstance} from 'vue';
 import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
 import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';

@@ -36,10 +36,11 @@
       <view class="footer-note">内容来自生财有术 · 展示已收录摘要与导读，具体语境请以原帖为准</view>
     </view>
     <JoinOffer variant="bar" from="home_bar" :visible="showJoinBar" />
-  </view>
+  <SiteFooter /></view>
 </template>
 
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
 import JoinOffer from '../../components/JoinOffer.vue';

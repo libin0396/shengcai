@@ -82,9 +82,10 @@
         <view class="sim-actions"><button class="sim-secondary" @click="state.step=0">调整决策，再试一次</button><button class="sim-secondary" @click="confirmReset">从头开始</button></view><SimCamp/>
       </view>
     </view>
-  </view>
+  <SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, reactive, watch} from 'vue';
 import SiteHeader from '../../components/SiteHeader.vue';
 import SimCamp from './SimCamp.vue';

@@ -93,10 +93,11 @@
       </view>
     </view>
     <!-- #endif -->
-  </view>
+  <SiteFooter /></view>
 </template>
 
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';

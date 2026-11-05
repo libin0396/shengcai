@@ -29,9 +29,10 @@
         </view>
       </view><view class="side"><view class="side-title">先玩再读，读得更懂。</view><view class="side-copy">挑一个方向，从真实案例出发，模拟体验关键步骤。</view><button v-for="g in games" :key="g.file" @click="play(g.file)">{{g.name}} →</button><view class="side-note">过程和金额均为模拟，不是收入预测。</view></view></view>
     </view><CampFooter/>
-  </view>
+  <SiteFooter /></view>
 </template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';
 import {onShow} from '@dcloudio/uni-app';
 import {articles,feedMeta} from '../../data/content.js';

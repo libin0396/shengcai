@@ -8,8 +8,9 @@
 <view class="sim-panel"><text class="sim-panel-title">找一点思路</text><text class="sim-note">{{help[s.step]}}</text><button class="sim-small" @click="copyHelp">复制求助问题</button><text class="sim-note">可以自行发给朋友讨论；不需要邀请朋友也能继续。</text></view>
 </view>
 <view v-if="s.step===4" class="sim-box"><text class="sim-kicker">模拟项目 · 复盘</text><text class="sim-title">{{issues.length?'这次模拟还未完成交付':'模拟交付条件已满足'}}</text><view class="sim-stage-info"><text>本轮解锁 · 模拟数值</text><text>¥ {{money}} · 非实际收入</text></view><text class="sim-note">金额和角色均为虚构，结果只检查填写、字段与少量关键词，不代表真实客户验收或收入预测。</text><view v-if="issues.length" class="sim-panel sim-bad"><text class="sim-panel-title">可以从这里改进</text><view v-for="(issue,i) in issues" :key="i" class="sim-result-item"><text class="sim-copy">{{issue.text}}</text><button class="sim-small" @click="s.step=issue.step">返回修改</button></view></view><view v-else class="sim-panel sim-good"><text class="sim-panel-title">本次练习条件已满足</text><text class="sim-copy">模拟老板：可以，先确认本次范围，新增工作再讨论投入。</text></view><view class="sim-panel"><text class="sim-panel-title">你刚刚完成了什么</text><text class="sim-copy">沟通：{{s.messages.filter(m=>m.role==='user').length}} 次</text><text class="sim-copy">方案：{{draftComplete?'四项已填写':'还有待确认内容'}}</text><text class="sim-copy">订单卡：{{orderReady?'字段已填全':'仍有缺项'}}</text><text class="sim-copy">客户回复：{{s.reply}}</text></view><view class="sim-actions"><button class="sim-secondary" @click="s.step=3">修改客户回复</button><button class="sim-secondary" @click="reset">重新体验</button><button class="sim-secondary" @click="copyHelp">复制求助问题</button></view><view class="sim-panel"><text class="sim-panel-title">从模拟到真实</text><text class="sim-note">看看已收录的工厂 FDE 案例，了解经营者如何从现场需求开始。</text><button class="sim-small" @click="openCase">站内查看案例 →</button></view><SimCamp/></view>
-</view></view></template>
+</view><SiteFooter /></view></template>
 <script setup>
+import SiteFooter from '../../components/SiteFooter.vue';
 import {reactive,computed,ref,watch} from 'vue';
 import SiteHeader from '../../components/SiteHeader.vue';
 import SimCamp from './SimCamp.vue';
