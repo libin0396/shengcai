@@ -27,3 +27,16 @@ test('privacy signals suppress collection before generating a browser identifier
   assert.equal(window.AINPETrack.track('outbound_click',{from:'article',target:'camp'}),false);assert.equal(sent.length,0);
  }
 });
+
+test('persona events send only the anonymous hidden flag and require a boolean',async()=>{
+ const {window,sent}=setup();
+ assert.equal(window.AINPETrack.track('persona_unlock',{hidden:true,played:true,game:'miniapp',tier:'tier-1',name:'private',trigger:'private'}),true);
+ assert.equal(window.AINPETrack.track('poster_save',{hidden:false,played:true}),true);
+ assert.equal(window.AINPETrack.track('poster_save',{hidden:'true'}),false);
+ assert.equal(window.AINPETrack.track('persona_unlock',{}),false);
+ assert.equal(sent.length,2);
+ const unlock=JSON.parse(await sent[0].data.text()),save=JSON.parse(await sent[1].data.text());
+ assert.equal(unlock.event,'persona_unlock');assert.equal(unlock.hidden,true);assert.equal(unlock.played,true);
+ assert.deepEqual(Object.keys(unlock).sort(),['did','event','hidden','played','ts']);
+ assert.equal(save.hidden,false);
+});

@@ -116,11 +116,32 @@ test('old databases migrate without losing records and old reports remain readab
   const {writeFile,chmod}=await import('node:fs/promises');await writeFile(x.dbPath,'',{mode:0o600});await chmod(x.dbPath,0o600);
   let db=new DatabaseSync(x.dbPath);db.exec(`CREATE TABLE events (id INTEGER PRIMARY KEY,event TEXT NOT NULL,page TEXT,source TEXT,game TEXT,tier TEXT,played INTEGER NOT NULL,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)`);
   db.prepare('INSERT INTO events(event,played,created_at,device_hash) VALUES(?,?,?,?)').run('site_view',0,Date.now(),'0'.repeat(64));db.close();
-  let report=spawnSync(process.execPath,['scripts/tracking-report.mjs',x.dbPath,'30'],{encoding:'utf8'});assert.equal(report.status,0);assert.equal(JSON.parse(report.stdout).outbound_clicks.camp.clicks,0);
+  let report=spawnSync(process.execPath,['scripts/tracking-report.mjs',x.dbPath,'30'],{encoding:'utf8'});assert.equal(report.status,0);assert.equal(JSON.parse(report.stdout).outbound_clicks.camp.clicks,0);assert.equal(JSON.parse(report.stdout).persona_events.persona_unlock.hidden.events,0);
   assert.equal((await x.post({...sample(),event:'outbound_click',from:'camp',target:'join'})).status,202);
   x.api.close();assert.equal((await x.post(sample(),{'x-real-ip':'198.51.100.2'})).status,202);
   db=new DatabaseSync(x.dbPath,{readOnly:true});try{
-   const rows=db.prepare('SELECT event,target FROM events ORDER BY id').all();assert.equal(rows.length,3);assert.equal(rows[0].event,'site_view');assert.equal(rows[0].target,null);assert.equal(rows[1].target,'join');
+   const rows=db.prepare('SELECT event,target,hidden FROM events ORDER BY id').all();assert.equal(rows.length,3);assert.equal(rows[0].event,'site_view');assert.equal(rows[0].target,null);assert.equal(rows[0].hidden,null);assert.equal(rows[1].target,'join');
+  }finally{db.close()}
+ }finally{await x.close()}
+});
+
+test('persona events accept only an anonymous boolean and report browser counts',async()=>{
+ const x=await setup();try{
+  const base={played:true,ts:Date.now(),did:'a'.repeat(32)};
+  for(const event of ['persona_unlock','poster_save'])for(const hidden of [true,false])assert.equal((await x.post({...base,event,hidden})).status,202);
+  for(const bad of [
+   {...base,event:'persona_unlock'}, {...base,event:'persona_unlock',hidden:'true'},
+   {...base,event:'poster_save',hidden:true,name:'private'}, {...base,event:'poster_save',hidden:false,game:'miniapp'},
+   {...base,event:'persona_unlock',hidden:true,tier:'tier-1'}, {...base,event:'site_view',hidden:true}
+  ])assert.equal((await x.post(bad)).status,400);
+  const report=spawnSync(process.execPath,['scripts/tracking-report.mjs',x.dbPath,'30'],{encoding:'utf8'});
+  assert.equal(report.status,0);const result=JSON.parse(report.stdout);
+  assert.deepEqual(result.persona_events.persona_unlock.hidden,{events:1,anonymous_browsers:1});
+  assert.deepEqual(result.persona_events.poster_save.normal,{events:1,anonymous_browsers:1});
+  assert.match(result.note,/not long presses, successful saves or shares/);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   const rows=db.prepare("SELECT hidden,page,source,game,tier FROM events WHERE event='persona_unlock' ORDER BY id").all();
+   assert.deepEqual(rows.map(row=>row.hidden),[1,0]);assert.equal(rows[0].game,null);assert.equal(rows[0].tier,null);
   }finally{db.close()}
  }finally{await x.close()}
 });
