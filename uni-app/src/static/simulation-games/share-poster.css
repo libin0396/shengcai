@@ -32,3 +32,24 @@
 @media(prefers-reduced-motion:reduce){.ainpe-hidden-reveal.unlocked span{animation:none}}
 .ainpe-hidden-reveal.unlocked span{display:flex;align-items:center;justify-content:center;gap:10px}.ainpe-hidden-reveal.unlocked span svg{width:46px;height:46px;flex:none}.ainpe-hidden-reveal.unlocked span strong{font-size:24px}
 .ainpe-result-poster.ainpe-reveal-pending,.ainpe-versus.ainpe-reveal-pending{visibility:hidden}
+
+/* Result actions stay available without crowding the first screen. */
+.ainpe-result-home{display:block;width:100%;min-height:48px;margin:12px 0 0;padding:10px 16px;border:0;border-radius:9px;background:#0e5a3a;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.ainpe-share-more{margin-top:12px;border-top:1px solid #e7eee4;padding-top:10px}
+.ainpe-share-more>summary{color:#426d50;font-size:13px;font-weight:700;line-height:1.6;cursor:pointer}
+.ainpe-promo-fold{margin:12px 0;border:1px solid #e3e7d9;border-radius:12px;overflow:hidden}
+.ainpe-promo-fold>summary{display:block;padding:18px 20px;cursor:pointer;list-style:none}
+.ainpe-promo-fold>summary::-webkit-details-marker{display:none}
+.ainpe-promo-fold>summary small,.ainpe-promo-fold>summary strong,.ainpe-promo-fold>summary span{display:block}
+.ainpe-promo-fold>summary small{font-size:11px;font-weight:700;letter-spacing:.03em;line-height:1.5}
+.ainpe-promo-fold>summary strong{margin:7px 0;font-size:18px;font-weight:800;line-height:1.45}
+.ainpe-promo-fold>summary span{font-size:12px;line-height:1.6}
+.ainpe-promo-camp{border-color:#f2b284;background:#fff0e3;color:#783912}
+.ainpe-promo-camp>summary small{color:#c04e1d}
+.ainpe-promo-camp>summary span{color:#a8633b}
+.ainpe-promo-join{border-color:#205c3e;background:#103b28;color:#fff}
+.ainpe-promo-join>summary small,.ainpe-promo-join>summary span{color:#bdd6c4}
+.ainpe-promo-fold>.ainpe-camp-v2,.ainpe-promo-fold>.ainpe-direct-offer{margin:0;border:0;border-radius:0;box-shadow:none}
+.ainpe-more-review{margin:14px 0;padding:4px 16px 12px;border:1px solid #e3e7d9;border-radius:12px;background:#fff;color:#315c3d}
+.ainpe-more-review>summary{padding:12px 0;font-size:14px;font-weight:700;cursor:pointer}
+.ainpe-more-review .acts{padding-bottom:4px}
