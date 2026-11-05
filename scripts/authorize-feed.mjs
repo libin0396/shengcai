@@ -5,6 +5,7 @@ import {Client,StreamableHTTPClientTransport,UnauthorizedError} from '../dist/ru
 import {ScysOAuthProvider} from './scys-auth.mjs';
 import {createAuthCallbackServer} from './scys-auth-loopback.mjs';
 import {scysFetch} from './scys-network.mjs';
+import {waitForAuthorization} from './authorization-wait.mjs';
 
 const endpoint=new URL('https://mcp.scys.com/shengcai-web/mcp');
 const port=19441, directory=process.env.AINPE_AUTH_DIR;
@@ -21,8 +22,7 @@ try{
     server=createAuthCallbackServer({port,provider,transport,getDestination:()=>destination,onDone:resolveDone});
     await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(port,'127.0.0.1',resolve)});
     console.log('AUTHORIZATION_READY');
-    const timer=setTimeout(()=>resolveDone(false),10*60*1000);timer.unref();
-    const ok=await done;clearTimeout(timer);
+    const ok=await waitForAuthorization(done);
     if(!ok)throw new Error('AUTHORIZATION_FAILED');
     console.log('AUTHORIZATION_SUCCEEDED');
   }

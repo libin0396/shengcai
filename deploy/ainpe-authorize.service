@@ -1,0 +1,21 @@
+[Unit]
+Description=AINPE one-time feed authorization (manual only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ainpe
+Group=ainpe
+WorkingDirectory=/opt/ainpe/current
+Environment=AINPE_AUTH_DIR=/var/lib/ainpe/data/auth
+ExecStart=/usr/bin/node /opt/ainpe/current/scripts/authorize-feed.mjs
+Restart=no
+RuntimeMaxSec=22min
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ainpe/data/auth
+StandardOutput=journal
+StandardError=journal
