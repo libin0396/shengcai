@@ -61,10 +61,10 @@ function send(res, status, body, method, headers = {}) {
   res.end(method === 'HEAD' ? undefined : bytes);
 }
 
-export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null} = {}) {
+export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
-  let reservations=null,tracking=null,board=null;
+  let reservations=null,tracking=null,board=null,stats=null;
   if(reservation){
     const dbParent=await realpath(path.dirname(reservation.dbPath));
     if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
@@ -74,6 +74,8 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     const trackingPath=path.join(dbParent,'ainpe-tracking.sqlite');
     if(path.resolve(reservation.dbPath)===trackingPath)throw new Error('tracking_db_conflicts_with_reservations');
     tracking=createProductionTrackingApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin});
+    const {createProductionStatsApi}=await import('./production-stats.mjs');
+    stats=createProductionStatsApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin,passwordFile:statsPasswordFile});
     const {createProductionBoardApi}=await import('./production-board.mjs');
     const boardPath=path.join(dbParent,'ainpe-board.sqlite');
     if(path.resolve(reservation.dbPath)===boardPath)throw new Error('board_db_conflicts_with_reservations');
@@ -152,14 +154,15 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       else res.destroy();
     }); };
     const afterTracking = () => { if(board)board.middleware(req,res,afterBoard);else afterBoard(); };
-    const afterReservation = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
+    const afterStats = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
+    const afterReservation = () => { if(stats)stats.middleware(req,res,afterStats);else afterStats(); };
     if(reservations){reservations.middleware(req,res,afterReservation);return;}
     void feed(req, res, fallback).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     });
   });
-  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();});
+  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();});
   return server;
 }
 
@@ -178,7 +181,7 @@ if (isMainModule()) {
   } else {
     try {
       const reservation = process.env.AINPE_RESERVATION_DB && process.env.AINPE_PUBLIC_ORIGIN ? {dbPath:process.env.AINPE_RESERVATION_DB,publicOrigin:process.env.AINPE_PUBLIC_ORIGIN} : null;
-      const server = await createProductionServer({reservation});
+      const server = await createProductionServer({reservation,statsPasswordFile:process.env.AINPE_STATS_PASSWORD_FILE||null});
       server.on('error', () => { console.error('Unable to start AINPE server.'); process.exitCode = 1; });
       server.listen(port, host, () => console.log(`AINPE listening on ${host}:${port}`));
     } catch {

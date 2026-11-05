@@ -89,6 +89,12 @@
       "style": {
         "navigationBarTitleText": "三天体验营"
       }
+    },
+    {
+      "path": "admin/stats",
+      "style": {
+        "navigationBarTitleText": "站长统计"
+      }
     }
   ],
   "globalStyle": {
