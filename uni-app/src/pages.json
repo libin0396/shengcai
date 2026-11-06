@@ -48,6 +48,7 @@
         "navigationBarTitleText": "模拟项目"
       }
     },
+    {"path": "pages/simulate/play", "style": {"navigationBarTitleText": "项目模拟"}},
     {
       "path": "pages/simulate/wallpaper-business",
       "style": {

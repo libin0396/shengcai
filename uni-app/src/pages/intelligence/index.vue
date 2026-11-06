@@ -39,7 +39,7 @@ import {articles,feedMeta} from '../../data/content.js';
 import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary} from '../../data/case-library.mjs';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
-import {matchArticleGame,simulationUrl} from '../../data/game-matching.js';
+import {matchArticleGame,simulationUrl,openGame} from '../../data/game-matching.js';
 import {caseStudies,caseById,caseAsArticle} from '../../data/case-studies.js';
 const categories=[{id:'all',label:'全部 AI'},{id:'miniapp',label:'AI 小程序'},{id:'development',label:'AI 产品开发'},{id:'video',label:'AI 视频'},{id:'overseas',label:'海外 AI 产品'},{id:'fde',label:'FDE 企业落地'},{id:'content',label:'内容创作'},{id:'agent',label:'Agent 与工具'}];
 const patterns={miniapp:/小程序|mini.?app/i,development:/开发|编程|代码|平台|产品/i,video:/视频|短剧|动画|影视/i,overseas:/(海外|出海).*(AI|建站|游戏站|产品)|热词.*(网站|游戏站)/i,fde:/(?:^|[^a-z])fde(?:$|[^a-z])|企业.*(?:落地|部署|交付)/i,content:/内容创作|自媒体|文案|写作|小红书|公众号/i,agent:/agent|智能体|工具|大模型|工作流/i};
@@ -86,12 +86,8 @@ function openArticle(a){try{uni.setStorageSync('ainpe:last-article',{id:String(a
 function go(url){uni.navigateTo({url})}
 function play(game,caseId){
 if(game?.url){uni.navigateTo({url:game.url+(caseId?(game.url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+caseId):'')});return;}
-// #ifdef H5
-let url=simulationUrl(game?.file || game);if(url){if(caseId)url+=(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+caseId);window.location.href=url;return;}
-// #endif
-// #ifndef H5
+let url=simulationUrl(game?.file || game);if(url){if(caseId)url+=(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+caseId);if(openGame(url))return;}
 uni.navigateTo({url:'/pages/simulate/index'});
-// #endif
 }
 function formatDate(v){const d=new Date(Number(v)*1000+8*3600000);return Number.isNaN(d.getTime())?'时间待确认':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`}
 </script>

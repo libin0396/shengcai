@@ -7,12 +7,14 @@
       </view>
       <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false" :scroll-into-view="active ? 'site-nav-'+active : ''" :scroll-with-animation="true">
         <view class="site-nav" aria-label="主导航">
-          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': active === link.key }" :aria-current="active === link.key ? 'page' : null" @tap="go(link.url)" @keydown.enter.prevent="go(link.url)" @keydown.space.prevent="go(link.url)">{{ link.label }}</button>
+          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': isCurrent(link) }" :aria-current="isCurrent(link) ? 'page' : null" @tap="go(link.url)" @keydown.enter.prevent="go(link.url)" @keydown.space.prevent="go(link.url)">{{ link.label }}</button>
         </view>
       </scroll-view>
       <view class="site-actions">
         <button class="site-contact" @tap="contactOpen = true">联系站长</button>
+        <!-- #ifdef H5 -->
         <button v-if="!hideCamp" class="site-camp" @tap="go('/pages/camp/index?from=header')">了解生财</button>
+        <!-- #endif -->
       </view>
     </view>
     <view v-if="contactOpen" class="site-contact-overlay" @tap="contactOpen = false">
@@ -30,7 +32,7 @@
 <script setup>
 import {track} from '../data/track.js';
 import { ref, onMounted, onUnmounted } from 'vue';
-defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false } });
+const props = defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false } });
 const contactOpen = ref(false);
 // #ifdef H5
 function escapeContact(e){if(e.key==='Escape') contactOpen.value=false}
@@ -42,12 +44,12 @@ let statusBarHeight = 0;
 try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } catch {}
 // #endif
 const links = [
-  { key: 'discover', label: '首页', url: '/pages/discover/index' },
-  { key: 'simulate', label: '模拟体验', url: '/pages/simulate/index' },
-  { key: 'intelligence', label: '案例库', url: '/pages/intelligence/index' },
-  { key: 'events', label: '线下活动', url: '/pages/events/index' },
+  { key: 'discover', also: ['simulate'], label: '测一测', url: '/pages/discover/index' },
+  { key: 'intelligence', also: ['topic'], label: '案例', url: '/pages/intelligence/index' },
+  { key: 'events', label: '活动', url: '/pages/events/index' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];
+function isCurrent(link) { return props.active === link.key || (link.also || []).includes(props.active); }
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
 function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>track('contact_copy',{from:'header'}) }); }
 </script>

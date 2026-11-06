@@ -18,10 +18,15 @@
     function onkey(e){if(e.key==='Escape')dismiss()}
     close.addEventListener('click',dismiss);backdrop.addEventListener('click',function(e){if(e.target===backdrop)dismiss()});document.addEventListener('keydown',onkey);
   }
+  function isMP(){try{return !!window.AINPE_MP||sessionStorage.getItem('ainpe:mp')==='1'||/miniProgram/i.test(navigator.userAgent||'')}catch(_){return /miniProgram/i.test(navigator.userAgent||'')}}
+  function toast(text){var t=document.createElement('div');t.setAttribute('role','status');t.textContent=text;t.style.cssText='position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:99999;max-width:80vw;padding:10px 16px;border-radius:10px;background:rgba(19,36,27,.92);color:#fff;font-size:14px;line-height:1.5;text-align:center';document.body.appendChild(t);setTimeout(function(){t.remove()},2600)}
+  function copy(text){function ok(){toast('链接已复制，粘贴到浏览器打开')}function manual(){try{var a=document.createElement('textarea');a.value=text;a.setAttribute('readonly','');a.style.cssText='position:fixed;left:-999px;top:0';document.body.appendChild(a);a.select();var done=document.execCommand('copy');a.remove();if(done){ok();return}}catch(_){}toast('请在浏览器打开：'+text)}if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text).then(ok,manual);else manual()}
   document.addEventListener('click',function(e){
-    var camp=e.target.closest('#camp');if(camp){e.preventDefault();e.stopImmediatePropagation();showCampGate(null);return;}
-    var link=e.target.closest('a[href]');if(!link)return;if(link.dataset&&link.dataset.track){try{if(link.dataset.track==='source')localStorage.setItem('ainpe:is-member','1');if(window.AINPETrack)window.AINPETrack.track('outbound_click',{target:link.dataset.track,from:'result'})}catch(_){}return;}
+    var camp=e.target.closest&&e.target.closest('#camp');if(camp){e.preventDefault();e.stopImmediatePropagation();showCampGate(null);return;}
+    var link=e.target.closest&&e.target.closest('a[href]');if(!link)return;
     var u;try{u=new URL(link.href,location.href)}catch(_){return;}
-    if(u.hostname==='scys.com'||u.hostname.endsWith('.scys.com')){e.preventDefault();e.stopImmediatePropagation();showCampGate(u.href)}
+    if(link.dataset&&link.dataset.track){try{if(window.AINPETrack)window.AINPETrack.track('outbound_click',{target:link.dataset.track,from:'result'})}catch(_){}}
+    if(u.protocol==='https:'&&(u.hostname==='scys.com'||u.hostname.endsWith('.scys.com'))){e.preventDefault();e.stopImmediatePropagation();showCampGate(u.href);return;}
+    if(u.origin!==location.origin&&isMP()){e.preventDefault();e.stopImmediatePropagation();copy(u.href)}
   },true);
 })();

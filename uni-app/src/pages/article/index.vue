@@ -23,7 +23,6 @@
           <view v-else class="intro-card"><view class="intro-label">AINPE 案例导读 <text>基于已收录资料整理</text></view><template v-if="expandedSummary"><view class="intro-title">这篇内容讲了什么</view><view class="intro-body">{{ expandedSummary.what }}</view><view class="intro-title">做法与观察</view><view class="intro-body">{{ expandedSummary.how }}</view><view class="intro-title">阅读时需要注意</view><view class="intro-body">{{ expandedSummary.note }}</view></template><template v-else><view class="intro-title">短摘要 · 资料不足</view><view class="intro-body">{{ displaySummary }}</view></template><view class="intro-note">这是导读，完整内容以原帖为准。</view></view>
           <view v-if="isAiArticle(article)" :class="['practice', {'study-practice':study}]"><view class="practice-title">{{matchingGame ? `读完，亲手试一次：${matchingGame.name}` : '先体验一个 AI 项目'}}</view><button class="play-action" @click="openSimulation">{{matchingGame ? '玩相关模拟 →' : '查看模拟项目 →'}}</button></view>
           <view v-if="article.sourceUrl" class="src-block"><text class="src-q">{{study ? '想看作者的完整原帖？' : '想看完整原文？'}}</text><view class="src-btns"><view class="src-a" @click="openReferral">加入生财，看完整原帖</view><view class="src-m" @click="openSource">查看原帖</view></view></view>
-          <MiniPair :hook="study?.campHook || '想把这篇里的做法用到自己身上？'" from="article" />
           <view v-if="isProjectArticle && !(study && matchingGame)" class="reservation"><view class="section-heading">想体验这篇文章中的项目？</view><button class="reserve-button" :disabled="reserveLoading || reserved || !reservationAvailable" @click="reserve">{{ reserved ? '已预约体验' : reserveLoading ? '正在记录…' : '预约体验这个项目' }}</button><view class="reserve-meta">{{ reservationAvailable ? (reservationCount >= 10 ? `已有 ${reservationCount} 条预约记录。` : '想体验的人多了，我们会优先考虑。') + ' 同一浏览器仅计一次，不收联系方式，也不会自动通知。' : '预约统计暂不可用，请稍后再试。' }}</view></view>
           <view v-else-if="isEventArticle" class="reservation"><view class="section-heading">想了解线下活动？</view><button class="reserve-button" @click="openEvents">查看线下活动</button></view>
           <view class="actions"><button class="save" @click="toggleSaved">{{ saved ? '★ 已收藏' : '☆ 收藏' }}</button></view>
@@ -31,7 +30,7 @@
           <view v-if="related.length" class="related"><view class="section-heading">接着看看相关案例</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
           <view class="footnote">{{study ? '站方解读，数字为作者自述。' : '内容以原帖为准。'}}</view>
         </view>
-        <view class="side-column"><view class="side-card"><view class="side-eyebrow">读完，亲手试一次</view><view class="side-title">{{matchingGame ? matchingGame.name : '找到适合自己的方向'}}</view><view class="side-copy">过程和金额均为模拟。</view><button class="side-action" @click="openSimulation">{{matchingGame ? '体验这个项目 →' : '看看模拟项目 →'}}</button></view><view v-if="related.length" class="side-related"><view class="side-related-title">其他方向的案例</view><view v-for="item in related" :key="item.id" class="side-related-item" @click="openArticle(item)">{{item.title}}<text>{{item.author}} · 生财有术</text></view></view><view class="side-camp" @click="openCamp"><image :src="campaign.posterUrl" mode="widthFix" class="side-poster side-illo" @click.stop="previewCampPoster"/><view class="side-camp-content"><text>AI 成万事 · 3 天体验营</text><view>看机会、学路径，亲手试一试。</view><button>了解体验营 →</button></view></view></view>
+        <view class="side-column"><view class="side-card"><view class="side-eyebrow">读完，亲手试一次</view><view class="side-title">{{matchingGame ? matchingGame.name : '找到适合自己的方向'}}</view><view class="side-copy">过程和金额均为模拟。</view><button class="side-action" @click="openSimulation">{{matchingGame ? '体验这个项目 →' : '看看模拟项目 →'}}</button></view><view v-if="related.length" class="side-related"><view class="side-related-title">其他方向的案例</view><view v-for="item in related" :key="item.id" class="side-related-item" @click="openArticle(item)">{{item.title}}<text>{{item.author}} · 生财有术</text></view></view></view>
       </view>
       <view v-else-if="feedMeta.loading || !feedMeta.loadAttempted" class="not-found"><view>正在加载文章…</view><text>请稍候。</text></view>
       <view v-else-if="feedMeta.loadFailed" class="not-found"><view>暂时无法加载文章</view><text>请检查网络连接后重试。</text><button @click="refreshFeed">重新加载</button></view>
@@ -45,14 +44,12 @@
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, watch, onMounted, onUnmounted, getCurrentInstance} from 'vue';
 import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
-import {articles, campaign, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';
+import {articles, isAiArticle, feedMeta, refreshFeed} from '../../data/content.js';
 import summaries from '../../data/article-summaries.json';
 import SiteHeader from '../../components/SiteHeader.vue';
-import CampQr from '../../components/CampQr.vue';
-import MiniPair from '../../components/MiniPair.vue';
 import {openExternal,REFERRAL_URL} from '../../data/offer.js';
 import {track} from '../../data/track.js';
-import {matchArticleGame,simulationUrl} from '../../data/game-matching.js';
+import {matchArticleGame,simulationUrl,openGame} from '../../data/game-matching.js';
 import {caseStudies,caseById,caseAsArticle} from '../../data/case-studies.js';
 import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary,relatedReviewedCases} from '../../data/case-library.mjs';
 
@@ -112,14 +109,10 @@ onUnmounted(()=>{window.removeEventListener('hashchange',syncArticleFromHash);wi
 // #endif
 function toggleSaved(){const next=saved.value?savedIds.value.filter(key=>key!==storageKey.value):[...savedIds.value,storageKey.value];try{uni.setStorageSync('ainpe:saved',next);savedIds.value=next;uni.showToast({title:saved.value?'已收藏':'已取消收藏',icon:'none'});}catch{uni.showToast({title:'保存失败，请检查存储空间',icon:'none'});}}
 function goBack(){uni.redirectTo({url:'/pages/intelligence/index'});}
-function openCamp(){uni.navigateTo({url:'/pages/camp/index?from=article'});}
-function previewCampPoster(){uni.previewImage({urls:[campaign.posterUrl],current:campaign.posterUrl});}
 function openEvents(){uni.navigateTo({url:'/pages/events/index'});}
 function openSimulation(){
 if(study.value?.simulation?.url){const url=study.value.simulation.url;uni.navigateTo({url:url+(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+id.value)});return;}
-// #ifdef H5
-if(matchingGame.value){let url=simulationUrl(matchingGame.value.file);if(url){url+=(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+id.value);window.location.href=url;return;}}
-// #endif
+if(matchingGame.value){let url=simulationUrl(matchingGame.value.file);if(url){url+=(url.includes('?')?'&':'?')+'from='+encodeURIComponent('case:'+id.value);if(openGame(url))return;}}
 uni.navigateTo({url:'/pages/simulate/index'});
 }
 function openSource(){const source=String(article.value?.sourceUrl||'');if(!/^https:\/\/(?:www\.)?scys\.com\//i.test(source))return;uni.navigateTo({url:'/pages/camp/index?from=article&source='+encodeURIComponent(source)});}

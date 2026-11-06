@@ -8,23 +8,16 @@
         <text class="sim-lead">选一个项目，做几个关键决策，看看结果。</text>
         <text class="sim-note">事件和金额都是模拟。</text>
       </view>
-      <!-- #ifdef H5 -->
       <view class="game-section">
         <view class="cover-grid"><GameCover v-for="(game,index) in newGames.slice(0,3)" :key="game.id" :game="game" :compact="index>0" :tag="index===0?'新手可以先试':''" :played="playedGames.includes(game.id)" @start="goGame" /></view>
         <view class="more-games-heading"><text class="sim-heading">更多项目，也可以直接体验</text></view>
         <view class="game-grid">
-          <a v-for="game in newGames.slice(3)" :key="game.file" class="game-card" :href="gameHref(game.file)">
-            <span class="game-number">项目模拟</span>
-            <strong class="game-title">{{game.title}}</strong>
-            <span class="game-description">{{game.description}}</span>
-            <span class="game-action">开始体验 <span aria-hidden="true">↗</span></span>
-          </a>
+          <view v-for="game in newGames.slice(3)" :key="game.file" class="game-card" role="link" tabindex="0" @tap="openGame(gameHref(game.file))" @keydown.enter="openGame(gameHref(game.file))">
+            <text class="game-number">项目模拟</text><text class="game-title">{{game.title}}</text>
+            <text class="game-description">{{game.description}}</text><text class="game-action">开始体验 ›</text>
+          </view>
         </view>
       </view>
-      <!-- #endif -->
-      <!-- #ifndef H5 -->
-      <view class="interest-section"><text class="sim-heading">项目体验正在适配中</text><text class="sim-note">目前六个项目可在网页浏览器体验，小程序版本尚未开放。</text></view>
-      <!-- #endif -->
       <view class="interest-section">
         <text class="interest-eyebrow">更多探索</text>
         <text class="sim-heading">接下来还可以做什么？</text>
@@ -54,8 +47,8 @@ import {onShow} from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
 import GameCover from '../../components/GameCover.vue';
 import SimCamp from './SimCamp.vue';
+import {openGame} from '../../data/game-matching.js';
 
-// #ifdef H5
 const newGames=[
   {id:'miniapp',number:'01',file:'miniapp.html',title:'AI 小程序副业',description:'从想法、制作到上线推广，体验一个小程序项目。'},
   {id:'video',number:'02',file:'video.html',title:'AI 视频定制',description:'理解客户需求、制作样片，模拟完成视频订单。'},
@@ -64,9 +57,8 @@ const newGames=[
   {number:'05',file:'voyage-lab.html?project=brain',title:'AI 第二大脑 · 内容创作',description:'整理素材、梳理方向，写出一个具体选题。'},
   {number:'06',file:'voyage-lab.html?project=trends',title:'海外热词游戏站',description:'从用户需求、页面规划到上线复盘。'}
 ];
-const gameHref=file=>`${import.meta.env.BASE_URL}static/simulation-games/${file}`;
-function goGame(id){window.location.href=`${import.meta.env.BASE_URL}static/simulation-games/${id}.html?start=1`;}
-// #endif
+const gameHref=file=>`/static/simulation-games/${file}`;
+function goGame(id){openGame(`/static/simulation-games/${id}.html?start=1`);}
 const playedGames=ref([]);
 const directions=[{id:'voyage-agent',name:'AI Agent 架构师',description:'设计一个能完成任务的工作流。'},{id:'voyage-office',name:'AI 办公自动化',description:'把重复任务整理为可执行流程。'},{id:'voyage-enterprise',name:'AI 企业服务',description:'从客户问题到交付方案。'}];
 const visibleDirections=directions;

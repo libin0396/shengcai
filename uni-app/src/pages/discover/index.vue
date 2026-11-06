@@ -3,16 +3,16 @@
     <SiteHeader active="discover" />
     <view class="home-hero">
       <view class="hero-v2">
-        <text class="hero-kicker">AI 实战 · 先体验，再决定</text>
-        <view class="hero-headline">先把一个项目，<br/>亲手跑一遍。</view>
-        <view class="hero-sub">选一个方向，做关键决策，看看模拟项目的不同结果。</view>
-        <view class="hero-step">你现在是？ </view>
+        <text class="hero-kicker">AI 副业 · 先模拟，再动手</text>
+        <view class="hero-headline">做副业，<br/>你会卡在哪？</view>
+        <view class="hero-sub">选一个项目，用几分钟体验关键步骤，看看可能遇到什么问题，再看看真实圈友怎么做。</view>
+        <view class="hero-step">你现在是？（选填，用来调整推荐顺序）</view>
         <view class="life-options"><button v-for="person in people" :key="person.value" :class="{selected:life===person.value}" :aria-pressed="life===person.value" @click="life=life===person.value?'':person.value">{{person.label}}</button></view>
-        <view class="report-example"><view class="report-caption">示例战报 · 游戏模拟</view><view class="report-money">¥2,482</view><view class="report-stamp">稳步回本</view><view class="report-persona">✦ &nbsp;你的副业人格与项目复盘</view><view class="report-note">玩完后你也会得到一张战报 · 金额为模拟</view></view>
+        <button class="hero-start" @click="startFirst">开始测 · {{recommendedGames[0]?.title || '选一个项目'}} ›</button>
       </view>
     </view>
     <view class="content-shell">
-      <view class="home-section-head"><view><view class="section-title">选一个项目，马上开局</view><view class="section-subtitle">{{life ? '已根据你的身份调整推荐，你也可以自由选择。' : '先试一次，再决定下一步。'}}</view></view><text @click="navigate('/pages/simulate/index')">全部 6 个项目 →</text></view>
+      <view class="home-section-head"><view><view class="section-title">或者，换个项目测</view><view class="section-subtitle">{{life ? '已根据你的身份调整推荐，你也可以自由选择。' : '先试一次，再决定下一步。'}}</view></view><text @click="navigate('/pages/simulate/index')">全部 6 个项目 →</text></view>
       <scroll-view scroll-x class="home-deck-scroll"><view class="home-deck"><GameCover v-for="(game,index) in recommendedGames" :key="game.id" :game="game" :tag="index===0?(life ? '为你推荐先试' : '新手可以先试'):''" :reason="index===0 ? recommendationReason : ''" :played="playedGames.includes(game.id)" @start="goGame" /></view></scroll-view>
       <view class="home-deck-note">金额和事件都是游戏设定</view>
       <view class="highlights-grid">
@@ -22,30 +22,21 @@
       <CampFooter from="home" />
       <view class="footer-note">内容来自生财有术，以原帖为准</view>
     </view>
-    <OfferBar :visible="showJoinBar" />
-  <SiteFooter :space-for-promo="true" :show-icp="true" /></view>
+  <SiteFooter :show-icp="true" /></view>
 </template>
 
 <script setup>
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
-import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
-import OfferBar from '../../components/OfferBar.vue';
+import {onLoad, onShow} from '@dcloudio/uni-app';
 import GameCover from '../../components/GameCover.vue';
+import {openGame} from '../../data/game-matching.js';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
-const showJoinBar=ref(false);
-onPageScroll(e=>{showJoinBar.value=e.scrollTop>barThreshold()});
-function barThreshold(){try{return Math.max(600,(document.documentElement.scrollHeight-window.innerHeight)*0.5)}catch{return 1200}}
-// #ifdef H5
-function updateJoinBar(){showJoinBar.value=window.scrollY>600}
-onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
-onUnmounted(()=>window.removeEventListener('scroll',updateJoinBar));
-// #endif
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
 const playedGames=ref([]);
@@ -93,23 +84,22 @@ function eventTime(t){const d=eventDate(t);return `${d.getUTCMonth()+1}月${d.ge
 function scrollToIntelligence(){navigate('/pages/intelligence/index')}
 function goCaseGame(item){
   const id=item.simulation?.file;
-  // #ifdef H5
   const url=['books','brain','trends'].includes(id)?`voyage-lab.html?project=${encodeURIComponent(id)}&start=1`:`${encodeURIComponent(id)}.html?start=1`;
-  window.location.href=`/static/simulation-games/${url}`;return;
-  // #endif
-  // #ifndef H5
-  navigate('/pages/simulate/index');
-  // #endif
+  if(!openGame(`/static/simulation-games/${url}`))navigate('/pages/simulate/index');
 }
+function startFirst(){const g=recommendedGames.value[0];if(g)goGame(g.id);else navigate('/pages/simulate/index')}
 function goGame(name){
-  // #ifdef H5
-  window.location.href=`/static/simulation-games/${name}.html?start=1${life.value?'&life='+encodeURIComponent(life.value):''}`;return;
-  // #endif
-  // #ifndef H5
-  navigate('/pages/simulate/index');
-  // #endif
+  if(!openGame(`/static/simulation-games/${name}.html?start=1${life.value?'&life='+encodeURIComponent(life.value):''}`))navigate('/pages/simulate/index');
 }
-onLoad(options=>{if(options?.section==='intelligence')uni.redirectTo({url:'/pages/intelligence/index'});else {let played=false;try{played=!!uni.getStorageSync('ainpe:played')}catch{}track('site_view',{page:'home',played})}});
+onLoad(options=>{
+  if(options?.section==='intelligence'){uni.redirectTo({url:'/pages/intelligence/index'});return;}
+  let played=false;try{played=!!uni.getStorageSync('ainpe:played')}catch{}
+  let from=options?.from;
+  // #ifdef H5
+  try{const url=new URL(window.location.href);if(url.searchParams.getAll('from').length===1 && url.searchParams.get('from')==='persona_qr'){from='persona_qr';url.searchParams.delete('from');window.history.replaceState(window.history.state,'',url.pathname+url.search+url.hash)}}catch{}
+  // #endif
+  track('site_view',from==='persona_qr'?{page:'home',played,from:'persona_qr'}:{page:'home',played});
+});
 const filteredArticles=computed(()=>{
   const keyword=query.value.trim().toLowerCase();
   return aiArticles.value.filter(a=>matchesAiCategory(a,selectedCategory.value))
@@ -155,4 +145,7 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 
 /* FDE stays in the activity list, with its current source status. */
 .conference-link{margin:0 0 8px;padding:16px;background:#123d2b;color:#f1f7ec;border-radius:8px}.conference-copy{min-width:0}.conference-copy .conference-label{display:block;color:#cbe496;font-size:12px;font-weight:800}.conference-copy .conference-name{margin-top:5px;color:#fff;font-size:16px;font-weight:800;line-height:1.45}.conference-copy .conference-detail{margin-top:5px;color:#bed1bc;font-size:12px;line-height:1.5}.conference-actions{display:flex;flex-direction:column;align-items:flex-end;gap:9px;flex-shrink:0}.conference-actions button{margin:0;padding:0;background:transparent;border:0;color:#e1f0aa;white-space:nowrap;font-size:12px;font-weight:700;line-height:1.5}.conference-actions button:first-child:not(:last-child){color:#b9d2bd}
+.hero-start{display:inline-block;margin:20px 0 0;padding:0 26px;line-height:50px;border-radius:999px;background:#EE5A24;color:#fff;font-size:17px;font-weight:900;border:0}
+.hero-start::after{border:0}
+@media(min-width:900px){.hero-v2{padding-right:24px;min-height:0}.hero-headline{max-width:720px}.hero-sub{max-width:620px}}
 </style>

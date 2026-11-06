@@ -114,3 +114,16 @@
 .ainpe-next-two{display:flex;gap:8px;margin-top:10px}
 .ainpe-next-two a{flex:1;min-width:0;border-radius:12px;color:#fff;padding:10px;min-height:84px;display:flex;flex-direction:column;text-decoration:none}
 .ainpe-next-two b{font-size:14px;line-height:1.3}.ainpe-next-two small{font-size:11px;opacity:.85;margin-top:2px}.ainpe-next-two i{font-style:normal;margin-top:auto;font-size:12.5px;font-weight:900;color:#ffc94d}
+
+/* V43 结局页唯一推广卡 */
+.ainpe-nextstep{margin:14px 0;padding:18px;border-radius:18px;background:#0b2e20;color:#fff}
+.ainpe-ns-why{display:block;font-size:13px;font-weight:800;color:#9fd8b5}
+.ainpe-nextstep h3{margin:6px 0 0;font-size:19px;line-height:1.45;color:#fff}
+.ainpe-nextstep h3 b{color:#ffc94d}
+.ainpe-nextstep p{margin:8px 0 0;font-size:14px;line-height:1.65;color:#cfe0d5}
+.ainpe-ns-ship{display:flex;gap:8px;align-items:center;margin-top:12px;padding:9px 10px;border-radius:12px;background:rgba(255,255,255,.08);font-size:13px}
+.ainpe-ns-ship em{font-style:normal;background:#ffc94d;color:#13241b;font-weight:900;border-radius:6px;padding:1px 6px;font-size:12px}
+.ainpe-ns-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.ainpe-ns-price{font-size:12px;line-height:1.5;color:#cfe0d5}.ainpe-ns-price b{font-size:16px;color:#fff}
+.ainpe-ns-go{flex:none;background:#ee5a24;color:#fff!important;font-weight:900;font-size:15px;border-radius:999px;padding:10px 18px;text-decoration:none}
+.src-btns a.src-mem{flex:0 0 auto;justify-content:flex-start;min-height:32px;padding:0;background:none;border:0!important;color:#0e5a3a!important;font-size:14px}

@@ -31,7 +31,7 @@
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';import {onShow,onHide} from '@dcloudio/uni-app';
 import PosterGallery from '../../components/PosterGallery.vue';
-import SiteHeader from '../../components/SiteHeader.vue';import CampFooter from '../../components/CampFooter.vue';
+import SiteHeader from '../../components/SiteHeader.vue';import {openGame} from '../../data/game-matching.js';import CampFooter from '../../components/CampFooter.vue';
 import {articles,events} from '../../data/content.js';import {getSaved,setSaved} from '../../data/storage.js';import personas from '../../data/personas.json';
 import {caseStudies,caseAsArticle} from '../../data/case-studies.js';
 const tab=ref('article'),saved=ref([]),history=ref([]),seenHidden=ref([]),gallery=ref(null);
@@ -56,9 +56,7 @@ function remove(t,item){saved.value=saved.value.filter(k=>k!==`${t}:${item.id}`)
 function openArticle(a){uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(a.id)}`})}
 function goSimulate(){uni.navigateTo({url:'/pages/simulate/index'})}
 function replay(record){
-// #ifdef H5
-const game=gameName(record),classic=['miniapp','video','education-ppt'],other=['books','brain','trends'];if(classic.includes(game)){window.location.href=`/static/simulation-games/${game}.html`;return;}if(other.includes(game)){window.location.href=`/static/simulation-games/voyage-lab.html?project=${game}`;return;}
-// #endif
+const game=gameName(record),classic=['miniapp','video','education-ppt'],other=['books','brain','trends'];if(classic.includes(game)&&openGame(`/static/simulation-games/${game}.html`))return;if(other.includes(game)&&openGame(`/static/simulation-games/voyage-lab.html?project=${game}`))return;
 goSimulate()}
 function goDiscover(){uni.redirectTo({url:'/pages/discover/index'})}function goEvents(){uni.redirectTo({url:'/pages/events/index'})}
 </script>

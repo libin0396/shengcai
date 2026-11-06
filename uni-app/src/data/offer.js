@@ -22,9 +22,9 @@ export function markMember() { try { uni.setStorageSync(MEMBER_KEY, 1); } catch 
 export function openExternal(url) {
   if (!url) return;
   // #ifdef H5
-  window.location.href = url; return;
+  let inMp = false;
+  try { inMp = /miniProgram/i.test(navigator.userAgent || '') || window.__wxjs_environment === 'miniprogram' || sessionStorage.getItem('ainpe:mp') === '1'; } catch { inMp = false; }
+  if (!inMp) { window.location.href = url; return; }
   // #endif
-  // #ifndef H5
   uni.setClipboardData({ data: url, success: () => uni.showToast({ title: '链接已复制，请在浏览器打开', icon: 'none' }) });
-  // #endif
 }

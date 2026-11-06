@@ -15,3 +15,18 @@ export function simulationUrl(file) {
   if(['books','brain','trends'].includes(file))return `/static/simulation-games/voyage-lab.html?project=${file}`;
   return '';
 }
+
+// 游戏地址只能进入本站已发布的模拟项目，参数由相应游戏自行处理。
+export function isGamePath(path) {
+  return /^\/static\/simulation-games\/(?:miniapp|video|education-ppt|voyage-lab)\.html(?:\?[^#]*)?$/.test(String(path || ''));
+}
+export function openGame(path) {
+  const p=String(path||'');
+  if(!isGamePath(p)) return false;
+  // #ifdef H5
+  window.location.href=p;return true;
+  // #endif
+  // #ifndef H5
+  uni.navigateTo({url:'/pages/simulate/play?u='+encodeURIComponent(p)});return true;
+  // #endif
+}

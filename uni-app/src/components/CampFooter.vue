@@ -1,20 +1,20 @@
 <template>
-  <view class="funnel">
-    <view class="funnel-in">
-      <text class="funnel-t">下一步，选一个适合你的</text>
-      <view class="funnel-grid"><CampCard :from="from" /><JoinCard :from="from" /></view>
-    </view>
+  <!-- 减推广：只有首页底部留一句话，其它页面底部不再放推广卡 -->
+  <view v-if="from === 'home'" class="oneline" role="link" tabindex="0" @tap="go" @keydown.enter.prevent="go">
+    <text class="ol-q">想跟着真人做？</text>
+    <text class="ol-a">看看生财有术 ›</text>
   </view>
 </template>
 <script setup>
-import CampCard from './CampCard.vue';
-import JoinCard from './JoinCard.vue';
-defineProps({ from: { type: String, default: 'footer' } });
+import { track } from '../data/track.js';
+const props = defineProps({ from: { type: String, default: 'footer' } });
+function go() {
+  track('outbound_click', { target: 'camp', from: props.from });
+  uni.navigateTo({ url: '/pages/camp/index?from=' + encodeURIComponent(props.from) });
+}
 </script>
 <style scoped>
-.funnel{padding:28px 16px 8px;margin-top:24px}
-.funnel-in{max-width:1060px;margin:auto}
-.funnel-t{display:block;font-size:19px;font-weight:900;color:#13241B;margin:0 2px 12px}
-.funnel-grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:760px){.funnel-grid{grid-template-columns:1fr 1fr;align-items:start}}
+.oneline{max-width:1060px;margin:28px auto 4px;padding:16px 18px;border-top:1px solid #E5DECF;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
+.ol-q{font-size:14px;color:#45594D}
+.ol-a{font-size:14px;font-weight:800;color:#0E5A3A}
 </style>
