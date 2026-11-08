@@ -63,10 +63,10 @@
       doc.body.insertBefore(a,hdr);
     }
     var nav=doc.createElement('nav');nav.className='lnav';nav.setAttribute('aria-label','主导航');
-    [['home','首页','/#/pages/discover/index'],['learn','学','/static/learn/index.html'],['intel','情报','/#/pages/intelligence/index'],['mine','我的','/#/pages/saved/index']].forEach(function(l){
-      var a=doc.createElement('a');a.href=l[2];var on=l[0]===active;
+    [['home','首页','/#/pages/discover/index'],['library','用法库','/static/learn/jijiu.html'],['find','找用法','/static/learn/find.html'],['learn','跟着做','/static/learn/index.html'],['mine','我的','/#/pages/saved/index']].forEach(function(l){
+      var a=doc.createElement('a');a.href=l[2];var on=l[0]===active;if(l[0]==='find')a.classList.add('nfind');
       a.innerHTML=(on?'<i>'+STEP+'</i>':'<i></i>')+'<span>'+l[1]+'</span>';
-      if(on){a.className='on';a.setAttribute('aria-current','page')}nav.appendChild(a);
+      if(on){a.classList.add('on');a.setAttribute('aria-current','page')}nav.appendChild(a);
     });
     doc.body.appendChild(nav);
   }

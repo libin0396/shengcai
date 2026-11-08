@@ -5,32 +5,32 @@
     <!-- #endif -->
     <SiteHeader active="discover" :has-banner="true" />
     <view class="home-a">
-      <view class="ha-title">今天，用 AI<br/>做成一件事</view>
-      <view class="ha-sub">不用先懂 AI，跟着步骤做出第一份作品。</view>
-      <view class="ha-how" aria-label="第一次来怎么用">
-        <view class="ha-how-t">第一次来？这样用<!-- #ifdef H5 --><text class="ha-replay" role="button" tabindex="0" @click="replayOnboard" @keydown.enter="replayOnboard">看动画引导 ›</text><!-- #endif --></view>
-        <view class="ha-steps">
-          <view class="ha-step"><text class="ha-n">1</text><text class="ha-sb">挑一件事</text><text class="ha-ss">比如做课件、绘本</text></view>
-          <view class="ha-step"><text class="ha-n">2</text><text class="ha-sb">跟着做</text><text class="ha-ss">先看教程，再做 5 关小练习</text></view>
-          <view class="ha-step"><text class="ha-n">3</text><text class="ha-sb">带走</text><text class="ha-ss">保存练习卡片和 AI 助手提示词</text></view>
-        </view>
+      <view class="ha-title">让普通人，<br/>也能用 AI 做成事</view>
+      <view class="ha-sub">从一份课件、一本绘本开始，跟着步骤，做出你的第一个作品。</view>
+      <!-- #ifdef H5 -->
+      <view class="ha-search" id="tour-search" role="search">
+        <input v-model="findQ" class="ha-input" maxlength="40" placeholder="你遇到了什么事？" aria-label="你遇到了什么事" confirm-type="search" @confirm="goFind"/>
+        <button class="ha-send" @click="goFind">找用法</button>
       </view>
-      <view class="ha-feature" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
+      <!-- #endif -->
+      <!-- #ifndef H5 -->
+      <view class="ha-search" id="tour-search"><text class="ha-input">遇到什么事？打开后输入</text><button class="ha-send" @click="goFind">找用法</button></view>
+      <!-- #endif -->
+      <view class="ha-chips"><text v-for="c in quick" :key="c.label" role="link" tabindex="0" @click="goQuick(c)" @keydown.enter.prevent="goQuick(c)">{{c.label}}</text></view>
+      <view class="ha-trust"><text><text class="ck">✓</text>零基础也能开始</text><text><text class="ck">✓</text>跟着步骤做</text><text><text class="ck">✓</text>提示词可复制</text></view>
+      <!-- #ifdef H5 -->
+      <text class="ha-replay" role="button" tabindex="0" @click="replayTour" @keydown.enter.prevent="replayTour">第一次来？看看怎么用 ›</text>
+      <!-- #endif -->
+      <view class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
         <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
-        <view class="ha-ladder"><text class="on">入门实践</text><text>进阶练习</text><text>继续探索</text></view>
+        <view class="ha-ladder"><text class="on">初级 · 看教程</text><text>中级 · 5 关练习</text><text>高级</text></view>
         <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">教案、逐字稿、3 页插画，手机就能做</text><view class="ha-cta">开始做</view></view>
       </view>
       <view class="ha-duo">
         <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image src="/static/learn/img/girl.jpg" mode="aspectFill" class="ha-mimg"/><text class="ha-tag">成品示例</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
         <view class="ha-vote"><text class="ha-vt">还在做 · 投一票</text><view class="ha-vs"><text v-for="t in learnTopics.filter(x=>!x.live)" :key="t.id" :class="{on:votes.includes(t.id)}" @click="vote(t)">{{t.short||t.name}}</text></view></view>
       </view>
-      <view class="ha-want">
-        <input v-model="want" class="ha-input" maxlength="40" placeholder="我想用 AI……比如：做睡前故事" confirm-type="send" @confirm="submitWant"/>
-        <button class="ha-send" @click="submitWant">告诉我们</button>
-      </view>
-      <text class="ha-privacy">输入内容仅在本机用于匹配，不会上传或保存；统计仅记录方向分类。</text>
-      <view v-if="wantReply" class="ha-reply" aria-live="polite">{{wantReply}}<text v-if="wantTopic" class="ha-go" @click="openTopic(wantTopic)">去做 ›</text></view>
-      <view class="ha-aid" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">AI 急救卡</text><text class="ha-aidd">看不懂的通知、孩子的题不会讲……复制一句话就能解决</text></view><text class="ha-arrow">›</text></view>
+      <view class="ha-aid" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">用法库</text><text class="ha-aidd">平时的小事，复制提示词就能用</text></view><text class="ha-arrow">›</text></view>
       <view class="ha-aid" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
     </view>
     <view class="content-shell">
@@ -50,7 +50,7 @@ import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {onLoad, onShow, onHide, onPageScroll} from '@dcloudio/uni-app';
 import GameCover from '../../components/GameCover.vue';
 import {openGame, openLearn} from '../../data/game-matching.js';
-import {learnTopics, classifyWant} from '../../data/learn-topics.js';
+import {learnTopics} from '../../data/learn-topics.js';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
@@ -63,24 +63,29 @@ function barThreshold(){try{return Math.max(600,(document.documentElement.scroll
 // #ifdef H5
 function updateJoinBar(){showJoinBar.value=window.scrollY>600}
 onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
-let onboardMounted=false,onboardScript=null,onboardPendingForce=false;
-function loadOnboard(force){
-  if(window.AINPEOnboard){if(force)window.AINPEOnboard.open();else window.AINPEOnboard.auto();return;}
-  onboardPendingForce=onboardPendingForce||force;
-  if(onboardScript)return;
-  const el=document.createElement('script');onboardScript=el;el.src='/static/learn/onboarding.js';
-  el.onload=()=>{onboardScript=null;if(!onboardMounted||!window.AINPEOnboard)return;const replay=onboardPendingForce;onboardPendingForce=false;if(replay)window.AINPEOnboard.open();else window.AINPEOnboard.auto();};
-  el.onerror=()=>{onboardScript=null;onboardPendingForce=false;};document.body.appendChild(el);
+let tourMounted=false,tourScript=null,tourPendingForce=false,tourTimer=null;
+const tourSteps=[
+  {sel:'#tour-search',title:'遇到事，搜这里',text:'说一句你遇到的事，找一句能复制给 AI 的提示词。'},
+  {sel:'#tour-make',title:'想做成一件事，从这里开始',text:'跟着步骤，做出你的第一个作品。'},
+  {sel:'#tour-lib',title:'用法库',text:'平时的小事，打开一张，复制就行。'},
+  {sel:'.site-nav-scroll',title:'随时回到这里',text:'首页、用法库、找用法、跟着做、我的。'},
+];
+function loadTour(force){
+  const run=()=>{if(!tourMounted)return;if(window.AINPETour)window.AINPETour.start(tourSteps,{force});};
+  if(window.AINPETour){run();return;}
+  tourPendingForce=tourPendingForce||force;
+  if(tourScript)return;
+  const el=document.createElement('script');tourScript=el;el.src='/static/learn/tour.js';
+  el.onload=()=>{tourScript=null;if(!tourMounted||!window.AINPETour)return;const replay=tourPendingForce;tourPendingForce=false;clearTimeout(tourTimer);tourTimer=setTimeout(()=>{if(tourMounted)window.AINPETour.start(tourSteps,{force:replay})},replay?0:700);};
+  el.onerror=()=>{tourScript=null;tourPendingForce=false;};document.body.appendChild(el);
 }
-// UniApp keeps previous pages mounted while navigating. Hide must therefore
-// clean up the global dialog, and show re-evaluates the first-visit state.
-onShow(()=>{document.title='AI 实战情报站';onboardMounted=true;loadOnboard(false)});
-onHide(()=>{onboardMounted=false;onboardPendingForce=false;window.AINPEOnboard?.dispose();});
-onUnmounted(()=>{onboardMounted=false;onboardPendingForce=false;window.removeEventListener('scroll',updateJoinBar);window.AINPEOnboard?.dispose();});
+onShow(()=>{document.title='AI 实战情报站';tourMounted=true;loadTour(false)});
+onHide(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.AINPETour?.dispose();});
+onUnmounted(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.removeEventListener('scroll',updateJoinBar);window.AINPETour?.dispose();});
 // #endif
-function replayOnboard(){
+function replayTour(){
   // #ifdef H5
-  loadOnboard(true);
+  loadTour(true);
   // #endif
 }
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
@@ -133,19 +138,19 @@ function goCaseGame(item){
   const url=['books','brain','trends'].includes(id)?`voyage-lab.html?project=${encodeURIComponent(id)}&start=1`:`${encodeURIComponent(id)}.html?start=1`;
   if(!openGame(`/static/simulation-games/${url}`))navigate('/pages/simulate/index');
 }
-const want=ref('');const votes=ref([]);try{const v=uni.getStorageSync('ainpe:votes');if(Array.isArray(v))votes.value=v}catch{}
-function vote(t){if(votes.value.includes(t.id)){uni.showToast({title:'本设备已标记',icon:'none'});return}votes.value=[...votes.value,t.id];try{uni.setStorageSync('ainpe:votes',votes.value)}catch{}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'已在本机标记',icon:'none'})}const wantReply=ref('');const wantTopic=ref(null);
+const findQ=ref('');const votes=ref([]);try{const v=uni.getStorageSync('ainpe:votes');if(Array.isArray(v))votes.value=v}catch{}
+function vote(t){if(votes.value.includes(t.id)){uni.showToast({title:'本设备已标记',icon:'none'});return}votes.value=[...votes.value,t.id];try{uni.setStorageSync('ainpe:votes',votes.value)}catch{}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'已在本机标记',icon:'none'})}
 function openLearnPage(page){if(!openLearn(page))uni.showToast({title:'暂时打不开，稍后再试',icon:'none'})}
-function openTopic(t){if(!t)return;if(t.live){openLearnPage(t.page);return}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'这个方向还在准备',icon:'none'})}
-function submitWant(){
-  const v=String(want.value||'').trim();
-  if(!v){wantReply.value='先写一句你想做的事。';wantTopic.value=null;return}
-  const k=classifyWant(v);track('want_submit',{page:'home',game:k});
-  const t=learnTopics.find(x=>x.id===k);
-  wantTopic.value=t&&t.live?t:null;
-  wantReply.value=t&&t.live?`这件事可以马上做：${t.name}。`:k==='money'?'先做成一件小事，再谈赚钱。':t?`「${t.name}」还在准备，可以在上方标记感兴趣。`:'暂时没有匹配的专题，可以先看看其他方向。';
-  want.value='';
+const quick=[{label:'做课件',page:'kejian.html?from=home'},{label:'做绘本',page:'huiben.html?from=home'},{label:'辅导作业',id:'homework'},{label:'写请假条',id:'leave'}];
+function goFind(){
+  // #ifdef H5
+  const value=String(findQ.value||'').trim().slice(0,40);
+  try{if(value)sessionStorage.setItem('ainpe:find-once',value);else sessionStorage.removeItem('ainpe:find-once')}catch{if(value){uni.showToast({title:'无法传递内容，请检查浏览器设置',icon:'none'});return}}
+  findQ.value='';
+  // #endif
+  openLearnPage('find.html');
 }
+function goQuick(c){if(c.page)openLearnPage(c.page);else { try { sessionStorage.removeItem('ainpe:find-once') } catch {} openLearnPage('find.html?quick='+c.id) }}
 function openCampBar(){track('outbound_click',{target:'camp',from:'home_bar'});navigate('/pages/camp/index?from=home_bar')}
 function startFirst(){const g=recommendedGames.value[0];if(g)goGame(g.id);else navigate('/pages/simulate/index')}
 function goGame(name){
@@ -289,4 +294,14 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .ha-sb{font-size:14px;font-weight:800;color:#161A23;margin-top:4px}
 .ha-ss{font-size:12px;line-height:1.5;color:#5F6675}
 .ha-replay{font-size:12.5px;font-weight:700;color:#2B44E6;cursor:pointer}
+
+/* V49 首页开场 */
+.ha-title{font-size:34px;line-height:1.18;font-weight:900;letter-spacing:-.5px}
+.ha-sub{font-size:15px;line-height:1.7;margin-top:10px}
+.ha-search{display:flex;gap:8px;align-items:center;margin-top:16px;background:#fff;border-radius:18px;padding:6px 6px 6px 16px;box-shadow:inset 0 0 0 1.5px #E6E8EC}
+.ha-search .ha-send{height:44px;line-height:44px;padding:0 18px;font-size:15px}
+.ha-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ha-chips text{font-size:13px;font-weight:700;color:#5F6675;background:#fff;border-radius:99px;padding:6px 12px;cursor:pointer}
+.ha-trust{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:13px;font-weight:700;color:#5F6675}.ha-trust .ck{color:#2B44E6;margin-right:5px}
+.home-a>.ha-replay{display:inline-block;margin-top:12px}
+@media(min-width:768px){.ha-title{font-size:48px;letter-spacing:-1px}.ha-sub{font-size:17px}}
 </style>

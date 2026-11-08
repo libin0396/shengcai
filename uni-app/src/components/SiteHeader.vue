@@ -7,7 +7,7 @@
       </view>
       <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false" :scroll-into-view="active ? 'site-nav-'+active : ''" :scroll-with-animation="true">
         <view class="site-nav" aria-label="主导航">
-          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': isCurrent(link) }" :aria-current="isCurrent(link) ? 'page' : null" @tap="goLink(link)" @keydown.enter.prevent="goLink(link)" @keydown.space.prevent="goLink(link)">{{ link.label }}</button>
+          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="['n-'+link.key,{ 'is-current': isCurrent(link) }]" :aria-current="isCurrent(link) ? 'page' : null" @tap="goLink(link)" @keydown.enter.prevent="goLink(link)" @keydown.space.prevent="goLink(link)">{{ link.label }}</button>
         </view>
       </scroll-view>
       <view class="site-actions">
@@ -44,10 +44,13 @@ let statusBarHeight = 0;
 // #ifdef MP-WEIXIN
 try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } catch {}
 // #endif
+// 网页顶栏按这个顺序；手机底部只放 5 个（真人案例收进首页），「找用法」放中间并突出
 const links = [
   { key: 'discover', label: '首页', url: '/pages/discover/index' },
-  { key: 'learn', label: '学', learn: 'index.html' },
-  { key: 'intelligence', also: ['topic','events','simulate','article'], label: '情报', url: '/pages/intelligence/index' },
+  { key: 'library', label: '用法库', learn: 'jijiu.html' },
+  { key: 'learn', label: '跟着做', learn: 'index.html' },
+  { key: 'intelligence', also: ['topic','events','simulate','article'], label: '真人案例', url: '/pages/intelligence/index' },
+  { key: 'find', label: '找用法', learn: 'find.html' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];
 function isCurrent(link) { return props.active === link.key || (link.also || []).includes(props.active); }
@@ -100,4 +103,14 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
 @media(max-width:700px){.site-header{border-bottom:0}.site-nav-scroll{background:#fff;box-shadow:none;border-top:1px solid #E6E8EC}.site-nav-item{color:#9AA0AC}.site-nav-item.is-current{border-top-color:#2B44E6;color:#2B44E6;font-weight:800}}
 /* 首页最上面已经有生财横幅，手机上不再重复显示顶栏按钮 */
 @media(max-width:700px){.site-camp.has-banner{display:none}}
+/* V49 导航：网页上「找用法」是一个浅蓝按钮；手机底部 5 个入口，「找用法」在中间凸起 */
+.site-nav-item.n-find{padding:0 14px;margin:15px 0;height:36px;line-height:36px;border:0;border-radius:12px;background:#ECEFFE;color:#2B44E6;font-weight:800}
+.site-nav-item.n-find.is-current{border:0}
+@media(max-width:700px){
+  .site-nav-item.n-intelligence{display:none}
+  .site-nav-item.n-discover{order:1}.site-nav-item.n-library{order:2}.site-nav-item.n-find{order:3}.site-nav-item.n-learn{order:4}.site-nav-item.n-saved{order:5}
+  .site-nav-item.n-find{flex:1;margin:0;height:auto;min-height:52px;padding:8px 2px;line-height:20px;background:transparent;border-radius:0;border-top:3px solid transparent;color:#2B44E6;position:relative;padding-top:30px}
+  .site-nav-item.n-find::before{content:'';position:absolute;left:50%;top:-16px;width:42px;height:42px;margin-left:-21px;border-radius:50%;background:#2B44E6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/20px no-repeat;box-shadow:0 0 0 4px #fff,0 8px 16px -6px rgba(43,68,230,.7)}
+  .site-nav-scroll{overflow:visible}
+}
 </style>

@@ -52,11 +52,11 @@ const made=computed(()=>{
   const k=all.kejian;
   if(k && typeof k==='object' && !Array.isArray(k) && Object.keys(k).length){
     const level=Number(k.level)||0;
-    items.push({page:'kejian.html?tab=practice',badge:'课件',title:'AI 课件练习',detail:k.done?'练习已完成':level>0?`进行到第 ${Math.min(level,5)} 关`:k.basicDone?'入门已完成':'已开始学习'});
+    items.push({page:'kejian.html?tab=practice',badge:'课件',title:'AI 课件练习',detail:k.done?'练习已完成':level>0?`进行到第 ${Math.min(level,5)} 关`:k.basicDone?'初级已完成':'已开始学习'});
   }
   const h=all.huiben;
   if(h && typeof h==='object' && !Array.isArray(h) && Object.keys(h).length){
-    items.push({page:'huiben.html?tab=practice',badge:'绘本',title:'AI 绘本故事示例',detail:h.done?'故事示例已完成':h.basicDone?'入门已完成':'已开始学习'});
+    items.push({page:'huiben.html?tab=practice',badge:'绘本',title:'AI 绘本故事示例',detail:h.done?'故事示例已完成':h.basicDone?'初级已完成':'已开始学习'});
   }
   return items;
 });

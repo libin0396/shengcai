@@ -8,7 +8,7 @@ const root = new URL('../uni-app/src/static/learn/', import.meta.url);
 const read = (name) => fs.readFileSync(new URL(name, root), 'utf8');
 
 test('learning pages load executable code from same-origin files', () => {
-  for (const page of ['index.html', 'jijiu.html', 'kejian.html', 'huiben.html']) {
+  for (const page of ['index.html', 'jijiu.html', 'kejian.html', 'huiben.html', 'find.html']) {
     const html = read(page);
     const tags = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)];
     assert.ok(tags.length, `${page} loads scripts`);
@@ -67,7 +67,7 @@ test('lesson progress uses the number of actual interactive stages', () => {
   const count = window.AINPE_KEJIAN.LEVELS.length;
   assert.equal(count, 5);
   assert.match(read('kejian.html'), new RegExp(`${count} 关整理助手`));
-  assert.match(read('index.html'), new RegExp(`进阶 ${count} 关`));
+  assert.match(read('index.html'), new RegExp(`中级 · ${count} 关`));
   assert.match(read('kejian.js'), /关 \/ '\+K\.LEVELS\.length/);
 });
 
@@ -86,4 +86,15 @@ test('custom lesson does not inherit an unrelated preset subject', () => {
   const other = app.buildSkill({lesson:'yuwen3',custom:'初中物理 浮力'});
   assert.match(other, /当前课题：「初中物理 浮力」/);
   assert.doesNotMatch(other, /三年级语文老师|西沙群岛/);
+});
+
+test('find page matches locally and only reports which card was copied', () => {
+  const src = read('find-page.js');
+  assert.doesNotMatch(src, /fetch\(|XMLHttpRequest|sendBeacon/);
+  assert.match(src, /L\.track\('aid_copy',\{page:'learn',game:'jijiu',tier:a\.id\}\)/);
+  assert.match(src, /sessionStorage\.removeItem/);
+  assert.doesNotMatch(src, /URLSearchParams\(location\.search\)\.get\('q'\)/);
+  const window = {};
+  vm.runInNewContext(read('aids-data.js'), { window });
+  for (const a of window.AINPE_AIDS) assert.ok(['初级', '中级', '高级'].includes(a.lv), `${a.id} has a level`);
 });

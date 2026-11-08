@@ -6,7 +6,7 @@
   var v=L.$('#vote');
   SOON.forEach(function(t){var b=document.createElement('button');b.type='button';b.textContent=t[1];if(voted.indexOf(t[0])>=0)b.className='on';
     b.addEventListener('click',function(){if(voted.indexOf(t[0])>=0){L.toast('已经投过啦');return}voted.push(t[0]);L.setState('votes',{ids:voted});b.className='on';L.track('want_submit',{page:'learn',game:t[0]});L.toast('已在当前页面标记，不会自动通知')});v.appendChild(b)});
-  if(L.getState('kejian').done){var f=L.$('#feat');f.href='kejian.html?tab=practice';f.querySelector('.ladder').innerHTML='<span><span class="step done"><i></i><i></i><i></i></span>入门 · 已完成</span><span class="on">进阶 5 关</span><span>最高一档</span>';f.querySelector('.btn').textContent='接着做'}
+  if(L.getState('kejian').done){var f=L.$('#feat');f.href='kejian.html?tab=practice';f.querySelector('.ladder').innerHTML='<span><span class="step done"><i></i><i></i><i></i></span>初级 · 已完成</span><span class="on">中级 · 5 关</span><span>高级</span>';f.querySelector('.btn').textContent='接着做'}
   if(L.getState('huiben').done)L.$('#miniHb').classList.add('done');
 
   var NAMES={kejian:'给孩子做一份课件',huiben:'和孩子做绘本',video:'AI 故事短片',novel:'AI 写小说',tuwen:'AI 图文号',assistant:'你自己的 AI 助手'};
@@ -16,7 +16,7 @@
     var k=L.classifyWant(val);L.track('want_submit',{page:'learn',game:k});
     if(k==='kejian'||k==='huiben')res.innerHTML='这件事现在就能做：<a class="chip" href="'+k+'.html?from=want">'+NAMES[k]+' ›</a>';
     else if(k==='money')res.innerHTML='先做成一件小事，再谈赚钱。'+(L.MP?'':'<a class="chip" href="/#/pages/camp/index?from=learn">看看真人怎么做 ›</a>');
-    else if(k==='other')res.innerHTML='这个方向还在准备，也不会自动通知。先试试<a class="chip" href="jijiu.html">AI 急救卡 ›</a>';
+    else if(k==='other')res.innerHTML='这个方向还在准备，也不会自动通知。先试试<a class="chip" href="jijiu.html">用法库 ›</a>';
     else res.innerHTML='「'+NAMES[k]+'」还在准备，不会自动通知。';
     L.$('#wantIn').value='';
   });

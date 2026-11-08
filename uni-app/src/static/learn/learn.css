@@ -280,3 +280,46 @@ html.is-mp .ihero{padding-top:20px}
 .how-replay{background:none;border:0;padding:4px 0;font:inherit;font-size:12.5px;font-weight:700;color:var(--blue);cursor:pointer}
 .realwho{margin-top:14px;padding:14px 16px;border-radius:12px;background:#fff8e8;border:1px solid #f0dfbd;color:#394e42}
 .realwho small{font-weight:700;color:#9b631b}.realwho p{margin:7px 0}.realwho a,.facts .fact a{color:#126d4e;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+
+
+/* V49：底部导航中间的「找用法」 */
+.lnav a.nfind{color:var(--blue);font-weight:800;position:relative}
+.lnav a.nfind i{width:42px;height:42px;margin-top:-22px;border-radius:50%;background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/20px no-repeat;box-shadow:0 0 0 4px #fff,0 8px 16px -6px rgba(43,68,230,.7)}
+.lnav a.nfind.on i{width:42px;height:42px}
+.lnav a.nfind.on i .step{display:none}
+/* V49：找用法 */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fsearch{display:flex;gap:8px;align-items:center;margin-top:12px;background:#fff;border-radius:16px;padding:6px 6px 6px 14px;box-shadow:inset 0 0 0 1.5px var(--line)}
+.fsearch input{flex:1;min-width:0;height:44px;border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:var(--ink)}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fchips .chip{border:0;font:inherit;font-size:13px;font-weight:700;background:#fff;color:var(--sub);border-radius:99px;padding:6px 12px;cursor:pointer}
+.fproj{display:flex;flex-direction:column;gap:2px;background:var(--ink);color:#fff;border-radius:18px;padding:14px 16px;margin-bottom:14px}
+.fproj small{font-size:12px;color:#A9B4FF;font-weight:700}
+.fproj b{font-size:17px}
+.fproj span{font-size:13.5px;font-weight:800;color:var(--sun);margin-top:4px}
+.fcount{font-size:13px;color:var(--sub);margin:4px 0 8px}
+.fhd{display:flex;align-items:center;gap:10px}
+.fhd .em{font-size:22px}
+.fhd b{font-size:17px}
+.flab{display:block;font-size:14px;margin-top:16px}
+.ffill{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ff{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:0 12px;min-height:46px}
+.ff span{flex:none;width:72px;font-size:13px;color:var(--sub)}
+.ff input,.ff textarea{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:15px;font-weight:700;color:var(--ink)}
+.ff.big{flex-direction:column;align-items:stretch;padding:10px 12px;gap:4px}
+.ff.big span{width:auto}
+.ff textarea{resize:vertical;font-weight:400;line-height:1.6}
+.fout{margin-top:8px}
+.fout mark{background:var(--sun);color:var(--ink);border-radius:4px;padding:0 3px}
+.fout mark.todo{background:rgba(255,200,61,.25);color:#FFE7A3}
+.fmore{display:flex;flex-direction:column;gap:8px}
+.fmore a{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:12px 14px;color:var(--ink);font-weight:700;font-size:14.5px}
+.fmore a i{margin-left:auto;font-style:normal;color:var(--mute)}
+/* V49：难度 初级 / 中级 / 高级 */
+.lv{display:inline-block;vertical-align:2px;margin-left:6px;font-style:normal;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;background:#E8F7EE;color:#15803D}
+.lv.lv中级{background:var(--blueSoft);color:var(--blue)}
+.lv.lv高级{background:#FFF1E8;color:#C2410C}
+.lvfilter{display:flex;gap:6px;margin-bottom:12px}
+.lvfilter button{font:inherit;font-size:13.5px;font-weight:700;border:0;border-radius:99px;padding:7px 14px;background:#fff;color:var(--sub);cursor:pointer}
+.lvfilter button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.aid[hidden]{display:none}

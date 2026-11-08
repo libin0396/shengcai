@@ -1,10 +1,17 @@
 (function(){
-  var L=window.Learn;L.chrome('learn');
+  var L=window.Learn;L.chrome('library');
   var AIDS=window.AINPE_AIDS||[],box=L.$('#aids');
   box.innerHTML=AIDS.map(function(a){
-    return '<div class="aid" id="'+a.id+'"><button type="button" class="hd" aria-expanded="false" aria-controls="b-'+a.id+'"><span class="em" aria-hidden="true">'+a.em+'</span><span><b>'+L.esc(a.title)+'</b><small>'+L.esc(a.when)+'</small></span><span class="ar" aria-hidden="true">›</span></button>'+
+    return '<div class="aid" id="'+a.id+'"><button type="button" class="hd" aria-expanded="false" aria-controls="b-'+a.id+'"><span class="em" aria-hidden="true">'+a.em+'</span><span><b>'+L.esc(a.title)+(a.lv?' <i class="lv lv'+a.lv+'">'+a.lv+'</i>':'')+'</b><small>'+L.esc(a.when)+'</small></span><span class="ar" aria-hidden="true">›</span></button>'+
       '<div class="body" id="b-'+a.id+'" hidden><div class="prompt"><small>复制这句话给 AI</small>'+L.esc(a.prompt)+'</div><div class="pact"><button type="button" class="btn or sm js-copy">复制</button></div><div class="ex"><small>AI 大概会这样回答（示例）</small>'+L.esc(a.example)+'</div></div></div>';
   }).join('');
+  // 按难度筛选：初级 / 中级 / 高级
+  var bar=document.createElement('div');bar.className='lvfilter';bar.setAttribute('role','group');bar.setAttribute('aria-label','按难度筛选');
+  ['全部','初级','中级','高级'].forEach(function(lv,i){var b=document.createElement('button');b.type='button';b.textContent=lv;b.setAttribute('aria-pressed',i?'false':'true');
+    b.addEventListener('click',function(){L.$$('button',bar).forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});
+      L.$$('.aid',box).forEach(function(el){var a=AIDS.filter(function(x){return x.id===el.id})[0];el.hidden=i>0&&a.lv!==lv})});
+    bar.appendChild(b)});
+  box.parentNode.insertBefore(bar,box);
   function open(el,on){el.classList.toggle('open',on);L.$('.body',el).hidden=!on;L.$('.hd',el).setAttribute('aria-expanded',on?'true':'false')}
   L.$$('.aid',box).forEach(function(el){
     var a=AIDS.filter(function(x){return x.id===el.id})[0];
