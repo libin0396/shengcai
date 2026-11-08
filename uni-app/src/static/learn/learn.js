@@ -70,6 +70,8 @@
     });
     doc.body.appendChild(nav);
   }
+  // 滚到吸顶导航所在位置，避免切换时跳回页首。
+  function toTabs(){var t=$('.ttop');if(!t)return;var y=t.getBoundingClientRect().bottom+(root.scrollY||root.pageYOffset||0)-4;root.scrollTo(0,Math.max(0,y))}
   function banner(){return null} // 已并入 chrome()
 
   // ---------- 作品卡 ----------
@@ -160,5 +162,5 @@
   ];
   function classifyWant(text){var t=String(text||'');for(var i=0;i<WANT.length;i++)if(WANT[i][1].test(t))return WANT[i][0];return 'other'}
 
-  root.Learn={STEP:STEP,MP:MP,$:$,$$:$$,esc:esc,toast:toast,copy:copy,download:download,openOut:openOut,getState:getState,setState:setState,track:track,chrome:chrome,banner:banner,workCard:workCard,mountWorkCard:mountWorkCard,classifyWant:classifyWant};
+  root.Learn={toTabs:toTabs,STEP:STEP,MP:MP,$:$,$$:$$,esc:esc,toast:toast,copy:copy,download:download,openOut:openOut,getState:getState,setState:setState,track:track,chrome:chrome,banner:banner,workCard:workCard,mountWorkCard:mountWorkCard,classifyWant:classifyWant};
 })(window);

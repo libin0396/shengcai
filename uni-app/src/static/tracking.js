@@ -49,9 +49,10 @@
       if(internal||!root.navigator||root.navigator.globalPrivacyControl||root.navigator.doNotTrack==='1'||EVENTS.indexOf(event)<0)return false;
       options=options||{};
       if(LEARN_EVENTS.indexOf(event)>=0){
+        var isOnboard=event==='learn_step'&&options.page==='learn'&&options.game==='onboard';
         var allowed=event==='want_submit'?WANT_CATEGORIES:LEARN_TOPICS;
         var allowedPage=event==='want_submit'?(options.page==='learn'||options.page==='home'):options.page==='learn';
-        if(!allowedPage||allowed.indexOf(options.game)<0||options.from!==undefined||options.target!==undefined||options.hidden!==undefined||(options.tier!==undefined&&LEARN_TIERS.indexOf(options.tier)<0))return false;
+        if(!allowedPage||(!isOnboard&&allowed.indexOf(options.game)<0)||options.from!==undefined||options.target!==undefined||options.hidden!==undefined||(isOnboard?['open','skip','start'].indexOf(options.tier)<0:(options.tier!==undefined&&LEARN_TIERS.indexOf(options.tier)<0)))return false;
       }
       var isPersonaEvent=event==='persona_unlock'||event==='poster_save';
       if(isPersonaEvent && typeof options.hidden!=='boolean')return false;

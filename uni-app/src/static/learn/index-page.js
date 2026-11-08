@@ -28,4 +28,5 @@
   else tip='安卓：点浏览器菜单，选「添加到主屏幕」或「添加到桌面」。';
   L.$('#addHomeTip').textContent=tip;
   L.track('learn_view',{page:'learn',game:'index'});
+  var replay=L.$('#obReplay');if(replay)replay.addEventListener('click',function(){if(window.AINPEOnboard)window.AINPEOnboard.open()});
 })();

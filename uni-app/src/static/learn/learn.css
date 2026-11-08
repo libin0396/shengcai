@@ -269,3 +269,14 @@ html.is-mp .navbtns{bottom:0}
 /* 跳到某一关时，不被吸顶的档位条挡住；小程序里没有顶栏，首页标题留一点呼吸 */
 #lv,#bookOut{scroll-margin-top:84px}
 html.is-mp .ihero{padding-top:20px}
+
+/* First-visit guide; uses the same wording on the site home and learning home. */
+.how{margin-top:14px;background:#fff;border-radius:18px;padding:14px}
+.how>b{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px}
+.how ol{list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;padding:0}
+.how li{display:flex;flex-direction:column;gap:2px}
+.how li span{display:inline-flex;width:22px;height:22px;border-radius:7px;background:var(--blue);color:#fff;font-size:12px;font-weight:900;align-items:center;justify-content:center}
+.how li b{font-size:14px;margin-top:4px}.how li small{font-size:12px;line-height:1.5;color:var(--sub)}
+.how-replay{background:none;border:0;padding:4px 0;font:inherit;font-size:12.5px;font-weight:700;color:var(--blue);cursor:pointer}
+.realwho{margin-top:14px;padding:14px 16px;border-radius:12px;background:#fff8e8;border:1px solid #f0dfbd;color:#394e42}
+.realwho small{font-weight:700;color:#9b631b}.realwho p{margin:7px 0}.realwho a,.facts .fact a{color:#126d4e;font-weight:600;text-decoration:underline;text-underline-offset:3px}

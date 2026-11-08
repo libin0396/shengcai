@@ -91,10 +91,26 @@ test('learning aggregates remain bounded and preserve existing persona statistic
   assert.equal(JSON.stringify(r.body).includes('private-input'),false);
  }finally{await x.close()}
 });
+
+test('onboarding metrics count fixed actions without returning identifiers',async()=>{
+ const x=await setup();try{
+  events(x.dbPath);const db=new DatabaseSync(x.dbPath);db.exec('ALTER TABLE events ADD COLUMN tier TEXT');
+  const add=db.prepare('INSERT INTO events(event,source,target,game,tier,created_at,device_hash) VALUES(?,?,?,?,?,?,?)'),now=Date.now();
+  add.run('learn_step',null,null,'onboard','open',now-100,'1'.repeat(64));
+  add.run('learn_step',null,null,'onboard','open',now-90,'1'.repeat(64));
+  add.run('learn_step',null,null,'onboard','skip',now-80,'2'.repeat(64));
+  add.run('learn_step',null,null,'onboard','start',now-70,'1'.repeat(64));
+  add.run('learn_step',null,null,'kejian','start',now-60,'2'.repeat(64));db.close();
+  await chmod(x.dbPath,0o600);const c=await cookie(x),r=await x.call('/api/admin/stats?days=30',{headers:{cookie:c}});
+  assert.equal(r.status,200);assert.deepEqual(r.body.metrics.onboardOpens,{events:2,browsers:1});
+  assert.deepEqual(r.body.metrics.onboardSkips,{events:1,browsers:1});assert.deepEqual(r.body.metrics.onboardStarts,{events:1,browsers:1});
+  assert.equal(JSON.stringify(r.body).includes('1'.repeat(64)),false);
+ }finally{await x.close()}
+});
 test('older databases without target do not misrepresent unavailable joining clicks as zero',async()=>{
  const x=await setup();try{
   const db=new DatabaseSync(x.dbPath);db.exec('CREATE TABLE events(id INTEGER PRIMARY KEY,event TEXT NOT NULL,source TEXT,game TEXT,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)');db.close();await chmod(x.dbPath,0o600);
-  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.metrics.joinClicks,null);assert.equal(r.body.metrics.learnCampClicks,null);
+  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.metrics.joinClicks,null);assert.equal(r.body.metrics.learnCampClicks,null);assert.equal(r.body.metrics.onboardOpens,null);
  }finally{await x.close()}
 });
 test('older databases without game do not claim a zero-valued funnel',async()=>{

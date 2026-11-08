@@ -12,8 +12,8 @@
     $$('.tabs button').forEach(function(x){var on=x.dataset.tab===id;x.classList.toggle('on',on);x.setAttribute('aria-selected',on?'true':'false')});
     $$('.pane').forEach(function(p){p.hidden=p.id!==id});
     $$('.tier').forEach(function(t){t.classList.toggle('on',t.dataset.go===id)});
-    if(scroll!==false)$('.tabs').scrollIntoView({block:'start'});
     if(id==='practice')renderLevel();
+    if(scroll!==false)L.toTabs();
   }
   $$('.tabs button').forEach(function(x){x.addEventListener('click',function(){tab(x.dataset.tab)})});
   $$('.tier').forEach(function(t){t.addEventListener('click',function(){tab(t.dataset.go);L.track('learn_step',{page:'learn',game:T,tier:t.dataset.tier})})});
@@ -87,7 +87,7 @@
     if(q.pref!=null)h='<div class="learned">'+esc(q.why[oi])+'</div>';
     else{
       var good=oi===q.rec;
-      h='<div class="reveal"><small>可以怎么考虑</small>'+(good?'<p><span class="ok">✓ 可以从这一步开始</span></p>':'<p><span class="warn">这一步可以再想一想：</span></p>')+'<p>'+q.why[oi]+'</p>'+(good?'':'<p><span class="ok">推荐做法：</span>'+esc(q.opts[q.rec])+'。'+q.why[q.rec]+'</p>')+'</div>';
+      h='<div class="reveal"><small>可以怎么考虑</small>'+(good?'<p><span class="ok">✓ 可以从这一步开始</span></p>':'<p><span class="warn">这一步可以再想一想：</span></p>')+'<p>'+q.why[oi]+'</p>'+(good?'':'<p><span class="ok">推荐做法：</span>'+esc(q.opts[q.rec])+'。'+q.why[q.rec]+'</p>')+(q.real?'<div class="realwho"><small>圈友怎么做的 · 作者自述</small><p>'+esc(q.real)+'</p><a href="/#/pages/camp/index?from=article&amp;source='+encodeURIComponent(q.realSource)+'">了解来源 ›</a></div>':'')+'</div>';
       if(q.cmp)h+='<div class="sample"><span class="tag">示例：同一节课，两种写法让 AI 写出来的开头</span><div class="cmp"><div class="bad"><b>一次写完</b>导入：出示图片导入新课，激发学生兴趣。<br>新授：学习生字词，理解课文内容。<br>练习：完成课后练习。</div><div class="good"><b>先定目标，分 3 次写</b>导入：「如果你有一条小船，最想划到海上哪儿去看看？」请 3 个孩子说说。<br>新授：找一找，课文从哪几处写出了西沙的「富饶」？</div></div></div>';
     }
     el.innerHTML=h;
@@ -101,7 +101,7 @@
       '<details class="sample"><summary class="h3" style="cursor:pointer">想真做这一步？复制给豆包</summary>'+promptBox('填好了你的课',lv.tryIt(lessonText()))+'</details>'+
       '<div class="navbtns"><button class="btn ln" id="prevLv">上一关</button><button class="btn or" id="nextLv">'+(S.level===K.LEVELS.length?'查看练习结果':'下一关')+'</button></div>';
     $('#prevLv').addEventListener('click',function(){S.level--;persist();renderLevel();$('#lv').scrollIntoView({block:'start'})});
-    $('#nextLv').addEventListener('click',function(){L.track('learn_step',{page:'learn',game:T,tier:lv.id});S.level++;persist();renderLevel();$('.tabs').scrollIntoView({block:'start'})});
+    $('#nextLv').addEventListener('click',function(){L.track('learn_step',{page:'learn',game:T,tier:lv.id});S.level++;persist();renderLevel();L.toTabs()});
   }
   function renderPick(box){
     var keys=Object.keys(K.LESSONS);

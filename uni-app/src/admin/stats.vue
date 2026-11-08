@@ -78,7 +78,10 @@ const extraMetrics=[
 ];
 const learningMetrics=[
   {key:'learnViews',label:'学习页访问',hint:'学习相关页面的访问事件'},
-  {key:'learnSteps',label:'学习步骤操作',hint:'点击步骤或展开内容'},
+  {key:'learnSteps',label:'学习步骤操作',hint:'含引导、点击步骤或展开内容'},
+  {key:'onboardOpens',label:'新手引导打开',hint:'包含主动重看，不等于独立新用户'},
+  {key:'onboardSkips',label:'新手引导跳过',hint:'按下跳过、点遮罩或按 Esc'},
+  {key:'onboardStarts',label:'引导后开始',hint:'点击前往课件，不代表已完成'},
   {key:'learnDone',label:'标记完成',hint:'含入门标记和进阶流程结束'},
   {key:'workCardSaves',label:'作品卡保存操作',hint:'按钮操作，不含微信长按'},
   {key:'skillCopies',label:'助手内容复制或下载',hint:'操作次数，不代表实际使用'},

@@ -8,20 +8,31 @@
 
   var HERO={girl:{label:'一个小女孩',def:'小雨',look:'一个扎两个小辫子、穿黄色雨衣的小女孩'},boy:{label:'一个小男孩',def:'阿海',look:'一个短头发、穿蓝色条纹衫的小男孩'},turtle:{label:'一只小海龟',def:'圆圆',look:'一只绿色背壳、眼睛圆圆的小海龟'}};
   var PLACE={sea:{label:'海底',tt:'海底',go:'潜到海底',img:'fish.jpg',see:'珊瑚丛里，成群的小鱼游来游去'},island:{label:'一座小岛',tt:'小岛',go:'划着小船去一座小岛',img:'cliff.jpg',see:'高高的岩石边，海鸟一圈一圈地飞'},beach:{label:'海边沙滩',tt:'沙滩',go:'去海边沙滩',img:'shell.jpg',see:'金色的沙滩上，到处是花纹不一样的贝壳'}};
-  var TROUBLE={lost:{label:'迷路了',t:'可是走着走着，回家的路不见了。'},boat:{label:'小船漏水了',t:'突然，小船开始漏水，水一点点漫上来。'},sad:{label:'遇到一个不开心的朋友',t:'这时，它看见一个小伙伴蹲在角落里，一句话也不说。'}};
+  var TROUBLE={lost:{label:'迷路了',t:'可是走着走着，回家的路不见了。'},boat:{label:'遇到意外',t:''},sad:{label:'遇到一个不开心的朋友',t:'这时，它看见一个小伙伴蹲在角落里，一句话也不说。'}};
   var FIX={friend:{label:'请新朋友帮忙',t:'一条小鱼游过来说：「跟我来！」它们一起找到了办法。'},self:{label:'自己想办法',t:'深呼吸，想一想，再试一试——办法真的被想出来了。'},share:{label:'把自己的东西分出去',t:'把口袋里最喜欢的那颗贝壳送了出去，大家都笑了。'}};
   var AGE={'2-3':'2–3 岁','4-6':'4–6 岁','7-9':'7–9 岁'};
   var STY={warm:'暖色调、柔和的水彩插画',crayon:'像小朋友用蜡笔画的，线条稚气、颜色鲜亮',clean:'干净的扁平插画，颜色明快'};
 
   function heroName(){return S.name||HERO[S.hero].def}
+  var BY_PLACE={
+    sea:{ride:'海水凉凉的，亮亮的，慢慢往下潜。',rideImg:'fish.jpg',helper:'一条小鱼游过来',lost:'可是游着游着，回家的路不见了。',broken:'潜水镜进了水，什么都看不清了。',repair:'仔细擦干净潜水镜，终于又看清了'},
+    island:{ride:'小船摇呀摇，风吹着帆，小岛越来越近。',rideImg:'boat.jpg',helper:'一只海鸟飞过来',lost:'可是走着走着，回家的路不见了。',broken:'要回家的时候，小船开始漏水，水一点点漫上来。',repair:'用背包里的修补材料补好了小船'},
+    beach:{ride:'沙子软软的，海浪一下一下拍着脚丫。',rideImg:'shell.jpg',helper:'一只小螃蟹爬过来',lost:'可是走着走着，回家的路不见了。',broken:'一个大浪打过来，刚装满贝壳的小桶被卷走了。',repair:'等海浪退去，找回了小桶'}
+  };
+  function troubleText(){var bp=BY_PLACE[S.place]||BY_PLACE.sea;return S.trouble==='boat'?bp.broken:S.trouble==='lost'?bp.lost:TROUBLE[S.trouble].t}
+  function fixText(){var bp=BY_PLACE[S.place]||BY_PLACE.sea;
+    if(S.trouble==='sad')return S.fix==='share'?'它把最喜欢的贝壳送给小伙伴，小伙伴笑了。':S.fix==='friend'?bp.helper+'，陪它们一起聊天，小伙伴慢慢笑了。':'它坐下来听小伙伴说话，小伙伴慢慢笑了。';
+    if(S.trouble==='lost')return S.fix==='self'?'它静下心，沿着熟悉的记号找到了回家的路。':bp.helper+(S.fix==='share'?'，它分享了自己的贝壳，也问到了回家的路。':'，为它指明了回家的路。');
+    return S.fix==='self'?'它想了想，'+bp.repair+'。':bp.helper+(S.fix==='share'?'，它分享了自己的贝壳，然后一起想办法，':'，它们一起想办法，')+bp.repair+'。';
+  }
   function pages(){
-    var n=heroName(),h=HERO[S.hero],p=PLACE[S.place];
+    var n=heroName(),p=PLACE[S.place],bp=BY_PLACE[S.place]||BY_PLACE.sea;
     var short=S.age==='2-3';
     return [
       {img:'girl.jpg',text:short?n+'想'+p.go+'。':'有一天，'+n+'对着窗外的大海说：「我想'+p.go+'！」'},
-      {img:'boat.jpg',text:short?n+'出发啦！':n+'带上小背包出发了。'+(S.place==='sea'?'海水凉凉的，亮亮的。':'风吹着帆，海浪轻轻摇。')},
-      {img:p.img,text:(short?'哇，':'到了'+p.label+'，'+p.see+'。')+TROUBLE[S.trouble].t},
-      {img:'kids.jpg',text:FIX[S.fix].t+(short?n+'笑了。':'回家的路上，'+n+'想：下次还要再来。')}
+      {img:bp.rideImg,text:short?n+'出发啦！':n+'带上小背包出发了。'+bp.ride},
+      {img:p.img,text:(short?'哇，':'到了'+p.label+'，'+p.see+'。')+troubleText()},
+      {img:'kids.jpg',text:fixText()+(short?n+'笑了。':'回家的路上，'+n+'想：下次还要再来。')}
     ];
   }
   function buildSkill(){
@@ -57,7 +68,7 @@
     $$('.tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===id)});
     $$('.pane').forEach(function(p){p.hidden=p.id!==id});
     $$('.tier').forEach(function(t){t.classList.toggle('on',t.dataset.go===id)});
-    if(scroll!==false)$('.tabs').scrollIntoView({block:'start'});
+    if(scroll!==false)L.toTabs();
   }
   $$('.tabs button').forEach(function(x){x.addEventListener('click',function(){tab(x.dataset.tab)})});
   $$('.tier').forEach(function(t){t.addEventListener('click',function(){tab(t.dataset.go)})});

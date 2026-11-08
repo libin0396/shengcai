@@ -7,6 +7,14 @@
     <view class="home-a">
       <view class="ha-title">今天，用 AI<br/>做成一件事</view>
       <view class="ha-sub">不用先懂 AI，跟着步骤做出第一份作品。</view>
+      <view class="ha-how" aria-label="第一次来怎么用">
+        <view class="ha-how-t">第一次来？这样用<!-- #ifdef H5 --><text class="ha-replay" role="button" tabindex="0" @click="replayOnboard" @keydown.enter="replayOnboard">看动画引导 ›</text><!-- #endif --></view>
+        <view class="ha-steps">
+          <view class="ha-step"><text class="ha-n">1</text><text class="ha-sb">挑一件事</text><text class="ha-ss">比如做课件、绘本</text></view>
+          <view class="ha-step"><text class="ha-n">2</text><text class="ha-sb">跟着做</text><text class="ha-ss">先看教程，再做 5 关小练习</text></view>
+          <view class="ha-step"><text class="ha-n">3</text><text class="ha-sb">带走</text><text class="ha-ss">保存练习卡片和 AI 助手提示词</text></view>
+        </view>
+      </view>
       <view class="ha-feature" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
         <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
         <view class="ha-ladder"><text class="on">入门实践</text><text>进阶练习</text><text>继续探索</text></view>
@@ -39,7 +47,7 @@
 <script setup>
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
-import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
+import {onLoad, onShow, onHide, onPageScroll} from '@dcloudio/uni-app';
 import GameCover from '../../components/GameCover.vue';
 import {openGame, openLearn} from '../../data/game-matching.js';
 import {learnTopics, classifyWant} from '../../data/learn-topics.js';
@@ -55,8 +63,26 @@ function barThreshold(){try{return Math.max(600,(document.documentElement.scroll
 // #ifdef H5
 function updateJoinBar(){showJoinBar.value=window.scrollY>600}
 onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
-onUnmounted(()=>window.removeEventListener('scroll',updateJoinBar));
+let onboardMounted=false,onboardScript=null,onboardPendingForce=false;
+function loadOnboard(force){
+  if(window.AINPEOnboard){if(force)window.AINPEOnboard.open();else window.AINPEOnboard.auto();return;}
+  onboardPendingForce=onboardPendingForce||force;
+  if(onboardScript)return;
+  const el=document.createElement('script');onboardScript=el;el.src='/static/learn/onboarding.js';
+  el.onload=()=>{onboardScript=null;if(!onboardMounted||!window.AINPEOnboard)return;const replay=onboardPendingForce;onboardPendingForce=false;if(replay)window.AINPEOnboard.open();else window.AINPEOnboard.auto();};
+  el.onerror=()=>{onboardScript=null;onboardPendingForce=false;};document.body.appendChild(el);
+}
+// UniApp keeps previous pages mounted while navigating. Hide must therefore
+// clean up the global dialog, and show re-evaluates the first-visit state.
+onShow(()=>{document.title='AI 实战情报站';onboardMounted=true;loadOnboard(false)});
+onHide(()=>{onboardMounted=false;onboardPendingForce=false;window.AINPEOnboard?.dispose();});
+onUnmounted(()=>{onboardMounted=false;onboardPendingForce=false;window.removeEventListener('scroll',updateJoinBar);window.AINPEOnboard?.dispose();});
 // #endif
+function replayOnboard(){
+  // #ifdef H5
+  loadOnboard(true);
+  // #endif
+}
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
 const playedGames=ref([]);
@@ -254,4 +280,13 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .discover-page .conference-actions button{color:#fff}
 .discover-page .conference-actions button:first-child:not(:last-child){color:#B8BDC8}
 .discover-page .footer-note{color:#9AA0AC}
+/* First-visit guide, matching the learning home. */
+.ha-how{margin-top:14px;background:#fff;border-radius:18px;padding:14px 14px 12px}
+.ha-how-t{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#161A23}
+.ha-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.ha-step{display:flex;flex-direction:column;gap:2px}
+.ha-n{display:inline-flex;width:22px;height:22px;border-radius:7px;background:#2B44E6;color:#fff;font-size:12px;font-weight:900;align-items:center;justify-content:center}
+.ha-sb{font-size:14px;font-weight:800;color:#161A23;margin-top:4px}
+.ha-ss{font-size:12px;line-height:1.5;color:#5F6675}
+.ha-replay{font-size:12.5px;font-weight:700;color:#2B44E6;cursor:pointer}
 </style>

@@ -16,6 +16,7 @@ const METRICS={
   shareLinkVisits:{event:'challenge_open',source:'share_link'},
   posterDownloads:{event:'poster_save'}, joinClicks:{event:'outbound_click',target:'join'},
   learnViews:{event:'learn_view'}, learnSteps:{event:'learn_step'}, learnDone:{event:'learn_done'},
+  onboardOpens:{event:'learn_step',game:'onboard',tier:'open'}, onboardSkips:{event:'learn_step',game:'onboard',tier:'skip'}, onboardStarts:{event:'learn_step',game:'onboard',tier:'start'},
   workCardSaves:{event:'card_save'}, skillCopies:{event:'skill_copy'}, promptCopies:{event:'aid_copy'}, wantSubmits:{event:'want_submit'},
   learnCampClicks:{event:'outbound_click',target:'camp',source:'learn'},
 };
@@ -64,7 +65,7 @@ function summary(dbPath,root,days){
     const columns=db.prepare('PRAGMA table_info(events)').all().map(x=>x.name);
     if(!['event','source','device_hash','created_at'].every(x=>columns.includes(x)))throw new Error('invalid_database');
     for(const [name,spec] of Object.entries(METRICS)){
-      if(spec.target&&!columns.includes('target')){result.metrics[name]=null;continue}
+      if((spec.target&&!columns.includes('target'))||(spec.game&&!columns.includes('game'))||(spec.tier&&!columns.includes('tier'))){result.metrics[name]=null;continue}
       let sql='SELECT COUNT(*) AS events, COUNT(DISTINCT device_hash) AS browsers FROM events WHERE created_at>=? AND created_at<?';
       const values=[since,until];
       if(spec.sources){
@@ -75,6 +76,8 @@ function summary(dbPath,root,days){
         if(spec.source){sql+=' AND source=?';values.push(spec.source)}
       }
       if(spec.target){sql+=' AND target=?';values.push(spec.target)}
+      if(spec.game){sql+=' AND game=?';values.push(spec.game)}
+      if(spec.tier){sql+=' AND tier=?';values.push(spec.tier)}
       const row=db.prepare(sql).get(...values);result.metrics[name]={events:Number(row.events),browsers:Number(row.browsers)};
     }
     if(columns.includes('game')){

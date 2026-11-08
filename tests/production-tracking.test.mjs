@@ -81,6 +81,15 @@ test('learning events accept only fixed categories and never raw request data',a
  }finally{await x.close()}
 });
 
+test('onboarding accepts only fixed open, skip and start actions',async()=>{
+ const x=await setup();try{
+  const base={event:'learn_step',page:'learn',game:'onboard',played:false,ts:Date.now(),did:'a'.repeat(32)};
+  for(const tier of ['open','skip','start'])assert.equal((await x.post({...base,tier})).status,202);
+  for(const bad of [base,{...base,tier:'private-input'},{...base,tier:'open',page:'home'},{...base,tier:'open',event:'learn_done'},{...base,tier:'open',game:'kejian'},{...base,tier:'open',raw:'secret'}])assert.equal((await x.post(bad)).status,400);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{assert.equal(db.prepare("SELECT COUNT(*) AS n FROM events WHERE event='learn_step' AND game='onboard'").get().n,3)}finally{db.close()}
+ }finally{await x.close()}
+});
+
 test('rejects cross-origin, untrusted proxy, oversized and unapproved data',async()=>{
  const x=await setup();try{
   assert.equal((await x.post(sample(),{origin:'https://evil.example'})).status,403);

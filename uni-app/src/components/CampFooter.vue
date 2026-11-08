@@ -14,7 +14,7 @@ function go() {
 }
 </script>
 <style scoped>
-.oneline{max-width:1060px;margin:28px auto 4px;padding:16px 18px;border-top:1px solid #E5DECF;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
-.ol-q{font-size:14px;color:#45594D}
-.ol-a{font-size:14px;font-weight:800;color:#0E5A3A}
+.oneline{max-width:1060px;margin:28px auto 4px;padding:16px 18px;border-top:1px solid #E6E8EC;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer}
+.ol-q{font-size:14px;color:#5F6675}
+.ol-a{font-size:14px;font-weight:800;color:#2B44E6}
 </style>

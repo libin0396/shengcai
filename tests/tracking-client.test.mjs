@@ -42,6 +42,20 @@ test('learning tracking sends fixed categories, not typed wants or personal fiel
  assert.equal(window.AINPETrack.track('learn_view',{page:'learn',game:'kejian'}),false);
 });
 
+test('onboarding tracks only the three fixed actions and keeps privacy controls',async()=>{
+ const {window,sent}=setup();
+ for(const tier of ['open','skip','start'])assert.equal(window.AINPETrack.track('learn_step',{page:'learn',game:'onboard',tier,raw:'must-not-be-sent'}),true);
+ for(const o of [
+  {page:'learn',game:'onboard'}, {page:'learn',game:'onboard',tier:'private'},
+  {page:'learn',game:'kejian',tier:'open'}, {page:'home',game:'onboard',tier:'start'},
+ ])assert.equal(window.AINPETrack.track('learn_step',o),false);
+ assert.equal(window.AINPETrack.track('learn_done',{page:'learn',game:'onboard',tier:'start'}),false);
+ assert.equal(sent.length,3);
+ for(const item of sent){const payload=JSON.parse(await item.data.text());assert.deepEqual(Object.keys(payload).sort(),['did','event','game','page','played','tier','ts']);}
+ window.navigator.globalPrivacyControl=true;
+ assert.equal(window.AINPETrack.track('learn_step',{page:'learn',game:'onboard',tier:'open'}),false);
+});
+
 test('persona events send only the anonymous hidden flag and require a boolean',async()=>{
  const {window,sent}=setup();
  assert.equal(window.AINPETrack.track('persona_unlock',{hidden:true,played:true,game:'miniapp',tier:'tier-1',name:'private',trigger:'private'}),true);
