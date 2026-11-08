@@ -59,6 +59,28 @@ test('homepage camp clicks are accepted with a bounded source and target',async(
  }finally{await x.close()}
 });
 
+test('learning events accept only fixed categories and never raw request data',async()=>{
+ const x=await setup();try{
+  const base={page:'learn',played:false,ts:Date.now(),did:'a'.repeat(32)};
+  for(const [event,game,tier] of [['learn_view','index'],['learn_step','kejian','start'],['learn_done','huiben','pro'],['card_save','kejian','wx'],['want_submit','video'],['aid_copy','jijiu','excel'],['skill_copy','huiben','file']]){
+   assert.equal((await x.post({...base,event,game,...(tier?{tier}:{})})).status,202);
+  }
+  assert.equal((await x.post({...base,page:'home',event:'want_submit',game:'video'})).status,202);
+  for(const invalid of [
+   {...base,event:'want_submit',game:'my_private_request'},
+   {...base,event:'want_submit',game:'other',message:'private input'},
+   {...base,event:'learn_view',game:'private-topic'},
+   {...base,event:'learn_step',game:'kejian',tier:'private-input'},
+   {...base,event:'learn_done',game:'kejian',from:'home'},
+   {...base,event:'card_save',page:'home',game:'kejian'}
+  ])assert.equal((await x.post(invalid)).status,400);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM events').get().n,8);
+   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM events WHERE event='want_submit' AND game='video'").get().n,2);
+  }finally{db.close()}
+ }finally{await x.close()}
+});
+
 test('rejects cross-origin, untrusted proxy, oversized and unapproved data',async()=>{
  const x=await setup();try{
   assert.equal((await x.post(sample(),{origin:'https://evil.example'})).status,403);

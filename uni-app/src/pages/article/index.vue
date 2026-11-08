@@ -9,7 +9,7 @@
             <view v-if="study" class="case-tags"><text>{{study.direction}}</text><text v-for="tag in study.startTags" :key="tag">{{tag}}</text><text class="verified-tag">完整解读</text></view>
             <view v-else class="source-label">● 来源：生财有术 <text>{{ article.isDigested ? '精华文章' : '圈友分享' }}</text></view>
             <view class="headline">{{ cleanCaseTitle(article.title) }}</view>
-            <view class="byline">原帖作者：{{ article.author || '生财圈友' }} · 来源：生财有术 · {{ formatDate(article.publishedAt) }} <text v-if="study" class="inline-source" @click="openSource">查看原帖 ↗</text></view>
+            <view class="byline">{{ study?.author || '一位生财圈友' }}（本站隐去昵称） · 来源：生财有术 · {{ formatDate(article.publishedAt) }} <text v-if="study" class="inline-source" @click="openSource">查看原帖 ↗</text></view>
             <button v-if="study && study.simulation" class="case-play-top" @click="openSimulation"><text>▶ 先玩一局同款模拟</text><text>开始 →</text></button>
           </view>
           <template v-if="study">
@@ -27,10 +27,10 @@
           <view v-else-if="isEventArticle" class="reservation"><view class="section-heading">想了解线下活动？</view><button class="reserve-button" @click="openEvents">查看线下活动</button></view>
           <view class="actions"><button class="save" @click="toggleSaved">{{ saved ? '★ 已收藏' : '☆ 收藏' }}</button></view>
 
-          <view v-if="related.length" class="related"><view class="section-heading">接着看看相关案例</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">{{ item.author || '生财圈友' }} · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
+          <view v-if="related.length" class="related"><view class="section-heading">接着看看相关案例</view><view v-for="item in related" :key="item.id" class="related-row" @click="openArticle(item)"><view><text class="related-title">{{ item.title }}</text><text class="related-meta">一位生财圈友 · {{ item.kind || '分享' }}</text></view><text class="related-arrow">↗</text></view></view>
           <view class="footnote">{{study ? '站方解读，数字为作者自述。' : '内容以原帖为准。'}}</view>
         </view>
-        <view class="side-column"><view class="side-card"><view class="side-eyebrow">读完，亲手试一次</view><view class="side-title">{{matchingGame ? matchingGame.name : '找到适合自己的方向'}}</view><view class="side-copy">过程和金额均为模拟。</view><button class="side-action" @click="openSimulation">{{matchingGame ? '体验这个项目 →' : '看看模拟项目 →'}}</button></view><view v-if="related.length" class="side-related"><view class="side-related-title">其他方向的案例</view><view v-for="item in related" :key="item.id" class="side-related-item" @click="openArticle(item)">{{item.title}}<text>{{item.author}} · 生财有术</text></view></view></view>
+        <view class="side-column"><view class="side-card"><view class="side-eyebrow">读完，亲手试一次</view><view class="side-title">{{matchingGame ? matchingGame.name : '找到适合自己的方向'}}</view><view class="side-copy">过程和金额均为模拟。</view><button class="side-action" @click="openSimulation">{{matchingGame ? '体验这个项目 →' : '看看模拟项目 →'}}</button></view><view v-if="related.length" class="side-related"><view class="side-related-title">其他方向的案例</view><view v-for="item in related" :key="item.id" class="side-related-item" @click="openArticle(item)">{{item.title}}<text>{{caseById(item.id)?.author || '一位生财圈友'}} · 生财有术</text></view></view></view>
       </view>
       <view v-else-if="feedMeta.loading || !feedMeta.loadAttempted" class="not-found"><view>正在加载文章…</view><text>请稍候。</text></view>
       <view v-else-if="feedMeta.loadFailed" class="not-found"><view>暂时无法加载文章</view><text>请检查网络连接后重试。</text><button @click="refreshFeed">重新加载</button></view>

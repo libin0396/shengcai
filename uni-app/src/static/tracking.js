@@ -1,7 +1,10 @@
 (function(root){
   'use strict';
-  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save'];
-  var TARGETS=['camp','join','source','event','referral'], SOURCES=['article','camp','result','mine','home','home_bar','event','header','footer','library','events','simulate','bar'];
+  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save','learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy'];
+  var TARGETS=['camp','join','source','event','referral'], SOURCES=['article','camp','result','mine','home','home_bar','event','header','footer','library','events','simulate','bar','learn'];
+  var LEARN_EVENTS=['learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy'];
+  var LEARN_TOPICS=['index','kejian','huiben','jijiu'], WANT_CATEGORIES=['kejian','huiben','video','novel','tuwen','assistant','money','other'];
+  var LEARN_TIERS=['basic','pro','start','file','wx','xhs','need','write','pages','redline','cover','caption','excel','homework','learnai','meeting','menu','notice','reply','summary','trip'];
   var KEY='ainpe:anonymous-device', ID=/^[a-z0-9][a-z0-9_-]{0,39}$/, did='';
   // Only this browser is excluded. Consume the URL control so it isn't shared.
   var INTERNAL='ainpe:internal', internal=false;
@@ -45,6 +48,11 @@
     try{
       if(internal||!root.navigator||root.navigator.globalPrivacyControl||root.navigator.doNotTrack==='1'||EVENTS.indexOf(event)<0)return false;
       options=options||{};
+      if(LEARN_EVENTS.indexOf(event)>=0){
+        var allowed=event==='want_submit'?WANT_CATEGORIES:LEARN_TOPICS;
+        var allowedPage=event==='want_submit'?(options.page==='learn'||options.page==='home'):options.page==='learn';
+        if(!allowedPage||allowed.indexOf(options.game)<0||options.from!==undefined||options.target!==undefined||options.hidden!==undefined||(options.tier!==undefined&&LEARN_TIERS.indexOf(options.tier)<0))return false;
+      }
       var isPersonaEvent=event==='persona_unlock'||event==='poster_save';
       if(isPersonaEvent && typeof options.hidden!=='boolean')return false;
       if((event==='outbound_click'||event==='contact_copy') && SOURCES.indexOf(options.from)<0)return false;

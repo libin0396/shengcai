@@ -15,6 +15,9 @@ const METRICS={
   challengePosterVisits:{event:'challenge_open',source:'poster_qr'}, personaPosterVisits:{event:'site_view',source:'persona_qr'},
   shareLinkVisits:{event:'challenge_open',source:'share_link'},
   posterDownloads:{event:'poster_save'}, joinClicks:{event:'outbound_click',target:'join'},
+  learnViews:{event:'learn_view'}, learnSteps:{event:'learn_step'}, learnDone:{event:'learn_done'},
+  workCardSaves:{event:'card_save'}, skillCopies:{event:'skill_copy'}, promptCopies:{event:'aid_copy'}, wantSubmits:{event:'want_submit'},
+  learnCampClicks:{event:'outbound_click',target:'camp',source:'learn'},
 };
 const emptyMetric=()=>({events:0,browsers:0});
 function send(res,status,value,extra={}){
@@ -54,7 +57,7 @@ function cookieToken(req){
 }
 function summary(dbPath,root,days){
   const until=Date.now(),since=until-days*86400000;
-  const result={period:{days,since:new Date(since).toISOString(),until:new Date(until).toISOString(),retentionDays:90},available:false,metrics:Object.fromEntries(Object.keys(METRICS).map(k=>[k,emptyMetric()])),funnel:{unit:'browser_project',started:0,finished:0,campVisitsAfterFinish:0,finishRate:null,campAfterFinishRate:null},daily:[]};
+  const result={period:{days,since:new Date(since).toISOString(),until:new Date(until).toISOString(),retentionDays:90},available:false,metrics:Object.fromEntries(Object.keys(METRICS).map(k=>[k,emptyMetric()])),funnel:{unit:'browser_project',started:0,finished:0,campVisitsAfterFinish:0,finishRate:null,campAfterFinishRate:null},learnByTopic:null,wants:null,daily:[]};
   let file;try{file=privateFile(dbPath,root).file}catch(e){if(e.code==='ENOENT')return result;throw e}
   const db=new DatabaseSync(file,{readOnly:true});
   try{
@@ -75,6 +78,9 @@ function summary(dbPath,root,days){
       const row=db.prepare(sql).get(...values);result.metrics[name]={events:Number(row.events),browsers:Number(row.browsers)};
     }
     if(columns.includes('game')){
+      // Fixed topic keys only. Never return visitor-entered text or device identifiers.
+      result.wants=Object.fromEntries(db.prepare("SELECT game,COUNT(DISTINCT device_hash) AS browsers FROM events WHERE event='want_submit' AND game IN ('kejian','huiben','video','novel','tuwen','assistant','money','other') AND created_at>=? AND created_at<? GROUP BY game").all(since,until).map(x=>[x.game,Number(x.browsers)]));
+      result.learnByTopic=Object.fromEntries(db.prepare("SELECT game,SUM(CASE WHEN event='learn_view' THEN 1 ELSE 0 END) AS views,COUNT(DISTINCT CASE WHEN event='learn_view' THEN device_hash END) AS browsers,COUNT(DISTINCT CASE WHEN event='learn_done' THEN device_hash END) AS doneBrowsers FROM events WHERE event IN ('learn_view','learn_done') AND game IN ('index','kejian','huiben','jijiu') AND created_at>=? AND created_at<? GROUP BY game").all(since,until).map(x=>[x.game,{views:Number(x.views),browsers:Number(x.browsers),doneBrowsers:Number(x.doneBrowsers)}]));
       const row=db.prepare(`WITH starts AS (
         SELECT device_hash,game,MIN(created_at) AS at FROM events
         WHERE event='sim_start' AND game IS NOT NULL AND created_at>=? AND created_at<? GROUP BY device_hash,game

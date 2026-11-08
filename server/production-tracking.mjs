@@ -6,9 +6,14 @@ import path from 'node:path';
 
 // A bounded, same-origin event log. Raw IPs, URLs, user-entered content and
 // browser identifiers are never written to the database.
-const EVENTS = new Set(['site_view', 'sim_start', 'sim_finish', 'camp_view', 'camp_join_click', 'share_open', 'share_save', 'challenge_open', 'replay_same_seed', 'versus_finish', 'versus_share', 'board_view', 'board_join', 'board_share', 'outbound_click', 'contact_copy', 'persona_unlock', 'poster_save']);
+const EVENTS = new Set(['site_view', 'sim_start', 'sim_finish', 'camp_view', 'camp_join_click', 'share_open', 'share_save', 'challenge_open', 'replay_same_seed', 'versus_finish', 'versus_share', 'board_view', 'board_join', 'board_share', 'outbound_click', 'contact_copy', 'persona_unlock', 'poster_save', 'learn_view', 'learn_step', 'learn_done', 'card_save', 'want_submit', 'aid_copy', 'skill_copy']);
 const TARGETS = new Set(['camp', 'join', 'source', 'event', 'referral']);
-const SOURCES = new Set(['article', 'camp', 'result', 'mine', 'home', 'home_bar', 'event', 'header', 'footer', 'library', 'events', 'simulate', 'bar']);
+const SOURCES = new Set(['article', 'camp', 'result', 'mine', 'home', 'home_bar', 'event', 'header', 'footer', 'library', 'events', 'simulate', 'bar', 'learn']);
+// Learning analytics record enumerated categories, never a visitor's typed request.
+const LEARN_EVENTS = new Set(['learn_view', 'learn_step', 'learn_done', 'card_save', 'want_submit', 'aid_copy', 'skill_copy']);
+const LEARN_TOPICS = new Set(['index', 'kejian', 'huiben', 'jijiu']);
+const WANT_CATEGORIES = new Set(['kejian', 'huiben', 'video', 'novel', 'tuwen', 'assistant', 'money', 'other']);
+const LEARN_TIERS = new Set(['basic', 'pro', 'start', 'file', 'wx', 'xhs', 'need', 'write', 'pages', 'redline', 'cover', 'caption', 'excel', 'homework', 'learnai', 'meeting', 'menu', 'notice', 'reply', 'summary', 'trip']);
 const ID = /^[a-z0-9][a-z0-9_-]{0,39}$/;
 const DEVICE = /^[a-f0-9]{32}$/;
 const MAX_BODY = 1024;
@@ -30,6 +35,11 @@ function valid(v) {
   if(!v || typeof v!=='object' || Array.isArray(v) || Object.keys(v).some(k=>!FIELDS.has(k)))return false;
   if(!EVENTS.has(v.event) || !DEVICE.test(v.did || '') || !Number.isSafeInteger(v.ts) || Math.abs(Date.now()-v.ts)>86400000)return false;
   if(typeof v.played!=='boolean')return false;
+  if(LEARN_EVENTS.has(v.event)){
+    const allowed=v.event==='want_submit'?WANT_CATEGORIES:LEARN_TOPICS;
+    const allowedPage=v.event==='want_submit'?v.page==='learn'||v.page==='home':v.page==='learn';
+    if(!allowedPage||!allowed.has(v.game)||v.from!==undefined||v.target!==undefined||v.hidden!==undefined||(v.tier!==undefined&&!LEARN_TIERS.has(v.tier)))return false;
+  }
   const isPersonaEvent=v.event==='persona_unlock'||v.event==='poster_save';
   if(isPersonaEvent){
     if(typeof v.hidden!=='boolean' || ['page','from','game','tier','target'].some(k=>v[k]!==undefined))return false;

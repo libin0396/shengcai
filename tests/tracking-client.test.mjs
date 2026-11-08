@@ -28,6 +28,20 @@ test('privacy signals suppress collection before generating a browser identifier
  }
 });
 
+test('learning tracking sends fixed categories, not typed wants or personal fields',async()=>{
+ const {window,sent}=setup();
+ assert.equal(window.AINPETrack.track('want_submit',{page:'learn',game:'other',text:'private request',wechatId:'private'}),true);
+ assert.equal(window.AINPETrack.track('want_submit',{page:'home',game:'video'}),true);
+ assert.equal(window.AINPETrack.track('want_submit',{page:'learn',game:'my_private_request'}),false);
+ assert.equal(window.AINPETrack.track('learn_step',{page:'learn',game:'kejian',tier:'private-input'}),false);
+ assert.equal(window.AINPETrack.track('outbound_click',{from:'learn',target:'camp'}),true);
+ const payload=JSON.parse(await sent[0].data.text());
+ assert.equal(payload.game,'other');assert.equal('text' in payload,false);assert.equal('wechatId' in payload,false);
+ assert.deepEqual(Object.keys(payload).sort(),['did','event','game','page','played','ts']);
+ window.navigator.globalPrivacyControl=true;
+ assert.equal(window.AINPETrack.track('learn_view',{page:'learn',game:'kejian'}),false);
+});
+
 test('persona events send only the anonymous hidden flag and require a boolean',async()=>{
  const {window,sent}=setup();
  assert.equal(window.AINPETrack.track('persona_unlock',{hidden:true,played:true,game:'miniapp',tier:'tier-1',name:'private',trigger:'private'}),true);

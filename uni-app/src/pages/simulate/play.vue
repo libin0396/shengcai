@@ -5,13 +5,13 @@
 <script setup>
 import {ref} from 'vue';
 import {onLoad} from '@dcloudio/uni-app';
-import {isGamePath} from '../../data/game-matching.js';
+import {isGamePath, isLearnPath} from '../../data/game-matching.js';
 const SITE='https://ainpe.aisen.xin';
 const src=ref('');
 onLoad(options=>{
   let p='';try{p=decodeURIComponent(String(options?.u||''))}catch{p=''}
-  // 只允许打开本站的游戏页面
-  if(!isGamePath(p))return;
+  // 只允许打开本站明确支持的游戏和学习页面。
+  if(!isGamePath(p) && !isLearnPath(p))return;
   src.value=SITE+p+(p.includes('?')?'&':'?')+'mp=1';
 });
 </script>

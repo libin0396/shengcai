@@ -11,7 +11,7 @@
         <view class="sim-panel"><text class="sim-panel-title">项目工作台 · 模拟任务</text><text class="sim-copy">起始预算 ¥500。你会得到一份需求卡、一版可操作的预览、一份测试记录和一张上线材料单。</text><text class="sim-note">角色、消息、故障、花费和结果是虚构的游戏设定；不会注册账号、调用 AI、生成真实代码或提交微信审核。</text></view>
         <view v-if="state.legacyNotice" class="sim-note">检测到旧版模拟记录，产品名称和需求已带入；原记录保留，新体验从头开始。</view>
         <button class="sim-primary" @click="state.step=0">打开项目工作台 →</button>
-        <text class="sim-note source-note">参考生财有术 2026 年 8 月「AI 产品（国内-微信小程序）」航海手册的任务节点及圈友艺文的案例，由 AINPE 独立编排；不是官方课程，也不是逐日打卡复刻。</text>
+        <text class="sim-note source-note">参考生财有术 2026 年 8 月「AI 产品（国内-微信小程序）」航海手册的任务节点及一位圈友的案例，由 AINPE 独立编排；不是官方课程，也不是逐日打卡复刻。</text>
       </view>
       <template v-else-if="state.step<5">
         <view class="sim-box">
@@ -78,7 +78,7 @@
         <text class="sim-note">访问、转化、成本与收益由固定游戏规则虚构；未计真实工时，不代表案例作者的收入或净利润。</text>
         <view class="sim-panel"><text class="sim-panel-title">你的选择如何影响结果</text><text class="sim-copy">你采访了 {{state.asked.length}} 个问题，整理出需求：“{{state.problem}}”。</text><text class="sim-copy">{{state.modules.includes('filter')?'你添加了筛选功能。':'你没有添加筛选功能，用户找图更费力，本次模拟完成核心操作的人数减少。'}}</text><text class="sim-copy">{{state.retested?'你记录问题、修复并复测了保存流程。':'保存流程尚未复测成功，本次模拟完成核心操作的人数减少。'}}</text><text class="sim-copy">{{state.paid==='yes'?'你在模拟中准备了付费壁纸，订单按完成核心操作人数的 2% 向下取整，单价 ¥9。':'你选择先免费观察，本轮没有付费收入。'}}</text><text class="sim-note">游戏规则：访问人数由渠道设定；完成核心操作人数从访问人数开始，依次乘以浏览、筛选、复测的模拟系数（未具备时分别为 35%、75%、40%），向下取整。</text></view>
         <view class="sim-panel"><text class="sim-panel-title">你的项目资料</text><text class="sim-copy">{{state.name}} · 给 {{state.audience}} 使用</text><text class="sim-copy">问题：{{state.problem}}</text><text class="sim-copy">首版功能：{{moduleLabels}}</text><text class="sim-copy">测试记录：{{state.bugNote || '未填写'}}</text><text class="sim-copy">推广文案：{{state.promo}}</text><button class="sim-small" @click="copyBrief">复制项目资料</button></view>
-        <view class="sim-panel"><text class="sim-panel-title">真实案例带来的启发</text><text class="sim-copy">圈友艺文复盘过教师壁纸小程序，并用小红书探索引流；她提到流量出现时，付费产品还没有准备好。她自述截至撰文时自然流累计百万曝光、小程序累计变现几千元，属于个人案例，不是本次模拟结果。</text><text class="sim-note">来源：生财有术 MCP，艺文《小红书累计百万曝光：一个小学老师的小程序运营复盘》；任务参考 2026 年 8 月「AI 产品（国内-微信小程序）」航海手册，流程为独立改编。</text></view>
+        <view class="sim-panel"><text class="sim-panel-title">真实案例带来的启发</text><text class="sim-copy">一位圈友复盘过教师壁纸小程序，并用小红书探索引流；她提到流量出现时，付费产品还没有准备好。她自述截至撰文时自然流累计百万曝光、小程序累计变现几千元，属于个人案例，不是本次模拟结果。</text><text class="sim-note">来源：生财有术 MCP，一位圈友的小程序复盘原帖；任务参考 2026 年 8 月「AI 产品（国内-微信小程序）」航海手册，流程为独立改编。</text></view>
         <view class="sim-actions"><button class="sim-secondary" @click="state.step=0">调整决策，再试一次</button><button class="sim-secondary" @click="confirmReset">从头开始</button></view><SimCamp/>
       </view>
     </view>

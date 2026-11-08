@@ -46,6 +46,34 @@ class CuratedContentTest(unittest.TestCase):
         data[0]['private']='not approved'
         with self.assertRaises(ValueError): validate(name,json.dumps(data,ensure_ascii=False))
 
+    def test_published_case_displays_hide_names_but_retain_source_links(self):
+        data=json.loads((root/'uni-app/src/data/case-studies-published.json').read_text())
+        for case in data:
+            with self.subTest(case=case['id']):
+                self.assertTrue(case['author'].startswith('一'), 'use a descriptive anonymous label')
+                self.assertEqual(case['sourceTitle'],'生财有术原帖')
+                self.assertEqual(case['sourceUrl'],'https://scys.com/articleDetail/xq_topic/'+case['id'])
+
+    def test_simulation_case_names_and_reference_labels_are_generic(self):
+        import re
+        for name in ('miniapp','video','education-ppt'):
+            html=(root/'uni-app/src/static/simulation-games'/f'{name}.html').read_text()
+            match=re.search(r'<script type="application/json" id="game-data">(.*?)</script>',html,re.S)
+            self.assertIsNotNone(match)
+            data=json.loads(match.group(1))
+            for case in data['cases']:
+                self.assertEqual(case['author'],'一位生财圈友')
+            def walk(value):
+                if isinstance(value,dict):
+                    for key,item in value.items():
+                        if key=='ref' and item:
+                            self.assertTrue(str(item).startswith('一位圈友'))
+                        else:
+                            walk(item)
+                elif isinstance(value,list):
+                    for item in value: walk(item)
+            walk(data)
+
     def test_case_can_have_no_simulation_without_fabricating_a_match(self):
         name='case-studies-published.json'
         data=json.loads((root/'uni-app/src/data'/name).read_text())

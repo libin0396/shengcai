@@ -7,7 +7,7 @@
       </view>
       <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false" :scroll-into-view="active ? 'site-nav-'+active : ''" :scroll-with-animation="true">
         <view class="site-nav" aria-label="主导航">
-          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': isCurrent(link) }" :aria-current="isCurrent(link) ? 'page' : null" @tap="go(link.url)" @keydown.enter.prevent="go(link.url)" @keydown.space.prevent="go(link.url)">{{ link.label }}</button>
+          <button v-for="link in links" :id="'site-nav-'+link.key" :key="link.key" class="site-nav-item" role="link" tabindex="0" :class="{ 'is-current': isCurrent(link) }" :aria-current="isCurrent(link) ? 'page' : null" @tap="goLink(link)" @keydown.enter.prevent="goLink(link)" @keydown.space.prevent="goLink(link)">{{ link.label }}</button>
         </view>
       </scroll-view>
       <view class="site-actions">
@@ -31,6 +31,7 @@
 
 <script setup>
 import {track} from '../data/track.js';
+import {openLearn} from '../data/game-matching.js';
 import { ref, onMounted, onUnmounted } from 'vue';
 const props = defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false } });
 const contactOpen = ref(false);
@@ -44,12 +45,13 @@ let statusBarHeight = 0;
 try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } catch {}
 // #endif
 const links = [
-  { key: 'discover', also: ['simulate'], label: '测一测', url: '/pages/discover/index' },
-  { key: 'intelligence', also: ['topic'], label: '案例', url: '/pages/intelligence/index' },
-  { key: 'events', label: '活动', url: '/pages/events/index' },
+  { key: 'discover', label: '首页', url: '/pages/discover/index' },
+  { key: 'learn', label: '学', learn: 'index.html' },
+  { key: 'intelligence', also: ['topic','events','simulate','article'], label: '情报', url: '/pages/intelligence/index' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
 ];
 function isCurrent(link) { return props.active === link.key || (link.also || []).includes(props.active); }
+function goLink(link) { if (link.learn) { if (!openLearn(link.learn)) go('/pages/discover/index'); } else go(link.url); }
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
 function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>track('contact_copy',{from:'header'}) }); }
 </script>
@@ -87,4 +89,13 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
 @media(max-width:480px) { .site-nav { width:100%; gap:8px; justify-content:space-between; } .site-nav-item { flex-shrink:0; white-space:nowrap; font-size:12px; } }
 @media(max-width:360px) { .site-header-main { padding-left:12px; padding-right:12px; gap:4px; } .site-brand { gap:6px; } .site-brand-mark { width:30px; height:30px; font-size:20px; } .site-brand-cn { font-size:13px; } .site-actions { gap:4px; } .site-contact { padding:0 2px; font-size:10px; } .site-camp { padding:0 9px; font-size:11px; } }
 @media(max-width:700px) { .site-header-main{padding:9px 16px;min-height:54px;flex-wrap:nowrap}.site-nav-scroll{position:fixed;z-index:95;left:0;right:0;bottom:0;width:100%;background:#082d20;box-shadow:0 -4px 16px #0002;padding:0 8px env(safe-area-inset-bottom);overflow:hidden}.site-nav{display:flex;width:100%;min-width:100%;gap:0;justify-content:space-between}.site-nav-item{flex:1;min-width:0;min-height:52px;padding:8px 2px;border-bottom:0;border-top:3px solid transparent;line-height:20px;text-align:center;font-size:12px}.site-nav-item.is-current{border-top-color:#ffcd55;border-bottom-color:transparent}.site-contact{font-size:11px} }
+/* A+：白底顶栏，蓝色表示当前位置 */
+.site-header{background:#fff;color:#161A23;border-bottom:1px solid #E6E8EC}
+.site-brand-cn{color:#161A23}.site-brand-en{color:#9AA0AC}
+.site-contact{color:#5F6675}
+.site-camp{border-color:#D5D8DE;color:#161A23}
+.site-nav-item{color:#9AA0AC}
+.site-nav-item.is-current{border-bottom-color:#2B44E6;color:#2B44E6}
+.site-nav-item:focus-visible{outline-color:#2B44E6}
+@media(max-width:700px){.site-header{border-bottom:0}.site-nav-scroll{background:#fff;box-shadow:none;border-top:1px solid #E6E8EC}.site-nav-item{color:#9AA0AC}.site-nav-item.is-current{border-top-color:#2B44E6;color:#2B44E6;font-weight:800}}
 </style>

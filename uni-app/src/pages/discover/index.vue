@@ -1,20 +1,31 @@
 <template>
   <view class="discover-page">
+    <!-- #ifdef H5 -->
+    <view class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
+    <!-- #endif -->
     <SiteHeader active="discover" />
-    <view class="home-hero">
-      <view class="hero-v2">
-        <text class="hero-kicker">AI 副业 · 先模拟，再动手</text>
-        <view class="hero-headline">做副业，<br/>你会卡在哪？</view>
-        <view class="hero-sub">选一个项目，用几分钟体验关键步骤，看看可能遇到什么问题，再看看真实圈友怎么做。</view>
-        <view class="hero-step">你现在是？（选填，用来调整推荐顺序）</view>
-        <view class="life-options"><button v-for="person in people" :key="person.value" :class="{selected:life===person.value}" :aria-pressed="life===person.value" @click="life=life===person.value?'':person.value">{{person.label}}</button></view>
-        <button class="hero-start" @click="startFirst">开始测 · {{recommendedGames[0]?.title || '选一个项目'}} ›</button>
+    <view class="home-a">
+      <view class="ha-title">今天，用 AI<br/>做成一件事</view>
+      <view class="ha-sub">不用先懂 AI，跟着步骤做出第一份作品。</view>
+      <view class="ha-feature" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
+        <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
+        <view class="ha-ladder"><text class="on">入门实践</text><text>进阶练习</text><text>继续探索</text></view>
+        <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">教案、逐字稿、3 页插画，手机就能做</text><view class="ha-cta">开始做</view></view>
       </view>
+      <view class="ha-duo">
+        <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image src="/static/learn/img/girl.jpg" mode="aspectFill" class="ha-mimg"/><text class="ha-tag">成品示例</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
+        <view class="ha-vote"><text class="ha-vt">还在做 · 投一票</text><view class="ha-vs"><text v-for="t in learnTopics.filter(x=>!x.live)" :key="t.id" :class="{on:votes.includes(t.id)}" @click="vote(t)">{{t.short||t.name}}</text></view></view>
+      </view>
+      <view class="ha-want">
+        <input v-model="want" class="ha-input" maxlength="40" placeholder="我想用 AI……比如：做睡前故事" confirm-type="send" @confirm="submitWant"/>
+        <button class="ha-send" @click="submitWant">告诉我们</button>
+      </view>
+      <text class="ha-privacy">输入内容仅在本机用于匹配，不会上传或保存；统计仅记录方向分类。</text>
+      <view v-if="wantReply" class="ha-reply" aria-live="polite">{{wantReply}}<text v-if="wantTopic" class="ha-go" @click="openTopic(wantTopic)">去做 ›</text></view>
+      <view class="ha-aid" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">AI 急救卡</text><text class="ha-aidd">看不懂的通知、孩子的题不会讲……复制一句话就能解决</text></view><text class="ha-arrow">›</text></view>
+      <view class="ha-aid" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
     </view>
     <view class="content-shell">
-      <view class="home-section-head"><view><view class="section-title">或者，换个项目测</view><view class="section-subtitle">{{life ? '已根据你的身份调整推荐，你也可以自由选择。' : '先试一次，再决定下一步。'}}</view></view><text @click="navigate('/pages/simulate/index')">全部 6 个项目 →</text></view>
-      <scroll-view scroll-x class="home-deck-scroll"><view class="home-deck"><GameCover v-for="(game,index) in recommendedGames" :key="game.id" :game="game" :tag="index===0?(life ? '为你推荐先试' : '新手可以先试'):''" :reason="index===0 ? recommendationReason : ''" :played="playedGames.includes(game.id)" @start="goGame" /></view></scroll-view>
-      <view class="home-deck-note">金额和事件都是游戏设定</view>
       <view class="highlights-grid">
         <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">数字为作者自述</view></view><text @click="scrollToIntelligence">进入案例库 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in item.numbers.slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
@@ -22,21 +33,30 @@
       <CampFooter from="home" />
       <view class="footer-note">内容来自生财有术，以原帖为准</view>
     </view>
-  <SiteFooter :show-icp="true" /></view>
+  <SiteFooter :space-for-promo="true" :show-icp="true" /></view>
 </template>
 
 <script setup>
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
-import {onLoad, onShow} from '@dcloudio/uni-app';
+import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';
 import GameCover from '../../components/GameCover.vue';
-import {openGame} from '../../data/game-matching.js';
+import {openGame, openLearn} from '../../data/game-matching.js';
+import {learnTopics, classifyWant} from '../../data/learn-topics.js';
 import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} from '../../data/content.js';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
 
+const showJoinBar=ref(false);
+onPageScroll(e=>{showJoinBar.value=e.scrollTop>barThreshold()});
+function barThreshold(){try{return Math.max(600,(document.documentElement.scrollHeight-window.innerHeight)*0.5)}catch{return 1200}}
+// #ifdef H5
+function updateJoinBar(){showJoinBar.value=window.scrollY>600}
+onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
+onUnmounted(()=>window.removeEventListener('scroll',updateJoinBar));
+// #endif
 const people=[{label:'上班族',value:'全职上班'},{label:'学生',value:'学生'},{label:'宝妈宝爸',value:'全职宝妈宝爸'},{label:'自由职业',value:'自由职业'},{label:'待业中',value:'待业'}];
 const life=ref('');
 const playedGames=ref([]);
@@ -87,6 +107,20 @@ function goCaseGame(item){
   const url=['books','brain','trends'].includes(id)?`voyage-lab.html?project=${encodeURIComponent(id)}&start=1`:`${encodeURIComponent(id)}.html?start=1`;
   if(!openGame(`/static/simulation-games/${url}`))navigate('/pages/simulate/index');
 }
+const want=ref('');const votes=ref([]);try{const v=uni.getStorageSync('ainpe:votes');if(Array.isArray(v))votes.value=v}catch{}
+function vote(t){if(votes.value.includes(t.id)){uni.showToast({title:'本设备已标记',icon:'none'});return}votes.value=[...votes.value,t.id];try{uni.setStorageSync('ainpe:votes',votes.value)}catch{}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'已在本机标记',icon:'none'})}const wantReply=ref('');const wantTopic=ref(null);
+function openLearnPage(page){if(!openLearn(page))uni.showToast({title:'暂时打不开，稍后再试',icon:'none'})}
+function openTopic(t){if(!t)return;if(t.live){openLearnPage(t.page);return}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'这个方向还在准备',icon:'none'})}
+function submitWant(){
+  const v=String(want.value||'').trim();
+  if(!v){wantReply.value='先写一句你想做的事。';wantTopic.value=null;return}
+  const k=classifyWant(v);track('want_submit',{page:'home',game:k});
+  const t=learnTopics.find(x=>x.id===k);
+  wantTopic.value=t&&t.live?t:null;
+  wantReply.value=t&&t.live?`这件事可以马上做：${t.name}。`:k==='money'?'先做成一件小事，再谈赚钱。':t?`「${t.name}」还在准备，可以在上方标记感兴趣。`:'暂时没有匹配的专题，可以先看看其他方向。';
+  want.value='';
+}
+function openCampBar(){track('outbound_click',{target:'camp',from:'home_bar'});navigate('/pages/camp/index?from=home_bar')}
 function startFirst(){const g=recommendedGames.value[0];if(g)goGame(g.id);else navigate('/pages/simulate/index')}
 function goGame(name){
   if(!openGame(`/static/simulation-games/${name}.html?start=1${life.value?'&life='+encodeURIComponent(life.value):''}`))navigate('/pages/simulate/index');
@@ -148,4 +182,44 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .hero-start{display:inline-block;margin:20px 0 0;padding:0 26px;line-height:50px;border-radius:999px;background:#EE5A24;color:#fff;font-size:17px;font-weight:900;border:0}
 .hero-start::after{border:0}
 @media(min-width:900px){.hero-v2{padding-right:24px;min-height:0}.hero-headline{max-width:720px}.hero-sub{max-width:620px}}
+/* 首页 A+：白底、大图、群青蓝 */
+.discover-page{background:#F3F4F6;color:#161A23}
+.learn-banner{display:flex;align-items:center;gap:8px;margin:8px 12px 0;background:#161A23;color:#fff;border-radius:12px;padding:9px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.lb-tag{font-size:11px;font-weight:800;background:rgba(255,255,255,.12);color:#C9CFFF;border-radius:6px;padding:1px 6px}
+.lb-go{margin-left:auto;color:#C9CFFF}
+.home-a{max-width:640px;margin:0 auto;padding:12px 16px 8px;box-sizing:border-box}
+.ha-title{font-size:28px;line-height:1.3;font-weight:800}
+.ha-sub{font-size:14.5px;color:#5F6675;margin-top:6px}
+.ha-feature{margin-top:16px;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 14px 34px -24px rgba(22,26,35,.6);cursor:pointer}
+.ha-pic{position:relative}
+.ha-img{display:block;width:100%;height:200px}
+.ha-mimg{display:block;width:100%;height:110px}
+.ha-tag{position:absolute;left:10px;top:10px;font-size:11px;font-weight:800;color:#fff;background:rgba(22,26,35,.6);border-radius:8px;padding:2px 8px}
+.ha-ladder{display:flex;gap:6px;padding:12px 16px 0;flex-wrap:wrap}
+.ha-ladder text{font-size:12px;font-weight:700;color:#5F6675;background:#F3F4F6;border-radius:8px;padding:3px 8px}
+.ha-ladder text.on{background:#ECEFFE;color:#2B44E6}
+.ha-tx{padding:8px 16px 16px}
+.ha-name{display:block;font-size:20px;font-weight:800}
+.ha-desc{display:block;font-size:13.5px;color:#5F6675;margin-top:2px}
+.ha-cta{margin-top:12px;background:#2B44E6;color:#fff;border-radius:14px;text-align:center;font-weight:800;font-size:16px;line-height:48px}
+.ha-duo{display:grid;grid-template-columns:1.1fr .9fr;gap:10px;margin-top:10px}
+.ha-mini{background:#fff;border-radius:18px;overflow:hidden;cursor:pointer}
+.ha-mtx{padding:8px 12px 12px}
+.ha-mname{display:block;font-size:14px;font-weight:800}
+.ha-mdesc{display:block;font-size:12px;color:#5F6675}
+.ha-vote{background:#E8EAEE;border-radius:18px;padding:12px}
+.ha-vt{display:block;font-size:14px;font-weight:800;margin-bottom:8px}
+.ha-vs text{display:inline-block;background:#fff;border-radius:99px;padding:4px 10px;margin:0 4px 6px 0;font-size:12.5px;color:#5F6675;cursor:pointer}
+.ha-vs text.on{background:#2B44E6;color:#fff}
+.ha-want{display:flex;gap:8px;align-items:center;margin-top:12px;background:#fff;border-radius:16px;padding:6px 6px 6px 14px}
+.ha-input{flex:1;min-width:0;height:44px;font-size:15px;color:#161A23}
+.ha-send{margin:0;height:40px;line-height:40px;padding:0 16px;border-radius:12px;background:#2B44E6;color:#fff;font-weight:800;font-size:14px;border:0}
+.ha-send::after{border:0}
+.ha-privacy{display:block;color:#76808c;font-size:11px;line-height:1.5;margin:6px 5px 0}
+.ha-reply{margin-top:8px;font-size:13.5px;color:#5F6675}
+.ha-go{margin-left:8px;color:#2B44E6;font-weight:800;cursor:pointer}
+.ha-aid{display:flex;align-items:center;gap:10px;margin-top:12px;background:#fff;border-radius:16px;padding:14px 16px;cursor:pointer}
+.ha-aidt{display:block;font-size:15px;font-weight:800}
+.ha-aidd{display:block;font-size:12.5px;color:#5F6675;margin-top:2px}
+.ha-arrow{margin-left:auto;font-size:20px;color:#9AA0AC}
 </style>

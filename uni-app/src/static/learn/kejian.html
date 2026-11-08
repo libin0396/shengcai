@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 课件和资料 · AI 实战情报站</title>
+<meta name="description" content="不懂 AI 也能跟着学习：参考示例，尝试制作一节课的教案、课件页和课件助手提示词。">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="manifest" href="/static/learn/manifest.webmanifest">
+<link rel="stylesheet" href="learn.css">
+</head>
+<body>
+<main>
+  <div class="thero"><img src="img/boat.jpg" alt="成品示例：海边小船插画"><span class="sample-tag">成品示例 · 课件第 1 页</span></div>
+  <section class="w ttop">
+    <a class="back" href="index.html">‹ 学</a>
+    <h1 class="h1">给孩子做一份课件</h1>
+    <p class="lead">准备手机和可用的 AI 工具，先给自己或孩子做一节课。工具额度和费用以实际说明为准。</p>
+  </section>
+  <nav class="tabs" aria-label="选一档"><div class="w">
+    <button class="on" data-tab="tutorial"><b><span class="step s1"><i></i><i></i><i></i></span>入门</b><small>跟着教程尝试</small></button>
+    <button data-tab="practice"><b><span class="step s2"><i></i><i></i><i></i></span>进阶</b><small>5 关整理助手</small></button>
+    <button data-tab="info"><b><span class="step s3"><i></i><i></i><i></i></span>最高一档</b><small>拿去卖之前</small></button>
+  </div></nav>
+
+  <!-- 教程 -->
+  <section class="pane w" id="tutorial">
+    <div class="card" style="margin-top:6px">
+      <label class="h3" for="lessonIn">你要做哪节课？</label>
+      <input id="lessonIn" maxlength="40" style="display:block;width:100%;margin-top:8px;border:0;border-radius:12px;height:46px;padding:0 12px;font:inherit;background:var(--bg)">
+      <p class="note">下面每一句提示词都会自动填上这节课。不知道选什么，就用孩子正在学的那一课。</p>
+    </div>
+    <div class="tcards sec" id="tcards"></div>
+    <div class="sec card" id="basicDone">
+      <b class="h3">做完了？</b>
+      <p class="note">你已经用 AI 做出一节课的教案和 3 页课件。想让 AI 以后每次都按你的习惯做，去「实操」做出你自己的课件助手。</p>
+      <div class="row" style="margin-top:10px"><button class="btn or sm" id="markBasic">我做完了</button><button class="btn ln sm" data-goto="practice">去实操 ›</button></div>
+    </div>
+  </section>
+
+  <!-- 实操 -->
+  <section class="pane w" id="practice" hidden>
+    <div id="lv" style="padding-top:6px"></div>
+    <div class="tray" id="tray"><b class="h3">练习成果</b><ol id="trayList"></ol></div>
+  </section>
+
+  <!-- 信息 -->
+  <section class="pane w" id="info" hidden>
+    <div class="sec">
+      <h2 class="h2">开始前先想清楚</h2>
+      <p class="note">以下是制作课件时可以参考的思路。</p>
+      <div class="facts" style="margin-top:10px">
+        <div class="fact"><b>从熟悉的课题开始</b><p>先选一节自己熟悉的课，梳理教学目标、教案、大纲和讲解稿。</p></div>
+        <div class="fact"><b>先了解需求</b><p>与老师或家长交流，确认他们真正需要什么，再决定制作内容。</p></div>
+        <div class="fact"><b>小范围试用</b><p>先让目标使用者试用，收集反馈并调整，再考虑是否整理成合集。</p></div>
+        <div class="fact bad"><b>检查使用权和质量</b><p>核对素材授权、文字准确性和演示效果，不要搬运他人的课件。</p></div>
+      </div>
+      <p class="note">以上是参考思路，实际结果因人而异。</p>
+    </div>
+    <div class="sec">
+      <h2 class="h2">要花多少</h2>
+      <table class="cost" style="margin-top:10px">
+        <tr><td>自己用、给孩子用</td><td>取决于所用工具和素材</td></tr>
+        <tr><td>AI 写作与生图</td><td>费用及额度以工具当期说明为准</td></tr>
+        <tr><td>WPS 把 PDF 转成 PPT</td><td>部分功能要会员</td></tr>
+        <tr><td>想拿去卖：平台费用</td><td>以平台当期规则为准</td></tr>
+        <tr><td>想拿去卖：时间</td><td>每份课件几个小时，前几周可能没单</td></tr>
+      </table>
+      <p class="note">符合条件的话，也可以先用小红书的个人售卖试一试，以平台当时的规则为准。</p>
+    </div>
+    <div class="sec" id="next">
+      <h2 class="h2">下一步</h2>
+      <ol class="next" style="margin-top:10px">
+        <li><b>先自己用。</b>用练习成果助手给自己或身边的老师做 2 份，看用起来顺不顺手。</li>
+        <li><b>想拿去卖，先算成本。</b>保证金、会员、时间都算进去，再翻同行的差评区找需求。</li>
+        <li><b>想有人带着做完。</b>生财有术的航海里有「小红书虚拟产品」这类船，课件是其中一种做法。每期开哪些船不固定，报名条件、费用及退款规则以当期报名页为准。<span id="campLink"></span></li>
+      </ol>
+    </div>
+  </section>
+  <p class="foot w">页面里的示意图不是真实软件界面。示例图片由 AI 生成。</p>
+</main>
+<script src="../tracking.js"></script>
+<script src="../qr-generator.js"></script>
+<script src="learn.js"></script>
+<script src="kejian-data.js"></script>
+<script src="kejian.js"></script>
+</body>
+</html>

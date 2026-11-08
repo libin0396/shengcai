@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>学 · AI 实战情报站</title>
+<meta name="description" content="帮不懂 AI、或只懂一点的人，低成本迈出第一步：看得懂、做得成、用得上。">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="manifest" href="/static/learn/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/static/learn/img/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AI 情报站">
+<link rel="stylesheet" href="learn.css">
+</head>
+<body>
+<main class="w">
+  <section class="ihero">
+    <h1 class="h1">今天，用 AI<br>做成一件事</h1>
+    <p class="lead">不用先懂 AI。先看示例，再跟着教程动手尝试。</p>
+    <a class="feature" href="kejian.html?from=start" id="feat">
+      <div class="pic"><img src="img/boat.jpg" alt="成品示例：海边小船插画"><span class="sample-tag">成品示例</span></div>
+      <div class="ladder"><span class="on"><span class="step s1"><i></i><i></i><i></i></span>入门 · 看教程</span><span>进阶 5 关</span><span>最高一档</span></div>
+      <div class="tx"><b class="t">给孩子做一份课件</b><p>教案、逐字稿、3 页插画，手机就能做</p><span class="btn pri block">开始做</span></div>
+    </a>
+    <div class="duo">
+      <a class="mini" href="huiben.html" id="miniHb"><img src="img/girl.jpg" alt="成品示例：绘本插画"><span class="sample-tag">成品示例</span><div>和孩子做绘本<small>4 页 · 孩子当作者</small></div></a>
+      <div class="vote" id="vote"><b>还在做 · 投一票</b></div>
+    </div>
+    <form class="want" id="want" autocomplete="off">
+      <div class="in"><label for="wantIn">我想用 AI……</label><input id="wantIn" maxlength="40" placeholder="我想用 AI……比如：做睡前故事"><button class="btn pri sm" type="submit">告诉我们</button></div>
+      <p class="note">内容只在本机分类；统计仅记录类别，不收集原文，也不会自动通知。</p>
+      <div class="res" id="wantRes" aria-live="polite"></div>
+    </form>
+  </section>
+  <section class="sec">
+    <div class="shead"><h2 class="h2">AI 急救卡</h2><a href="jijiu.html">全部 10 张 ›</a></div>
+    <p class="lead">平时遇到的小事，复制一句话给 AI 就能解决。</p>
+    <div class="aidrail" id="aidsPreview"></div>
+  </section>
+  <section class="sec card">
+    <b class="h3">把这里放到手机桌面</b>
+    <p class="note" id="addHomeTip"></p>
+  </section>
+  <p class="foot">示例图片由 AI 生成，示意图不是真实软件界面。</p>
+</main>
+<script src="../tracking.js"></script>
+<script src="learn.js"></script>
+<script src="aids-data.js"></script>
+<script src="index-page.js"></script>
+</body>
+</html>

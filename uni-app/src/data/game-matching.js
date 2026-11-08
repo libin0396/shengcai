@@ -20,13 +20,22 @@ export function simulationUrl(file) {
 export function isGamePath(path) {
   return /^\/static\/simulation-games\/(?:miniapp|video|education-ppt|voyage-lab)\.html(?:\?[^#]*)?$/.test(String(path || ''));
 }
+// Learning pages also use a fixed allowlist; do not permit arbitrary web-view destinations.
+export function isLearnPath(path) {
+  return /^\/static\/learn\/(?:index|kejian|huiben|jijiu)\.html(?:\?[^#]*)?$/.test(String(path || ''));
+}
 export function openGame(path) {
   const p=String(path||'');
-  if(!isGamePath(p)) return false;
+  if(!isGamePath(p) && !isLearnPath(p)) return false;
   // #ifdef H5
   window.location.href=p;return true;
   // #endif
   // #ifndef H5
   uni.navigateTo({url:'/pages/simulate/play?u='+encodeURIComponent(p)});return true;
   // #endif
+}
+
+export function openLearn(page='index.html') {
+  const p='/static/learn/'+String(page || 'index.html');
+  return isLearnPath(p) && openGame(p);
 }

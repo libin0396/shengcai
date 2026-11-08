@@ -12,7 +12,7 @@ EXPECTED = {
     'article-summaries.json':'a3479ea99b666c7c7c240d4f8786c7a863efccaf41dcfa8f6d2135c31509d3a1',
     'verified-offline-events.json':'b99ce4e1f11b6fbbf8f5bb42b57069c0bb6cf4f7863a8dfd136406aba73be351',
     'event-reviews.json':'655fee60a423172dde417ce182f4cc64359b366b6fc6b731da0bac87d2845df1',
-    'case-studies-published.json':'0b56827bdba18fdf92073f273ce2ac09cc262d2584e0d886855fcdee7413fa1e',
+    'case-studies-published.json':'10281684b5886979d98ed722e96be83b954f9d561be73d86c1ae6c7b44fa5fd6',
 }
 SUMMARY_IDS={'55521424552448144','45548242582124888','82258454581421112',
              '22258454588222581','14425121225548122','82258452211188182',

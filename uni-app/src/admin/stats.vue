@@ -40,6 +40,11 @@
           </view>
           <view class="notice"><text class="notice-title">先看懂这些数字</text><text>人数按匿名浏览器估算，同一人使用不同设备会分别计数；屏蔽统计、清除数据或网络异常也会影响结果。</text><text>“海报来源访问”包括人格卡选项目页和挑战或对战卡挑战页的带标记访问；无法确认是否实际扫码或报名。</text><text>体验营按钮点击不等于加入或报名，当前二维码长按也不会产生该点击事件。</text></view>
           <template v-if="stats.funnel"><view class="section-head"><text class="section-title">模拟后的下一步</text><text class="section-note">按浏览器和项目匹配</text></view><view class="funnel-card"><view class="funnel-step"><text>开始模拟</text><strong>{{ funnelCount('started') }}</strong><small>项体验</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成模拟</text><strong>{{ funnelCount('finished') }}</strong><small>完成率 {{ funnelRate('finishRate') }}</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成后访问体验营</text><strong>{{ funnelCount('campVisitsAfterFinish') }}</strong><small>访问率 {{ funnelRate('campAfterFinishRate') }}</small></view></view><text class="funnel-note">同一浏览器按项目分别计数，并按开始、完成、访问体验营的时间顺序匹配；不是实名人数或实际报名，原帖中转也可能产生访问。</text></template>
+          <view class="section-head"><text class="section-title">AI 实操学习</text><text class="section-note">浏览器数 / 次数</text></view>
+          <view class="extra-list"><view v-for="item in learningMetrics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">{{ item.hint }}</text></view><text class="extra-count">{{ stats.metrics?.[item.key] === null ? '暂不可统计' : `${count(item.key,'browsers')} / ${count(item.key,'events')}` }}</text></view></view>
+          <view v-if="stats.learnByTopic" class="extra-list" style="margin-top:10px"><view v-for="topic in learningTopics" :key="topic.key" class="extra-row"><view><text class="extra-name">{{ topic.label }}</text><text class="extra-hint">学习页访问 / 标记完成（浏览器数）</text></view><text class="extra-count">{{ learningTopicCount(topic.key,'browsers') }} / {{ learningTopicCount(topic.key,'doneBrowsers') }}</text></view></view>
+          <view v-if="stats.wants" class="extra-list" style="margin-top:10px"><view v-for="item in wantedTopics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">表达过此方向兴趣的浏览器数</text></view><text class="extra-count">{{ wantCount(item.key) }}</text></view></view>
+          <text class="funnel-note">完成以页面内的完成或标记事件计算，不代表已完成真实作品；需求只记录分类，不记录输入原文，不会自动通知用户。</text>
           <view class="section-head"><text class="section-title">更多入口</text><text class="section-note">浏览器数 / 次数</text></view>
           <view class="extra-list"><view v-for="item in extraMetrics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">{{ item.hint }}</text></view><text class="extra-count">{{ stats.metrics?.[item.key] === null ? '暂不可统计' : `${count(item.key,'browsers')} / ${count(item.key,'events')}` }}</text></view></view>
           <view class="section-head"><text class="section-title">每日趋势</text><text class="section-note">显示事件次数 · 北京时间</text></view>
@@ -71,6 +76,21 @@ const extraMetrics=[
   {key:'posterDownloads',label:'战报下载操作',hint:'仅统计下载按钮，不含微信长按保存'},
   {key:'joinClicks',label:'直接加入入口点击',hint:'点击不代表已加入或付款'}
 ];
+const learningMetrics=[
+  {key:'learnViews',label:'学习页访问',hint:'学习相关页面的访问事件'},
+  {key:'learnSteps',label:'学习步骤操作',hint:'点击步骤或展开内容'},
+  {key:'learnDone',label:'标记完成',hint:'含入门标记和进阶流程结束'},
+  {key:'workCardSaves',label:'作品卡保存操作',hint:'按钮操作，不含微信长按'},
+  {key:'skillCopies',label:'助手内容复制或下载',hint:'操作次数，不代表实际使用'},
+  {key:'promptCopies',label:'提示词复制操作',hint:'操作次数，不代表实际使用'},
+  {key:'wantSubmits',label:'方向兴趣操作',hint:'仅记录类别，不保存输入原文'},
+  {key:'learnCampClicks',label:'学习页访问生财入口',hint:'仅统计点击，不代表报名'}
+];
+const learningTopics=[{key:'kejian',label:'AI 课件'},{key:'huiben',label:'亲子绘本'},{key:'jijiu',label:'AI 急救卡'}];
+const wantedTopics=[{key:'kejian',label:'课件'},{key:'huiben',label:'绘本'},{key:'video',label:'故事短片'},{key:'novel',label:'写小说'},{key:'tuwen',label:'图文号'},{key:'assistant',label:'AI 助手'},{key:'money',label:'副业或变现'},{key:'other',label:'其他'}];
+function nonnegative(value){return Number.isSafeInteger(value)&&value>=0?value.toLocaleString('zh-CN'):'0'}
+function learningTopicCount(key,field){return nonnegative(stats.value?.learnByTopic?.[key]?.[field])}
+function wantCount(key){return nonnegative(stats.value?.wants?.[key])}
 const dailyRows=computed(()=>Array.isArray(stats.value?.daily)?stats.value.daily.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))):[]);
 const retentionDays=computed(()=>Number.isInteger(stats.value?.period?.retentionDays)?stats.value.period.retentionDays:90);
 function count(key,field){const n=stats.value?.metrics?.[key]?.[field];return Number.isSafeInteger(n)&&n>=0?n.toLocaleString('zh-CN'):'—'}

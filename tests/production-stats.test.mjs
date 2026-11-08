@@ -34,6 +34,12 @@ function events(dbPath){
  add.run('challenge_open','poster_qr',null,null,now-500,'2'.repeat(64));add.run('site_view','persona_qr',null,null,now-450,'2'.repeat(64));add.run('site_view','persona_qr',null,null,now-440,'1'.repeat(64));add.run('challenge_open','share_link',null,null,now-400,'1'.repeat(64));
  add.run('outbound_click','camp','join',null,now-300,'2'.repeat(64));add.run('sim_start',null,null,'miniapp',now-91*86400000,'3'.repeat(64));db.close();
 }
+function learningEvents(dbPath){
+ const db=new DatabaseSync(dbPath),add=db.prepare('INSERT INTO events(event,source,target,game,created_at,device_hash) VALUES(?,?,?,?,?,?)'),now=Date.now();
+ add.run('learn_view',null,null,'kejian',now-200,'1'.repeat(64));add.run('learn_view',null,null,'kejian',now-190,'1'.repeat(64));
+ add.run('learn_done',null,null,'kejian',now-180,'1'.repeat(64));add.run('want_submit',null,null,'video',now-170,'1'.repeat(64));
+ add.run('want_submit',null,null,'private-input',now-160,'2'.repeat(64));add.run('outbound_click','learn','camp',null,now-150,'1'.repeat(64));db.close();
+}
 test('admin requires same-origin HTTPS, a private hash file and an authenticated session',async()=>{
  const x=await setup();try{
   assert.equal((await x.call('/api/admin/stats')).status,401);
@@ -74,16 +80,27 @@ test('funnel is based on same browser and project with later events within the s
   assert.equal(r.status,200);assert.deepEqual(r.body.funnel,{unit:'browser_project',started:3,finished:2,campVisitsAfterFinish:2,finishRate:66.7,campAfterFinishRate:100});
  }finally{await x.close()}
 });
+test('learning aggregates remain bounded and preserve existing persona statistics',async()=>{
+ const x=await setup();try{
+  events(x.dbPath);learningEvents(x.dbPath);await chmod(x.dbPath,0o600);
+  const c=await cookie(x),r=await x.call('/api/admin/stats?days=30',{headers:{cookie:c}});
+  assert.equal(r.status,200);assert.deepEqual(r.body.metrics.posterQrVisits,{events:3,browsers:2});
+  assert.deepEqual(r.body.metrics.learnViews,{events:2,browsers:1});assert.deepEqual(r.body.metrics.learnDone,{events:1,browsers:1});
+  assert.deepEqual(r.body.metrics.learnCampClicks,{events:1,browsers:1});
+  assert.deepEqual(r.body.learnByTopic.kejian,{views:2,browsers:1,doneBrowsers:1});assert.deepEqual(r.body.wants,{video:1});
+  assert.equal(JSON.stringify(r.body).includes('private-input'),false);
+ }finally{await x.close()}
+});
 test('older databases without target do not misrepresent unavailable joining clicks as zero',async()=>{
  const x=await setup();try{
   const db=new DatabaseSync(x.dbPath);db.exec('CREATE TABLE events(id INTEGER PRIMARY KEY,event TEXT NOT NULL,source TEXT,game TEXT,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)');db.close();await chmod(x.dbPath,0o600);
-  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.metrics.joinClicks,null);
+  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.metrics.joinClicks,null);assert.equal(r.body.metrics.learnCampClicks,null);
  }finally{await x.close()}
 });
 test('older databases without game do not claim a zero-valued funnel',async()=>{
  const x=await setup();try{
   const db=new DatabaseSync(x.dbPath);db.exec('CREATE TABLE events(id INTEGER PRIMARY KEY,event TEXT NOT NULL,source TEXT,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)');db.close();await chmod(x.dbPath,0o600);
-  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.funnel,null);
+  const c=await cookie(x),r=await x.call('/api/admin/stats',{headers:{cookie:c}});assert.equal(r.status,200);assert.equal(r.body.funnel,null);assert.equal(r.body.wants,null);assert.equal(r.body.learnByTopic,null);
  }finally{await x.close()}
 });
 test('disabled or invalid configuration is fail-closed; password rotation invalidates sessions',async()=>{
