@@ -265,3 +265,7 @@ html.is-mp .navbtns{bottom:0}
 .toast.show{opacity:1}
 .foot{margin:28px auto 10px;font-size:12px;color:var(--mute);text-align:center;line-height:1.7}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 跳到某一关时，不被吸顶的档位条挡住；小程序里没有顶栏，首页标题留一点呼吸 */
+#lv,#bookOut{scroll-margin-top:84px}
+html.is-mp .ihero{padding-top:20px}

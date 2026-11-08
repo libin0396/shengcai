@@ -2,7 +2,7 @@
   <view class="intel-page">
     <SiteHeader active="intelligence"/>
     <view class="wrap">
-      <view class="intro"><view><view class="title">案例库</view><view class="subtitle">看别人怎么做，再亲手模拟一次。数字为作者自述。</view></view></view>
+      <view class="intro"><view><view class="title">情报</view><view class="subtitle">看别人怎么做，先试玩一局，再看看线下活动。精选案例匿名展示，数字取大概；详情以原帖为准。</view><view class="intel-links"><text @click="goPage('/pages/simulate/index')">先试玩：做副业会卡在哪 ›</text><text @click="goPage('/pages/events/index')">线下活动 ›</text></view></view></view>
       <view class="layout"><view class="main">
         <view class="toolbar"><view class="search-field"><input v-model="query" placeholder="搜索标题、作者或关键词" confirm-type="search"/><button v-if="query" class="clear-search" aria-label="清空搜索" @click="query='';limit=20">×</button></view><picker :range="sortLabels" :value="sortIndex" @change="changeSort"><view class="sort">{{sortLabels[sortIndex]}} ⌄</view></picker></view>
         <view class="filter-row"><scroll-view scroll-x class="categories" :show-scrollbar="false"><view class="category-row"><button v-for="c in categories" :key="c.id" :class="{active:category===c.id}" @click="category=c.id;limit=20">{{c.label}}</button></view></scroll-view><button class="filter-toggle" :class="{active:showFilters || activeFilterCount}" :aria-expanded="showFilters" @click="showFilters=!showFilters">筛选{{activeFilterCount ? ' '+activeFilterCount : ''}} {{showFilters?'⌃':'⌄'}}</button></view>
@@ -35,6 +35,7 @@
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';
 import {onShow} from '@dcloudio/uni-app';
+function goPage(url){uni.navigateTo({url,fail:()=>uni.redirectTo({url})})}
 import {articles,feedMeta} from '../../data/content.js';
 import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary} from '../../data/case-library.mjs';
 import SiteHeader from '../../components/SiteHeader.vue';
@@ -103,4 +104,22 @@ function formatDate(v){const d=new Date(Number(v)*1000+8*3600000);return Number.
 .filter-row{display:flex;align-items:stretch;background:#fff;border-left:1px solid #e5decf;border-right:1px solid #e5decf;border-bottom:1px solid #edf0e9}.filter-row .categories{flex:1;min-width:0;width:0;border:0}.filter-toggle{flex:none;align-self:center;margin:0 10px 0 4px;padding:0 11px;line-height:34px;border:1px solid #dce7d9;border-radius:8px;background:#fff;color:#42644a;font-size:12px;white-space:nowrap}.filter-toggle:after,.extra-filters button:after{border:0}.filter-toggle.active{border-color:#8eaf8f;color:#174e34;background:#f2f7ee}.extra-filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 14px 14px;background:#fff;border-left:1px solid #e5decf;border-right:1px solid #e5decf}.extra-filters button,.start-picker{margin:0;padding:0 12px;line-height:32px;border-radius:18px;background:#f3f7f0;color:#65816a;font-size:12px;white-space:nowrap}.extra-filters button.active,.start-picker.active{background:#174e34;color:#fff}@media(max-width:700px){.wrap{padding-top:18px}.intro{margin-bottom:18px}.title{font-size:25px;margin-top:6px}.subtitle{line-height:1.5;margin-top:6px}.toolbar{padding:10px}.category-row{padding:10px}.list-head{padding:10px 14px}.case-list-label{padding:18px 0 10px}}
 .feature-card{overflow:hidden}.featured-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.feature-number{min-width:0}.feature-number-note{overflow-wrap:anywhere;font-size:11px;line-height:1.4}.case-next.playable{width:calc(100% + 40px);margin:16px -20px -20px;border-radius:0 0 11px 11px;background:#0e4a32}.case-next-main{display:flex;align-items:center;gap:10px;flex:1}.case-next .case-next-icon{display:flex;align-items:center;justify-content:center;flex:none;width:28px;height:28px;border-radius:50%;background:#f36b31;color:#fff;font-size:11px}.case-next-arrow{flex:none;white-space:nowrap}.case-next.playable .case-next-sub{font-size:11px}
 @media(max-width:700px){.case-next.playable{width:calc(100% + 34px);margin:16px -17px -17px}.feature-number{padding:8px 6px}.feature-value{overflow-wrap:anywhere}}
+
+/* A+：情报页白卡、浅灰底、蓝色只给可点的地方 */
+.intel-page{background:#F3F4F6;color:#161A23}
+.intel-page .title{color:#161A23}
+.intel-page .subtitle{color:#5F6675}
+.intel-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.intel-links text{display:inline-block;padding:7px 12px;border-radius:12px;background:#fff;color:#2B44E6;font-size:13px;font-weight:800;cursor:pointer}
+.intel-page .intro button{background:#2B44E6;border-radius:12px}
+.intel-page .toolbar,.intel-page .categories,.intel-page .list-head,.intel-page .filter-row,.intel-page .extra-filters{border-color:#E6E8EC}
+.intel-page .case-list-label{color:#161A23}
+.intel-page .featured{background:transparent}
+.intel-page .feature-card,.intel-page .short-card{border:0;border-radius:18px}
+.intel-page .feature-tags{color:#2B44E6}
+.intel-page .feature-tags>text{background:#ECEFFE;border-radius:8px}
+.intel-page .feature-title{color:#161A23}
+.intel-page .feature-number{background:#F3F4F6;border-radius:12px}
+.intel-page .read-link{color:#2B44E6}
+.intel-page .more-posts{border:0;border-radius:18px}
 </style>

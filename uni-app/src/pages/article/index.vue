@@ -2,7 +2,7 @@
   <view class="detail-page">
     <SiteHeader active="intelligence" />
     <view class="detail-shell">
-      <view class="back" role="link" tabindex="0" @click="goBack" @keydown.enter.prevent="goBack">← 返回案例库</view>
+      <view class="back" role="link" tabindex="0" @click="goBack" @keydown.enter.prevent="goBack">← 返回情报</view>
       <view v-if="article" class="article-layout">
         <view class="main-column">
           <view class="article-header">

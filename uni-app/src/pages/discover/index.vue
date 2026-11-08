@@ -3,7 +3,7 @@
     <!-- #ifdef H5 -->
     <view class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
     <!-- #endif -->
-    <SiteHeader active="discover" />
+    <SiteHeader active="discover" :has-banner="true" />
     <view class="home-a">
       <view class="ha-title">今天，用 AI<br/>做成一件事</view>
       <view class="ha-sub">不用先懂 AI，跟着步骤做出第一份作品。</view>
@@ -27,7 +27,7 @@
     </view>
     <view class="content-shell">
       <view class="highlights-grid">
-        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">数字为作者自述</view></view><text @click="scrollToIntelligence">进入案例库 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in item.numbers.slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
+        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in item.numbers.slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <CampFooter from="home" />
@@ -222,4 +222,36 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .ha-aidt{display:block;font-size:15px;font-weight:800}
 .ha-aidd{display:block;font-size:12.5px;color:#5F6675;margin-top:2px}
 .ha-arrow{margin-left:auto;font-size:20px;color:#9AA0AC}
+
+/* A+：首页下半截（真人案例、活动）和上面统一：白卡、浅灰底、蓝色只给可点的地方 */
+.discover-page .content-shell{max-width:640px;padding-top:8px}
+.discover-page .section-title{color:#161A23}
+.discover-page .section-subtitle{color:#9AA0AC}
+.discover-page .section-more,.discover-page .block-title>text{color:#2B44E6}
+.discover-page .home-case{border:0;border-radius:18px}
+.discover-page .home-case-tags text{color:#2B44E6;background:#ECEFFE;border-radius:8px}
+.discover-page .home-case-tags text+text{color:#5F6675;background:#F3F4F6}
+.discover-page .home-case-title{color:#161A23}
+.discover-page .home-case-start,.discover-page .home-case-by{color:#9AA0AC}
+.discover-page .home-case-numbers view{background:#F3F4F6;border-radius:12px}
+.discover-page .home-case-numbers text{color:#5F6675}
+.discover-page .home-case-numbers text:first-child{color:#161A23}
+.discover-page .home-case-play{background:#161A23}
+.discover-page .home-case-play>text:first-child{background:#2B44E6}
+.discover-page .home-case-play>view>text{color:#C9CFFF}
+.discover-page .home-case-play>text:last-child{color:#C9CFFF}
+.discover-page .highlight-list{border:0;border-radius:18px}
+.discover-page .highlight-title{color:#161A23}
+.discover-page .highlight-meta{color:#9AA0AC}
+.discover-page .event-date{border-color:#E6E8EC;color:#9AA0AC;border-radius:10px}
+.discover-page .event-date text+text{color:#2B44E6}
+.discover-page .highlight-footer{color:#2B44E6}
+.discover-page .conference-link{background:#161A23;color:#fff;border-radius:14px}
+.discover-page .conference-link>view>view{color:#5F6675}
+.discover-page .conference-copy .conference-name{color:#fff}
+.discover-page .conference-copy .conference-label{color:#C9CFFF}
+.discover-page .conference-copy .conference-detail{color:#B8BDC8}
+.discover-page .conference-actions button{color:#fff}
+.discover-page .conference-actions button:first-child:not(:last-child){color:#B8BDC8}
+.discover-page .footer-note{color:#9AA0AC}
 </style>

@@ -13,7 +13,7 @@
       <view class="site-actions">
         <button class="site-contact" @tap="contactOpen = true">联系站长</button>
         <!-- #ifdef H5 -->
-        <button v-if="!hideCamp" class="site-camp" @tap="go('/pages/camp/index?from=header')">了解生财</button>
+        <button v-if="!hideCamp" :class="['site-camp',{'has-banner':hasBanner}]" @tap="go('/pages/camp/index?from=header')">了解生财</button>
         <!-- #endif -->
       </view>
     </view>
@@ -33,7 +33,7 @@
 import {track} from '../data/track.js';
 import {openLearn} from '../data/game-matching.js';
 import { ref, onMounted, onUnmounted } from 'vue';
-const props = defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false } });
+const props = defineProps({ active: { type: String, default: '' }, hideCamp: { type: Boolean, default: false }, hasBanner: { type: Boolean, default: false } });
 const contactOpen = ref(false);
 // #ifdef H5
 function escapeContact(e){if(e.key==='Escape') contactOpen.value=false}
@@ -98,4 +98,6 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
 .site-nav-item.is-current{border-bottom-color:#2B44E6;color:#2B44E6}
 .site-nav-item:focus-visible{outline-color:#2B44E6}
 @media(max-width:700px){.site-header{border-bottom:0}.site-nav-scroll{background:#fff;box-shadow:none;border-top:1px solid #E6E8EC}.site-nav-item{color:#9AA0AC}.site-nav-item.is-current{border-top-color:#2B44E6;color:#2B44E6;font-weight:800}}
+/* 首页最上面已经有生财横幅，手机上不再重复显示顶栏按钮 */
+@media(max-width:700px){.site-camp.has-banner{display:none}}
 </style>
