@@ -5,6 +5,7 @@
     <!-- #endif -->
     <SiteHeader active="discover" :has-banner="true" />
     <view class="home-a">
+      <view class="ha-hero">
       <view class="ha-title">让普通人，<br/>也能用 AI 做成事</view>
       <view class="ha-sub">从一份课件、一本绘本开始，跟着步骤，做出你的第一个作品。</view>
       <!-- #ifdef H5 -->
@@ -21,6 +22,7 @@
       <!-- #ifdef H5 -->
       <text class="ha-replay" role="button" tabindex="0" @click="replayTour" @keydown.enter.prevent="replayTour">第一次来？看看怎么用 ›</text>
       <!-- #endif -->
+      </view>
       <view class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
         <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
         <view class="ha-ladder"><text class="on">初级 · 看教程</text><text>中级 · 5 关练习</text><text>高级</text></view>
@@ -31,11 +33,11 @@
         <view class="ha-vote"><text class="ha-vt">还在做 · 投一票</text><view class="ha-vs"><text v-for="t in learnTopics.filter(x=>!x.live)" :key="t.id" :class="{on:votes.includes(t.id)}" @click="vote(t)">{{t.short||t.name}}</text></view></view>
       </view>
       <view class="ha-aid" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">用法库</text><text class="ha-aidd">平时的小事，复制提示词就能用</text></view><text class="ha-arrow">›</text></view>
-      <view class="ha-aid" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
+      <view class="ha-aid ha-aid2" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
     </view>
     <view class="content-shell">
       <view class="highlights-grid">
-        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in item.numbers.slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
+        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in publicNumbers(item.numbers).slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <CampFooter from="home" />
@@ -55,7 +57,7 @@ import {articles, campaign, events, feedMeta, isAiArticle, matchesAiCategory} fr
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {track} from '../../data/track.js';
-import {caseStudies, caseAsArticle} from '../../data/case-studies.js';
+import {caseStudies, caseAsArticle, publicNumbers} from '../../data/case-studies.js';
 
 const showJoinBar=ref(false);
 onPageScroll(e=>{showJoinBar.value=e.scrollTop>barThreshold()});
@@ -304,4 +306,20 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .ha-trust{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:14px;font-size:13px;font-weight:700;color:#5F6675}.ha-trust .ck{color:#2B44E6;margin-right:5px}
 .home-a>.ha-replay{display:inline-block;margin-top:12px}
 @media(min-width:768px){.ha-title{font-size:48px;letter-spacing:-1px}.ha-sub{font-size:17px}}
+/* V50 desktop layout */
+.ha-hero>.ha-replay{display:inline-block;margin-top:12px}
+@media(min-width:900px){
+  .home-a{max-width:1120px;padding:56px 32px 8px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);column-gap:56px;row-gap:16px;align-items:start}
+  .ha-hero{grid-column:1;grid-row:1;align-self:center}
+  .ha-title{font-size:56px;line-height:1.1;letter-spacing:-1.5px}
+  .ha-sub{font-size:18px;max-width:520px}
+  .ha-search{max-width:560px;margin-top:24px}
+  .ha-feature{grid-column:2;grid-row:1;margin-top:0}
+  .ha-img{height:260px}
+  .ha-duo{grid-column:1 / -1;margin-top:24px;grid-template-columns:1fr 1fr;gap:16px}
+  .ha-mimg{height:160px}
+  #tour-lib{grid-column:1;margin-top:0}
+  .ha-aid2{grid-column:2;margin-top:0}
+  .discover-page .content-shell{max-width:1120px;padding-left:32px;padding-right:32px}
+}
 </style>

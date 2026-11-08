@@ -20,7 +20,7 @@
     else res.innerHTML='「'+NAMES[k]+'」还在准备，不会自动通知。';
     L.$('#wantIn').value='';
   });
-  L.$('#aidsPreview').innerHTML=(window.AINPE_AIDS||[]).slice(0,5).map(function(a){return '<a href="jijiu.html#'+a.id+'"><span aria-hidden="true">'+a.em+'</span><b>'+L.esc(a.title)+'</b><small>'+L.esc(a.when)+'</small></a>'}).join('');
+  L.$('#aidsPreview').innerHTML=(window.AINPE_AIDS||[]).slice(0,5).map(function(a){return '<a href="jijiu.html#'+a.id+'"><span aria-hidden="true">'+L.aidIcon(a.id)+'</span><b>'+L.esc(a.title)+'</b><small>'+L.esc(a.when)+'</small></a>'}).join('');
   var ua=navigator.userAgent||'',tip;
   if(L.MP)tip='在小程序里：点右上角「···」，选「添加到我的小程序」或「添加到桌面」。';
   else if(/MicroMessenger/i.test(ua))tip='在微信里：点右上角「···」，选「在浏览器打开」，再按下面的方法添加。';

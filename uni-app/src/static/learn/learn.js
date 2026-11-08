@@ -62,10 +62,11 @@
       a.addEventListener('click',function(){track('outbound_click',{target:'camp',from:'learn'})});
       doc.body.insertBefore(a,hdr);
     }
+    var NAVICON={home:'<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',library:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',learn:'<path d="M3 20h6v-5h6v-5h6"/>',mine:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'};
     var nav=doc.createElement('nav');nav.className='lnav';nav.setAttribute('aria-label','主导航');
     [['home','首页','/#/pages/discover/index'],['library','用法库','/static/learn/jijiu.html'],['find','找用法','/static/learn/find.html'],['learn','跟着做','/static/learn/index.html'],['mine','我的','/#/pages/saved/index']].forEach(function(l){
       var a=doc.createElement('a');a.href=l[2];var on=l[0]===active;if(l[0]==='find')a.classList.add('nfind');
-      a.innerHTML=(on?'<i>'+STEP+'</i>':'<i></i>')+'<span>'+l[1]+'</span>';
+      a.innerHTML='<i>'+(NAVICON[l[0]]?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+NAVICON[l[0]]+'</svg>':'')+'</i><span>'+l[1]+'</span>';
       if(on){a.classList.add('on');a.setAttribute('aria-current','page')}nav.appendChild(a);
     });
     doc.body.appendChild(nav);
@@ -162,5 +163,8 @@
   ];
   function classifyWant(text){var t=String(text||'');for(var i=0;i<WANT.length;i++)if(WANT[i][1].test(t))return WANT[i][0];return 'other'}
 
-  root.Learn={toTabs:toTabs,STEP:STEP,MP:MP,$:$,$$:$$,esc:esc,toast:toast,copy:copy,download:download,openOut:openOut,getState:getState,setState:setState,track:track,chrome:chrome,banner:banner,workCard:workCard,mountWorkCard:mountWorkCard,classifyWant:classifyWant};
+  // 用法库线条图标（替代表情符号，和设计稿统一）
+  var AIDICON={notice:'<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',reply:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',summary:'<path d="M4 6h16M4 12h10M4 18h6"/>',homework:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',menu:'<path d="M4 11h16a8 8 0 0 1-16 0z"/><path d="M8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3"/>',meeting:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',excel:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',trip:'<rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4h6v3M9 20v1M15 20v1"/>',caption:'<rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/>',learnai:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'};
+  function aidIcon(id){var p=AIDICON[id];return p?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>':''}
+  root.Learn={aidIcon:aidIcon,toTabs:toTabs,STEP:STEP,MP:MP,$:$,$$:$$,esc:esc,toast:toast,copy:copy,download:download,openOut:openOut,getState:getState,setState:setState,track:track,chrome:chrome,banner:banner,workCard:workCard,mountWorkCard:mountWorkCard,classifyWant:classifyWant};
 })(window);

@@ -45,8 +45,11 @@
     var out=[],seen={};prompt.replace(/【([^】]+)】/g,function(m,inner){if(!seen[m]){seen[m]=1;out.push(m)}return m});return out;
   }
   // 名字优先取【】前面那句「xxx：」，没有就取【】里第一个短词
+  // 自动取不好的几个，直接写死名字
+  var NAMED={'【30】':'几分钟','【WPS / Excel】':'用的软件','【比如 姓名】':'A 列是','【比如 部门】':'B 列是','【比如 报销金额】':'C 列是','【1 天 / 2 天】':'玩几天','【比如 2 个大人 1 个 6 岁孩子】':'一起去的','【多少元】':'预算'};
   function label(m,prompt){
     var t=m.slice(1,-1).trim();
+    if(NAMED[m])return {text:NAMED[m],big:false,hint:t};
     if(/粘贴|写在这里|写下来/.test(t))return {text:/题目/.test(t)?'题目':/写下来/.test(t)?'写在这里':'粘贴原文',big:true,hint:''};
     var before=prompt.slice(0,prompt.indexOf(m)).split(/[\n。；]/).pop(),lead=(before.match(/([^：:，,\s]{1,6})[：:]\s*$/)||[])[1];
     var first=t.replace(/^比如\s*/,'').split(/[，,、\/\s]+/)[0];
@@ -73,7 +76,7 @@
     if(r.aids.length){
       var a=r.aids[0],sl=slots(a.prompt);
       html+='<p class="fcount">找到 '+r.aids.length+' 个用法</p>';
-      html+='<div class="card fbest"><div class="fhd"><span class="em" aria-hidden="true">'+a.em+'</span><b>'+L.esc(a.title)+'</b>'+(a.lv?'<i class="lv lv'+a.lv+'">'+a.lv+'</i>':'')+'</div>';
+      html+='<div class="card fbest"><div class="fhd"><span class="em" aria-hidden="true">'+L.aidIcon(a.id)+'</span><b>'+L.esc(a.title)+'</b>'+(a.lv?'<i class="lv lv'+a.lv+'">'+a.lv+'</i>':'')+'</div>';
       if(sl.length){
         html+='<b class="flab">填一下</b><div class="ffill">'+sl.map(function(m,i){var lb=label(m,a.prompt);
           return '<label class="ff'+(lb.big?' big':'')+'"><span>'+L.esc(lb.text)+'</span>'+(lb.big?'<textarea data-k="'+i+'" rows="3" placeholder="'+L.esc(lb.hint||'粘贴在这里')+'"></textarea>':'<input data-k="'+i+'" placeholder="'+L.esc(lb.hint)+'">')+'</label>'}).join('')+'</div>';
@@ -81,7 +84,7 @@
       html+='<b class="flab">拼好的这句话</b><div class="prompt dark fout" id="fout"></div>';
       html+='<button type="button" class="btn pri block" id="fcopy" style="margin-top:12px">复制提示词</button></div>';
       if(r.aids.length>1){
-        html+='<p class="fcount">也可能是</p><div class="fmore">'+r.aids.slice(1,4).map(function(x){return '<a href="jijiu.html#'+x.id+'"><span aria-hidden="true">'+x.em+'</span>'+L.esc(x.title)+'<i>›</i></a>'}).join('')+'</div>';
+        html+='<p class="fcount">也可能是</p><div class="fmore">'+r.aids.slice(1,4).map(function(x){return '<a href="jijiu.html#'+x.id+'"><span aria-hidden="true">'+L.aidIcon(x.id)+'</span>'+L.esc(x.title)+'<i>›</i></a>'}).join('')+'</div>';
       }
       res.innerHTML=html;
       var vals={},out=L.$('#fout');

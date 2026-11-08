@@ -15,7 +15,7 @@
     s.textContent=
       '.tour-hole{position:fixed;z-index:10000;border-radius:16px;box-shadow:0 0 0 9999px rgba(22,26,35,.62);pointer-events:none;transition:all .25s ease}'+
       '.tour-hole::after{content:"";position:absolute;inset:-4px;border-radius:20px;border:2px solid #FFC83D}'+
-      '.tour-tip{position:fixed;z-index:10001;left:16px;right:16px;max-width:360px;margin:0 auto;background:#fff;color:#161A23;border-radius:18px;padding:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.5);font-family:"Noto Sans SC","PingFang SC",system-ui,sans-serif;transition:top .25s ease}'+
+      '.tour-tip{position:fixed;z-index:10001;left:16px;right:16px;max-width:360px;max-height:calc(100vh - 16px);overflow:auto;box-sizing:border-box;margin:0 auto;background:#fff;color:#161A23;border-radius:18px;padding:16px;box-shadow:0 20px 40px -20px rgba(0,0,0,.5);font-family:"Noto Sans SC","PingFang SC",system-ui,sans-serif;transition:top .25s ease}'+
       '.tour-tip .tn{font-size:12px;font-weight:800;color:#2B44E6}'+
       '.tour-tip .tt{display:block;font-size:18px;font-weight:900;margin-top:4px}'+
       '.tour-tip .tx{font-size:14.5px;line-height:1.6;color:#5F6675;margin:6px 0 0}'+
@@ -30,6 +30,14 @@
   }
   function find(sel){
     var list=sel.split(',');for(var i=0;i<list.length;i++){var el=doc.querySelector(list[i].trim());if(el){var r=el.getBoundingClientRect();if(r.width>0&&r.height>0)return el}}return null;
+  }
+  // A delayed tour can start while the highlighted element is off-screen.
+  // Keep the dialog (especially its skip button) inside the viewport even
+  // while smooth scrolling has not yet reached the target.
+  function tipTop(r,pad,th,vh){
+    var below=r.bottom+pad+14,above=r.top-pad-14-th;
+    var preferred=below+th<vh-8?below:above;
+    return Math.min(Math.max(8,preferred),Math.max(8,vh-th-8));
   }
   var active=null;
   function start(steps,opt){
@@ -48,8 +56,8 @@
       var s=steps[i],el=find(s.sel);if(!el){next();return}
       var r=el.getBoundingClientRect(),pad=6,vh=root.innerHeight;
       hole.style.top=(r.top-pad)+'px';hole.style.left=(r.left-pad)+'px';hole.style.width=(r.width+pad*2)+'px';hole.style.height=(r.height+pad*2)+'px';
-      var th=tip.offsetHeight||170,below=r.bottom+pad+14,above=r.top-pad-14-th;
-      tip.style.top=(below+th<vh-8?below:Math.max(8,above))+'px';
+      var th=tip.offsetHeight||170;
+      tip.style.top=tipTop(r,pad,th,vh)+'px';
     }
     function show(){
       var s=steps[i],el=find(s.sel),last=i===steps.length-1;

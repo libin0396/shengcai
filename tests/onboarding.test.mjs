@@ -83,3 +83,17 @@ test('homepage tour does not open after navigation and is disposed when hidden',
   hooks.show();assert.deepEqual(calls,['auto']);hooks.hide();assert.deepEqual(calls,['auto','dispose']);
   document.title='上一篇文章';hooks.show();assert.equal(document.title,'AI 实战情报站');assert.deepEqual(calls,['auto','dispose','auto']);hooks.unmount();assert.deepEqual(calls,['auto','dispose','auto','dispose']);
 });
+
+test('delayed tour keeps its controls visible for targets outside the viewport',()=>{
+  const tour=readFileSync(new URL('../uni-app/src/static/learn/tour.js',import.meta.url),'utf8');
+  const match=tour.match(/function tipTop\(r,pad,th,vh\)\{[\s\S]*?\n  \}/);
+  assert.ok(match,'tour dialog positioning helper exists');
+  const top=vm.runInNewContext('('+match[0]+')');
+  const height=844,tip=180;
+  for(const rect of [{top:-1200,bottom:-1100},{top:2000,bottom:2100},{top:330,bottom:390}]){
+    const y=top(rect,6,tip,height);
+    assert.ok(y>=8 && y+tip<=height-8,`dialog at ${y} must be visible`);
+  }
+  assert.equal(top({top:330,bottom:390},6,tip,height),410);
+  assert.match(tour,/max-height:calc\(100vh - 16px\);overflow:auto/);
+});

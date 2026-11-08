@@ -2,7 +2,7 @@
   var L=window.Learn;L.chrome('library');
   var AIDS=window.AINPE_AIDS||[],box=L.$('#aids');
   box.innerHTML=AIDS.map(function(a){
-    return '<div class="aid" id="'+a.id+'"><button type="button" class="hd" aria-expanded="false" aria-controls="b-'+a.id+'"><span class="em" aria-hidden="true">'+a.em+'</span><span><b>'+L.esc(a.title)+(a.lv?' <i class="lv lv'+a.lv+'">'+a.lv+'</i>':'')+'</b><small>'+L.esc(a.when)+'</small></span><span class="ar" aria-hidden="true">›</span></button>'+
+    return '<div class="aid" id="'+a.id+'"><button type="button" class="hd" aria-expanded="false" aria-controls="b-'+a.id+'"><span class="em" aria-hidden="true">'+L.aidIcon(a.id)+'</span><span><b>'+L.esc(a.title)+(a.lv?' <i class="lv lv'+a.lv+'">'+a.lv+'</i>':'')+'</b><small>'+L.esc(a.when)+'</small></span><span class="ar" aria-hidden="true">›</span></button>'+
       '<div class="body" id="b-'+a.id+'" hidden><div class="prompt"><small>复制这句话给 AI</small>'+L.esc(a.prompt)+'</div><div class="pact"><button type="button" class="btn or sm js-copy">复制</button></div><div class="ex"><small>AI 大概会这样回答（示例）</small>'+L.esc(a.example)+'</div></div></div>';
   }).join('');
   // 按难度筛选：初级 / 中级 / 高级

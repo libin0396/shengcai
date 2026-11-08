@@ -41,7 +41,7 @@ const narratives = {
   '82255821128414422': {
     revenueModel: [
       '销售不同功能和服务范围的工作流套餐；作者披露基础套餐 999 元、全功能套餐 5000 元。',
-      '销售不同功能和服务范围的工作流套餐；作者披露基础套餐约千元、全功能套餐约五千元。',
+      '销售不同功能和服务范围的工作流套餐。',
     ],
   },
   '22258212425811581': {
@@ -84,3 +84,9 @@ export function displayCase(study) {
   if (text.firstPitfall && result.pitfalls[0]) result.pitfalls[0].detail = summary(study.pitfalls[0].detail, text.firstPitfall);
   return result;
 }
+
+// 只过滤公开展示的收益数字，原始案例和来源保持不变。
+const MONEY_LABEL=/收入|变现|利润|收益|净收|签单|业绩|GMV|销售|成交|营收|赚/i;
+const MONEY_VALUE=/[¥$￥]|美元|元|千块|块钱/;
+const COST_LABEL=/成本|投入|订阅|花费/;
+export const publicNumbers = numbers => (Array.isArray(numbers) ? numbers : []).filter(n => n && !MONEY_LABEL.test(String(n.label||'')) && !(MONEY_VALUE.test(String(n.value||'')) && !COST_LABEL.test(String(n.label||''))));

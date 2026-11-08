@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {displayCase} from '../uni-app/src/data/case-display.mjs';
+import {displayCase, publicNumbers} from '../uni-app/src/data/case-display.mjs';
 
 const originals = JSON.parse(readFileSync(new URL('../uni-app/src/data/case-studies-published.json', import.meta.url), 'utf8'));
 const source = id => originals.find(c => c.id === id);
@@ -48,4 +48,27 @@ test('a changed source value never inherits an outdated summary', () => {
   const input = structuredClone(source('45548881815182188'));
   number(input, '预估收入').value = '1024 元';
   assert.equal(number(displayCase(input), '预估收入').value, '1024 元');
+});
+
+
+test('public case figures hide earnings and revenue while retaining costs and activity', () => {
+  const input = [
+    {label:'月收入',value:'两万元'}, {label:'较好阶段',value:'月收入数万元'},
+    {label:'单月 GMV',value:'五百万'}, {label:'净利润',value:null},
+    {label:'广告投入',value:'三百元/天'}, {label:'订阅费用',value:'198 元/月'},
+    {label:'曝光',value:'一百万人'},
+  ];
+  const before = structuredClone(input);
+  assert.deepEqual(publicNumbers(input).map(n => n.label), ['广告投入','订阅费用','曝光']);
+  assert.deepEqual(input,before);
+  assert.deepEqual(publicNumbers(null),[]);
+});
+
+
+test('public summaries keep the sales model without pricing figures', () => {
+  const input = source('82255821128414422');
+  const before = structuredClone(input);
+  const shown = displayCase(input);
+  assert.equal(shown.project.revenueModel,'销售不同功能和服务范围的工作流套餐。');
+  assert.deepEqual(input,before);
 });

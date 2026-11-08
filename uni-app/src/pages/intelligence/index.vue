@@ -16,7 +16,7 @@
               <view class="feature-tags"><text>{{getCase(a).direction}}</text><text>完整解读</text><button class="star" :aria-label="isSaved(a)?'取消收藏':'收藏文章'" @click.stop="toggleSaved(a)">{{isSaved(a)?'★':'☆'}}</button></view>
               <view class="feature-title">{{a.title}}</view>
               <view class="feature-start">起点：<text>{{getCase(a).start.occupation||getCase(a).start.experience||'未披露'}}</text></view>
-              <view class="featured-numbers"><view v-for="n in getCase(a).numbers.slice(0,3)" :key="n.label" :class="['feature-number',{'undisclosed':!n.value}]"><text class="feature-value">{{n.value||'未披露'}}</text><text class="feature-number-note">{{compactNumberNote(n)}}</text></view></view>
+              <view class="featured-numbers"><view v-for="n in publicNumbers(getCase(a).numbers).slice(0,3)" :key="n.label" :class="['feature-number',{'undisclosed':!n.value}]"><text class="feature-value">{{n.value||'未披露'}}</text><text class="feature-number-note">{{compactNumberNote(n)}}</text></view></view>
               <view class="feature-footer"><text>{{a.author}} · 作者自述</text><text class="read-link">查看解读 ›</text></view>
               <button v-if="matchingGame(a)" class="case-next playable" @click.stop="play(matchingGame(a),a.id)"><view class="case-next-main"><text class="case-next-icon">▶</text><view><text>玩相关模拟：{{matchingGame(a).name}}</text></view></view><text class="case-next-arrow">开始 →</text></button>
               <view v-else class="case-next reserve-next" @click.stop><view><text>这个方向还没有模拟</text><text class="case-next-sub">{{reservationCounts['article:'+a.id]>=10 ? reservationCounts['article:'+a.id]+' 条预约记录' : '想玩的人多了会优先考虑'}}</text></view><button :disabled="reservationBusy===String(a.id)||reservedCases.includes('article:'+a.id)" @click.stop="reserveCase(a)">{{reservedCases.includes('article:'+a.id)?'已预约':reservationBusy===String(a.id)?'记录中…':'我想玩'}}</button></view>
@@ -41,7 +41,7 @@ import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary} from '../../data/case
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {matchArticleGame,simulationUrl,openGame} from '../../data/game-matching.js';
-import {caseStudies,caseById,caseAsArticle} from '../../data/case-studies.js';
+import {caseStudies,caseById,caseAsArticle, publicNumbers} from '../../data/case-studies.js';
 const categories=[{id:'all',label:'全部 AI'},{id:'miniapp',label:'AI 小程序'},{id:'development',label:'AI 产品开发'},{id:'video',label:'AI 视频'},{id:'overseas',label:'海外 AI 产品'},{id:'fde',label:'FDE 企业落地'},{id:'content',label:'内容创作'},{id:'agent',label:'Agent 与工具'}];
 const patterns={miniapp:/小程序|mini.?app/i,development:/开发|编程|代码|平台|产品/i,video:/视频|短剧|动画|影视/i,overseas:/(海外|出海).*(AI|建站|游戏站|产品)|热词.*(网站|游戏站)/i,fde:/(?:^|[^a-z])fde(?:$|[^a-z])|企业.*(?:落地|部署|交付)/i,content:/内容创作|自媒体|文案|写作|小红书|公众号/i,agent:/agent|智能体|工具|大模型|工作流/i};
 const starts=['全部起点','上班族','老师','有编程基础','自己有生意','零基础'];
