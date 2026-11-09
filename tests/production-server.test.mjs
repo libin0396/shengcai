@@ -27,8 +27,12 @@ before(async () => {
   await symlink(dir, path.join(dir, 'current'), 'dir');
   await writeFile(path.join(client, 'index.html'), '<main>AINPE</main>');
   await writeFile(path.join(client, 'assets', 'app.js'), 'export default 1');
+  await writeFile(path.join(client, 'assets', 'example.mp4'), Buffer.from('0123456789abcdef'));
+  await writeFile(path.join(client, 'assets', 'example.pdf'), Buffer.from('%PDF-1.7\nexample\n%%EOF\n'));
   await writeFile(path.join(dir, 'private.txt'), 'private');
   await symlink(path.join(dir, 'private.txt'), path.join(client, 'assets', 'outside.txt'));
+  await symlink(path.join(dir, 'private.txt'), path.join(client, 'assets', 'outside.mp4'));
+  await symlink(path.join(dir, 'private.txt'), path.join(client, 'assets', 'outside.pdf'));
   await writeFile(path.join(dir, 'data', 'live-feed.json'), JSON.stringify({
     version:1, updatedAt:'2026-11-03T04:30:00Z', fetchedAt:'2026-11-03T04:30:00Z',
     articles:[{id:'1', entityType:'xq_topic', title:'AI 案例', publishedAt:1790000000, sourceUrl:'https://scys.com/articleDetail/xq_topic/1'}],
@@ -40,9 +44,62 @@ before(async () => {
   port = server.address().port;
   base = `http://127.0.0.1:${port}`;
 });
+
+test('streams MP4 with safe single-range seeking and correct HTTP headers', async () => {
+  const url = base + '/assets/example.mp4';
+  let response = await fetch(url);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-type'), 'video/mp4');
+  assert.equal(response.headers.get('accept-ranges'), 'bytes');
+  assert.equal(response.headers.get('content-length'), '16');
+  assert.equal(await response.text(), '0123456789abcdef');
+
+  for (const [range, expectedRange, expected] of [
+    ['bytes=2-5', 'bytes 2-5/16', '2345'],
+    ['bytes=12-', 'bytes 12-15/16', 'cdef'],
+    ['bytes=-4', 'bytes 12-15/16', 'cdef'],
+    ['bytes=14-100', 'bytes 14-15/16', 'ef'],
+  ]) {
+    response = await fetch(url, {headers:{Range:range}});
+    assert.equal(response.status, 206);
+    assert.equal(response.headers.get('content-range'), expectedRange);
+    assert.equal(response.headers.get('content-length'), String(expected.length));
+    assert.equal(await response.text(), expected);
+  }
+  for (const range of ['bytes=16-', 'bytes=5-2', 'bytes=-0', 'bytes=0-1,3-4', 'bytes=999999999999999999999-', 'bytes=-']) {
+    response = await fetch(url, {headers:{Range:range}});
+    assert.equal(response.status, 416);
+    assert.equal(response.headers.get('content-range'), 'bytes */16');
+    assert.equal(await response.text(), '');
+  }
+  response = await fetch(url, {method:'HEAD', headers:{Range:'bytes=0-1'}});
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-length'), '16');
+  assert.equal(await response.text(), '');
+  response = await fetch(url, {headers:{Range:'bytes=0-1', 'If-Range':'"not-a-matching-validator"'}});
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), '0123456789abcdef');
+  assert.equal((await fetch(base + '/assets/outside.mp4', {headers:{Range:'bytes=0-1'}})).status, 404);
+});
 after(async () => {
   if (server) await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
   if (dir) await rm(dir, {recursive:true, force:true});
+});
+
+test('serves PDFs with a viewable content type while retaining asset path protections', async () => {
+  const url = base + '/assets/example.pdf';
+  let response = await fetch(url);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-type'), 'application/pdf');
+  assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(response.headers.get('content-length'), String(Buffer.byteLength('%PDF-1.7\nexample\n%%EOF\n')));
+  assert.equal(await response.text(), '%PDF-1.7\nexample\n%%EOF\n');
+  response = await fetch(url, {method:'HEAD'});
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('content-type'), 'application/pdf');
+  assert.equal(await response.text(), '');
+  assert.equal((await fetch(base + '/assets/outside.pdf')).status, 404);
+  assert.equal((await fetch(base + '/assets/missing.pdf', {headers:{Accept:'text/html'}})).status, 404);
 });
 
 test('serves the SPA and assets with correct types, without hiding missing files', async () => {

@@ -6,12 +6,12 @@ import vm from 'node:vm';
 const script=await readFile('uni-app/src/static/learn/guide-page.js','utf8');
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const valid={verified:true,src:'media/example/step-1.png',alt:'原始资料',caption:'第一步的实际输出',kind:'AI生成产出',source:'本站实际生成'};
-function render(media,stepMedia,evidence){
+function render(media,stepMedia,evidence,video){
   const app={innerHTML:'',querySelector(selector){return selector==='.guide-detail-hero'?{appendChild(){}}:{textContent:''}}};
   const progress={textContent:''};
   const L={$:selector=>selector==='#guide-app'?app:progress,$$:()=>[],chrome(){},esc:escape,copy(){}};
   const location={search:'?id=example',href:'http://127.0.0.1:4188/static/learn/guide.html?id=example',origin:'http://127.0.0.1:4188'};
-  const guide={id:'example',title:'示例教程',category:'示例',intro:'说明',outcome:'成果',needs:'准备',media,evidence,steps:[{title:'第一步',action:'操作',check:'检查',media:stepMedia}]};
+  const guide={id:'example',title:'示例教程',category:'示例',intro:'说明',outcome:'成果',needs:'准备',media,evidence,video,steps:[{title:'第一步',action:'操作',check:'检查',media:stepMedia}]};
   const window={Learn:L,location,AINPE_GUIDES:[guide]};
   const document={title:'',createElement(){return {className:'',textContent:''}}};
   vm.runInNewContext(script,{window,document,URL,URLSearchParams,localStorage:{getItem(){return '{}'},setItem(){}}});
@@ -49,27 +49,42 @@ test('三篇文字教程保留实操工具、虚构素材与结果边界；短�
     const e=ctx.window.AINPE_GUIDES.find(g=>g.id===id).evidence;
     assert.equal(e.verified,true);assert.match(e.tool,/Kimi/);assert.match(e.tool,/虚构/);assert.match(e.limits,/未保存操作截图/);
   }
-  const image=ctx.window.AINPE_GUIDES.find(g=>g.id==='short-drama').steps[2].media[0];
-  assert.equal(image.kind,'AI生成产出');assert.match(image.caption,/不代表短剧已完成/);
+  const drama=ctx.window.AINPE_GUIDES.find(g=>g.id==='short-drama');
+  const image=drama.steps[2].media.find(m=>m.kind==='AI生成产出');
+  assert.equal(image.kind,'AI生成产出');assert.match(image.caption,/角色参考图/);
+  assert.match(drama.evidence.limits,/未实操剪映/);assert.match(drama.evidence.limits,/没有连续拍出/);
+  for(const i of [1,2,3])assert.ok(drama.steps[i].media.some(m=>m.kind==='实操截图'));
+  assert.equal(drama.video.kind,'AI生成视频');assert.match(drama.video.caption,/没有音轨/);
   assert.ok((await readFile('uni-app/src/static/learn/'+image.src)).length>0);
 });
-test('商品图演示保留虚构 AI 底图和未导出说明，不展示未整理的排版截图',async()=>{
+test('商品图区分 AI 底图、预览手工排字和 AI 排字，不展示未整理的排版截图',async()=>{
   const content=await readFile('uni-app/src/static/learn/guides-data.js','utf8');
   const ctx={window:{}};vm.runInNewContext(content,ctx);
   const guide=ctx.window.AINPE_GUIDES.find(g=>g.id==='product-poster');
-  assert.match(guide.evidence.limits,/虚构|真实商品/);assert.match(guide.evidence.limits,/尚未.*导出/);
-  const image=guide.steps[1].media[0];
+  assert.match(guide.evidence.limits,/虚构|真实商品/);assert.match(guide.evidence.limits,/未在 WPS/);
+  const image=guide.steps[1].media[0], manual=guide.steps[2].media[0], poster=guide.steps[2].media[1];
   assert.equal(image.kind,'AI生成产出');assert.match(image.caption,/虚构/);assert.match(image.caption,/无法核验/);
-  assert.equal(guide.steps[2].media,undefined);
-  assert.ok((await readFile('uni-app/src/static/learn/'+image.src)).length>0);
+  assert.equal(manual.kind,'人工编辑成果');assert.match(manual.caption,/底图由 AI 生成/);assert.match(manual.caption,/预览.*手工/);assert.match(manual.caption,/虚构/);
+  assert.equal(poster.kind,'AI生成产出');assert.match(poster.caption,/并非.*手工/);assert.doesNotMatch(poster.src,/layout-screen/);
+  for(const m of [image,manual,poster])assert.ok((await readFile('uni-app/src/static/learn/'+m.src)).length>0);
 });
-test('绘本专题可看到真实生成的单张四格图，并明确排版和未成册的边界',async()=>{
+test('视频只接受核对过的站内 MP4，使用手动播放和手机行内播放',()=>{
+  const video={verified:true,kind:'AI生成视频',src:'media/short-drama/finished-story.mp4',title:'找伞短片',caption:'虚构示例，无音轨',source:'豆包、FFmpeg'};
+  const html=render(undefined,undefined,undefined,video).html;
+  assert.match(html,/video controls playsinline/);assert.doesNotMatch(html,/autoplay/);assert.match(html,/\/static\/learn\/media\/short-drama\/finished-story\.mp4/);assert.match(html,/虚构示例，无音轨/);
+  assert.doesNotMatch(render(undefined,undefined,undefined,{...video,verified:false}).html,/<video/);
+  assert.doesNotMatch(render(undefined,undefined,undefined,{...video,src:'https:\/\/example.com\/video.mp4'}).html,/<video/);
+  assert.doesNotMatch(render(undefined,undefined,undefined,{...video,src:'media\/..\/..\/private.mp4'}).html,/<video/);
+});
+test('绘本专题展示四张独立插画、实际修订和可阅读的成品',async()=>{
   const html=await readFile('uni-app/src/static/learn/huiben.html','utf8');
-  assert.match(html,/内置 AI 图像生成工具一次生成一张四格插画/);
-  assert.match(html,/四格来自同一张图，尚未导出或装订成册/);
-  assert.equal((html.match(/class="book-example-scene (?:one|two|three|four)"/g)||[]).length,4);
+  assert.match(html,/分别制作四张独立插画/);
+  assert.match(html,/尚未实际打印或装订，WPS 制作流程也未验证/);
+  assert.equal((html.match(/class="book-example-scene"/g)||[]).length,4);
   assert.match(html,/<details class="book-example-details">/);
-  assert.ok((await readFile('uni-app/src/static/learn/media/picturebook/fox-story-grid.png')).length>0);
+  for(const n of [1,2,3,4]) assert.ok((await readFile('uni-app/src/static/learn/media/picturebook/fox-page-'+n+'.png')).length>0);
+  assert.match(html,/fox-page-1-before\.png/);
+  const pdf=await readFile('uni-app/src/static/learn/media/picturebook/fox-book.pdf');assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
 });
 test('课件专题展示三页真实预览及可下载文件，并如实标明未验证的 WPS 环节',async()=>{
   const html=await readFile('uni-app/src/static/learn/kejian.html','utf8');
@@ -81,4 +96,6 @@ test('课件专题展示三页真实预览及可下载文件，并如实标明�
   }
   const name='media/lesson/rain-lesson-example.pptx';assert.ok(html.includes(name));
   const pptx=await readFile('uni-app/src/static/learn/'+name);assert.equal(pptx.subarray(0,2).toString(),'PK');
+  assert.match(html,/本机 LibreOffice Impress 打开并导出 PDF/);
+  const pdf=await readFile('uni-app/src/static/learn/media/lesson/rain-lesson-export.pdf');assert.equal(pdf.subarray(0,5).toString(),'%PDF-');
 });

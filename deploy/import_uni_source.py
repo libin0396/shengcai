@@ -22,6 +22,23 @@ for name in EXPECTED:
 target.mkdir()
 APPROVED_LESSON = Path('src/static/learn/media/lesson/rain-lesson-example.pptx')
 APPROVED_LESSON_SHA256 = '52761f528629b313612b23c08743609589e2a87f2eeb3996d9b719bb2f9fb51e'
+APPROVED_MEDIA = {
+    Path('src/static/learn/media/lesson/rain-lesson-export.pdf'): ('98197378c1c73f8334a2e262d635895485780cb18c4eddb6fa707824dc77bcd4', 2 * 1024 * 1024, 'pdf'),
+    Path('src/static/learn/media/picturebook/fox-book.pdf'): ('c8975c6bf6e17ee511c74d2a7cb231033c314977b5c3ba27e2624a30cfa34b78', 3 * 1024 * 1024, 'pdf'),
+    Path('src/static/learn/media/short-drama/finished-story.mp4'): ('7b85ae27c34b55b3d6c32ab487fc2a045bbead9c60a6d2f963cecf20beffc99c', 5 * 1024 * 1024, 'mp4'),
+}
+
+def validate_media(src, spec):
+    digest, size_limit, kind = spec
+    if src.stat().st_size > size_limit:
+        raise ValueError('media exceeds approved size')
+    content = src.read_bytes()
+    if hashlib.sha256(content).hexdigest() != digest:
+        raise ValueError('media changed; review required')
+    if kind == 'pdf' and not content.startswith(b'%PDF-'):
+        raise ValueError('invalid PDF example')
+    if kind == 'mp4' and (len(content) < 12 or content[4:8] != b'ftyp'):
+        raise ValueError('invalid MP4 example')
 
 def validate_lesson(src):
     # The sole allowed binary document is the reviewed three-slide example.
@@ -61,6 +78,8 @@ for sub in ['src/pages','src/components','src/static']:
             rel = src.relative_to(source)
             if rel == APPROVED_LESSON:
                 validate_lesson(src)
+            elif rel in APPROVED_MEDIA:
+                validate_media(src, APPROVED_MEDIA[rel])
             elif src.suffix.lower() not in {'.vue','.js','.css','.html','.png','.jpg','.jpeg','.webp','.gif','.svg','.json'}:
                 raise ValueError('unexpected source file type: '+str(src))
             copy_file(rel)

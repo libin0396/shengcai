@@ -42,6 +42,15 @@
 .guide-evidence-limits{margin:8px 0 0;padding:11px 13px;border-radius:10px;background:#f3f4f6;color:#5f6675;font-size:12px;line-height:1.7}
 @media(max-width:700px){.guide-evidence{padding:18px;margin:18px 0;border-radius:16px}.guide-evidence h2{font-size:18px}.guide-evidence dd{font-size:14px}}
 
+.guide-video-example{margin:22px 0;padding:22px 24px;border:1px solid #dbe3f6;border-radius:18px;background:#fff;color:#161a23}
+.guide-video-tag{display:inline-block;margin:0;padding:5px 9px;border-radius:8px;background:#eceffe;color:#2b44e6;font-size:12px;font-weight:700}
+.guide-video-example h2{margin:12px 0 16px;font-size:20px;line-height:1.4}
+.guide-video-example video{display:block;width:min(100%,320px);max-height:70vh;aspect-ratio:9/16;object-fit:contain;border-radius:12px;background:#111827}
+.guide-video-example>p:not(.guide-video-tag){margin:14px 0 0;color:#526073;font-size:14px;line-height:1.75}
+.guide-video-example small{display:block;margin-top:8px;color:#667187;font-size:12px;line-height:1.6}
+.guide-video-example>a{display:inline-block;min-height:44px;margin-top:8px;color:#2949d9;font-size:13px;font-weight:700;line-height:44px}
+@media(max-width:700px){.guide-video-example{margin:18px 0;padding:18px;border-radius:16px}.guide-video-example h2{font-size:18px}}
+
 /* 素材只在有经过核对的图片与来源时显示；大图保持原比例。 */
 .guide-media{margin:18px 0 22px;padding:0;background:#f4f6fa;border:1px solid #e6e8ec;border-radius:14px;overflow:hidden}
 .guide-media-open{display:block;position:relative;width:100%;margin:0;padding:0;border:0;background:#eef1f6;text-align:center;cursor:zoom-in}

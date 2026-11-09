@@ -17,21 +17,25 @@
 .book-example-intro,.book-example-note{margin:10px 0 0;color:#5f6675;font-size:14px;line-height:1.75}
 .book-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0;padding:0;list-style:none}
 .book-example-grid li{min-width:0;overflow:hidden;background:#f5f6f8;border-radius:14px}
-.book-example-scene{width:100%;aspect-ratio:2/1;background-image:url('media/picturebook/fox-story-grid.png');background-size:200% 200%;background-repeat:no-repeat}
-.book-example-scene.one{background-position:0 0}.book-example-scene.two{background-position:100% 0}.book-example-scene.three{background-position:0 100%}.book-example-scene.four{background-position:100% 100%}
+.book-example-scene{display:block;width:100%;height:auto;aspect-ratio:2/1;object-fit:cover}
 .book-example-caption{padding:11px 13px 14px;font-size:14px;line-height:1.65;color:#29354a}
 .book-example-caption small{display:block;margin-bottom:3px;color:#2b44e6;font-size:12px;font-weight:700}
 .book-example-details{margin:14px 0;color:#2b44e6;font-size:13px}
 .book-example-details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
 .book-example-details summary:focus-visible{outline:3px solid #2b44e6;outline-offset:2px}
 .book-example-details img{display:block;width:100%;height:auto;border-radius:10px;margin:4px 0}
+.book-example-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:8px 0}
+.book-example-compare figure{min-width:0;margin:0;color:#5f6675;line-height:1.6}
+.book-example-compare figcaption{padding:5px 0}
+.book-example-download{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;margin-top:12px;padding:9px 16px;border-radius:10px;background:#2b44e6;color:#fff;font-size:14px;font-weight:700;text-decoration:none}
+.book-example-download:focus-visible{outline:3px solid #ffc83d;outline-offset:3px}
 .book-example-note{padding:12px;background:#f3f4f6;border-radius:10px;font-size:12px}
-@media(max-width:600px){.book-example{padding:18px}.book-example-grid{grid-template-columns:1fr}.book-example h2{font-size:19px}}
+@media(max-width:600px){.book-example{padding:18px}.book-example-grid,.book-example-compare{grid-template-columns:1fr}.book-example h2{font-size:19px}.book-example-download{width:100%}}
 </style>
 </head>
 <body>
 <main>
-  <div class="thero"><img src="img/girl.jpg" alt="成品示例：绘本插画"><span class="sample-tag">成品示例 · 绘本第 1 页</span></div>
+  <div class="thero"><img src="media/picturebook/fox-page-1.png" alt="本站试做：小狐狸和蓝纸船的第 1 页插画"><span class="sample-tag">本站试做 · 绘本第 1 页</span></div>
   <section class="w ttop">
     <a class="back" href="index.html">‹ 跟着做</a>
     <h1 class="h1">和孩子一起做一本绘本</h1>
@@ -48,15 +52,16 @@
     <section class="book-example" aria-labelledby="book-example-title">
       <p class="book-example-tag">本站原创示例 · AI 生成插画</p>
       <h2 id="book-example-title">试做：小狐狸和蓝纸船</h2>
-      <p class="book-example-intro">我们先写了一个虚构故事，再用内置 AI 图像生成工具一次生成一张四格插画；下面的四个画面，是本页用同一张图分区排版展示的。</p>
+      <p class="book-example-intro">我们先写了一个虚构故事，以原来的四格图为参考，再用内置 AI 图像生成工具分别制作四张独立插画，排成四页绘本。</p>
       <ol class="book-example-grid">
-        <li><div class="book-example-scene one" role="img" aria-label="小狐狸在柳树旁发现蓝纸船"></div><div class="book-example-caption"><small>01 · 发现</small>柳树下，小狐狸发现了一只蓝色的纸船。</div></li>
-        <li><div class="book-example-scene two" role="img" aria-label="小狐狸沿着小溪寻找纸船的主人"></div><div class="book-example-caption"><small>02 · 寻找</small>他沿着小溪，一路寻找纸船的主人。</div></li>
-        <li><div class="book-example-scene three" role="img" aria-label="小狐狸把纸船还给小刺猬"></div><div class="book-example-caption"><small>03 · 相遇</small>原来，纸船是小刺猬不小心弄丢的。</div></li>
-        <li><div class="book-example-scene four" role="img" aria-label="小狐狸和小刺猬一起看纸船漂走"></div><div class="book-example-caption"><small>04 · 分享</small>夕阳下，他们一起看着纸船顺水飘远。</div></li>
+        <li><img class="book-example-scene" src="media/picturebook/fox-page-1.png" alt="小狐狸在柳树旁发现蓝纸船" loading="lazy" decoding="async"><div class="book-example-caption"><small>01 · 发现</small>柳树下，小狐狸发现了一只蓝色的纸船。</div></li>
+        <li><img class="book-example-scene" src="media/picturebook/fox-page-2.png" alt="小狐狸沿着小溪寻找纸船的主人" loading="lazy" decoding="async"><div class="book-example-caption"><small>02 · 寻找</small>它沿着小溪，一路寻找纸船的主人。</div></li>
+        <li><img class="book-example-scene" src="media/picturebook/fox-page-3.png" alt="小狐狸把纸船还给小刺猬" loading="lazy" decoding="async"><div class="book-example-caption"><small>03 · 相遇</small>原来，纸船是小刺猬不小心弄丢的。</div></li>
+        <li><img class="book-example-scene" src="media/picturebook/fox-page-4.png" alt="小狐狸和小刺猬一起看纸船漂走" loading="lazy" decoding="async"><div class="book-example-caption"><small>04 · 分享</small>夕阳下，它们一起看着纸船顺水漂远。</div></li>
       </ol>
-      <details class="book-example-details"><summary>查看一次生成的完整四格图</summary><img src="media/picturebook/fox-story-grid.png" alt="小狐狸与小刺猬的故事：一次生成的四格插画原图" loading="lazy"></details>
-      <p class="book-example-note">来源：本站原创虚构故事与内置 AI 图像生成工具；故事文字由本站编写、网页排版。四格来自同一张图，尚未导出或装订成册，也不代表本教程在所有外部工具中完整走通。</p>
+      <details class="book-example-details"><summary>看看画面是怎么调整的</summary><p>第一版插画里，小刺猬提前出现了。为了让故事顺序更清楚，我们让 AI 删除它，保留小狐狸和纸船。</p><div class="book-example-compare"><figure><img src="media/picturebook/fox-page-1-before.png" alt="修订前：小狐狸和提前出现的小刺猬" loading="lazy" decoding="async"><figcaption>生成后检查：小刺猬提前出现</figcaption></figure><figure><img src="media/picturebook/fox-page-1.png" alt="修订后：小狐狸独自发现纸船" loading="lazy" decoding="async"><figcaption>调整后：只保留小狐狸与纸船</figcaption></figure></div></details>
+      <a class="book-example-download" href="media/picturebook/fox-book.pdf" download="小狐狸和蓝纸船-四页绘本.pdf">查看完整四页绘本 PDF（约 2.3 MB）</a>
+      <p class="book-example-note">来源：本站原创虚构故事；内置 AI 图像工具分别生成和修改插画，再用本地演示文稿工具排版并通过 LibreOffice 导出。页面图片是生成结果，不是软件操作截图。绘本尚未实际打印或装订，WPS 制作流程也未验证。</p>
     </section>
     <div class="tcards sec" id="tcards"></div>
   </section>

@@ -1,5 +1,5 @@
 import {createServer} from 'node:http';
-import {realpathSync} from 'node:fs';
+import {createReadStream, realpathSync} from 'node:fs';
 import {readFile, realpath, stat} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
@@ -12,6 +12,7 @@ const contentTypes = {
   '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml',
   '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.webp':'image/webp',
   '.gif':'image/gif', '.ico':'image/x-icon', '.woff':'font/woff', '.woff2':'font/woff2',
+  '.mp4':'video/mp4', '.pdf':'application/pdf',
   '.ttf':'font/ttf', '.txt':'text/plain; charset=utf-8', '.xml':'application/xml; charset=utf-8',
 };
 
@@ -59,6 +60,22 @@ function send(res, status, body, method, headers = {}) {
   const bytes = Buffer.from(body);
   res.writeHead(status, {'Content-Type':'text/plain; charset=utf-8', 'Content-Length':bytes.length, ...headers});
   res.end(method === 'HEAD' ? undefined : bytes);
+}
+
+// One byte range is sufficient for video seeking; reject multipart ranges.
+function videoRange(header, size) {
+  const match = /^bytes=(\d*)-(\d*)$/.exec(header);
+  if (!match || (!match[1] && !match[2]) || size === 0) return null;
+  const first = match[1] ? Number(match[1]) : null;
+  const last = match[2] ? Number(match[2]) : null;
+  if ((first !== null && !Number.isSafeInteger(first)) ||
+      (last !== null && !Number.isSafeInteger(last))) return null;
+  if (first === null) {
+    if (last === 0) return null;
+    return {start:Math.max(0, size - last), end:size - 1};
+  }
+  if (first >= size || (last !== null && last < first)) return null;
+  return {start:first, end:last === null ? size - 1 : Math.min(last, size - 1)};
 }
 
 export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null} = {}) {
@@ -115,8 +132,10 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       if (!inside(assetsRoot, candidate)) return null;
       try {
         const actual = await realpath(candidate);
-        if (!inside(assetsRoot, actual) || !(await stat(actual)).isFile()) return null;
-        return {body:await readFile(actual), name:actual};
+        if (!inside(assetsRoot, actual)) return null;
+        const info = await stat(actual);
+        if (!info.isFile()) return null;
+        return {name:actual, size:info.size};
       } catch (error) {
         if (['ENOENT', 'ENOTDIR', 'EACCES'].includes(error.code)) return null;
         throw error;
@@ -130,12 +149,32 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       asset = await loadAsset('/index.html');
     }
     if (!asset) return send(res, 404, 'Not Found', req.method);
+    if (path.extname(asset.name).toLowerCase() === '.mp4') {
+      const headers = {'Content-Type':'video/mp4', 'Accept-Ranges':'bytes', 'Cache-Control':'no-cache'};
+      // A server without validators cannot establish that If-Range matches.
+      const hasRange = req.method === 'GET' && req.headers.range && !req.headers['if-range'];
+      const range = hasRange ? videoRange(req.headers.range, asset.size) : null;
+      if (hasRange && !range) {
+        res.writeHead(416, {...headers, 'Content-Range':`bytes */${asset.size}`, 'Content-Length':0});
+        return res.end();
+      }
+      if (range) headers['Content-Range'] = `bytes ${range.start}-${range.end}/${asset.size}`;
+      headers['Content-Length'] = range ? range.end - range.start + 1 : asset.size;
+      res.writeHead(range ? 206 : 200, headers);
+      if (req.method === 'HEAD' || asset.size === 0) return res.end();
+      const stream = createReadStream(asset.name, range || undefined);
+      stream.on('error', () => res.destroy());
+      res.on('close', () => stream.destroy());
+      stream.pipe(res);
+      return;
+    }
+    const body = await readFile(asset.name);
     res.writeHead(200, {
       'Content-Type':contentTypes[path.extname(asset.name).toLowerCase()] || 'application/octet-stream',
-      'Content-Length':asset.body.length,
+      'Content-Length':body.length,
       'Cache-Control':'no-cache',
     });
-    res.end(req.method === 'HEAD' ? undefined : asset.body);
+    res.end(req.method === 'HEAD' ? undefined : body);
   }
 
   const server = createServer((req, res) => {
