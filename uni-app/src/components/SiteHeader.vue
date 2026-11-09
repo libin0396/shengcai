@@ -1,5 +1,5 @@
 <template>
-  <view class="site-header" :style="{ paddingTop: statusBarHeight + 'px' }">
+  <view class="site-header" :class="{'tutorial-nav': tutorialFirst}" :style="{ paddingTop: statusBarHeight + 'px' }">
     <view class="site-header-main">
       <view class="site-brand" role="link" tabindex="0" aria-label="返回首页" @tap="go('/pages/discover/index')" @keydown.enter.prevent="go('/pages/discover/index')" @keydown.space.prevent="go('/pages/discover/index')">
         <view class="site-brand-mark">↗</view>
@@ -46,14 +46,21 @@ let statusBarHeight = 0;
 try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } catch {}
 // #endif
 // 网页顶栏按这个顺序；手机底部只放 5 个（真人案例收进首页），「找用法」放中间并突出
-const links = [
+const originalLinks = [
   { key: 'discover', label: '首页', url: '/pages/discover/index' },
   { key: 'library', label: '用法库', learn: 'jijiu.html' },
   { key: 'learn', label: tutorialFirst ? '教程' : '跟着做', learn: tutorialFirst ? 'guides.html' : 'index.html' },
   { key: 'intelligence', also: ['topic','events','simulate','article'], label: '真人案例', url: '/pages/intelligence/index' },
   { key: 'find', label: '找用法', learn: 'find.html' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
-].filter(link => !tutorialFirst || link.key !== 'intelligence');
+];
+const links = tutorialFirst ? [
+  { key: 'discover', label: '首页', url: '/pages/discover/index' },
+  { key: 'learn', label: '跟着做', learn: 'guides.html' },
+  { key: 'find', label: '搜索', learn: 'find.html' },
+  { key: 'library', label: '快捷提示词', learn: 'jijiu.html' },
+  { key: 'saved', label: '我的', url: '/pages/saved/index' },
+] : originalLinks;
 function isCurrent(link) { return props.active === link.key || (link.also || []).includes(props.active); }
 function goLink(link) { if (link.learn) { if (!openLearn(link.learn)) go('/pages/discover/index'); } else go(link.url); }
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
@@ -127,5 +134,22 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
   .site-nav-item.n-saved::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5 20v-1.2c0-3.4 3.2-5.5 7-5.5s7 2.1 7 5.5V20'/%3E%3C/svg%3E")}
   .site-nav-item.n-find{min-height:58px;padding-top:31px}
   .site-nav-item.n-find::before{top:3px;width:26px;height:26px;margin-left:-13px;background-size:16px}
+}
+/* 教程站：把分步动手放到前面，搜索仍保留独立入口。 */
+@media(min-width:701px){
+  .tutorial-nav .site-nav-item.n-find{padding:22px 0 19px;margin:0;height:auto;line-height:20px;border-bottom:3px solid transparent;border-radius:0;background:transparent;color:#9AA0AC;font-weight:600}
+  .tutorial-nav .site-nav-item.n-find.is-current{border-bottom-color:#2B44E6;color:#2B44E6}
+}
+@media(max-width:700px){
+  .tutorial-nav .site-nav-item.n-discover{order:1}
+  .tutorial-nav .site-nav-item.n-learn{order:2;color:#5369a8;font-weight:800}
+  .tutorial-nav .site-nav-item.n-find{order:3;color:#778292;font-weight:600}
+  .tutorial-nav .site-nav-item.n-library{order:4}
+  .tutorial-nav .site-nav-item.n-saved{order:5}
+  .tutorial-nav .site-nav-item.n-learn::before{opacity:1;filter:invert(20%) sepia(90%) saturate(4451%) hue-rotate(231deg) brightness(94%)}
+  .tutorial-nav .site-nav-item.n-learn.is-current{color:#2B44E6}
+  .tutorial-nav .site-nav-item.n-find::before{top:7px;width:21px;height:21px;margin-left:-10.5px;border-radius:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/21px no-repeat}
+  .tutorial-nav .site-nav-item.n-find.is-current{color:#2B44E6;font-weight:800}
+  .tutorial-nav .site-nav-item.n-find.is-current::before{filter:invert(20%) sepia(90%) saturate(4451%) hue-rotate(231deg) brightness(94%)}
 }
 </style>

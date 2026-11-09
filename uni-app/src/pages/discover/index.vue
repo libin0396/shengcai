@@ -4,32 +4,34 @@
     <view v-if="!tutorialFirst" class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
     <!-- #endif -->
     <SiteHeader active="discover" :has-banner="true" />
-    <view class="home-a">
+    <view class="home-a" :class="{'tutorial-home': tutorialFirst}">
       <view class="ha-hero">
       <view v-if="tutorialFirst" class="home-eyebrow"><text class="home-eyebrow-dot">●</text> AI 实用教程 · 从一件小事开始</view>
       <view class="ha-title">让普通人，<br/>也能用 AI 做成事</view>
       <view class="ha-sub">{{tutorialFirst ? '从生活里的小问题开始，跟着步骤练习，一步步用好 AI。' : '从课件、绘本开始，跟着步骤复制提示词，再到 AI 工具里做出你的作品。'}}</view>
-      <view v-if="tutorialFirst" class="hero-start-action" role="link" tabindex="0" @click="goQuick({id:'reply'})" @keydown.enter.prevent="goQuick({id:'reply'})">开始做第一件事 ↗</view>
+      <view class="hero-actions">
+        <view v-if="tutorialFirst" class="hero-start-action" role="link" tabindex="0" @click="goQuick({id:'reply'})" @keydown.enter.prevent="goQuick({id:'reply'})">开始做第一件事 ↗</view>
+        <!-- #ifdef H5 -->
+        <text class="ha-replay" role="button" tabindex="0" @click="replayTour" @keydown.enter.prevent="replayTour">第一次来？看看怎么用 ›</text>
+        <!-- #endif -->
+      </view>
       <!-- #ifdef H5 -->
       <view class="ha-search" id="tour-search" role="search">
         <input v-model="findQ" class="ha-input" maxlength="40" placeholder="你遇到了什么事？" aria-label="你遇到了什么事" confirm-type="search" @confirm="goFind"/>
-        <button class="ha-send" @click="goFind">找用法</button>
+        <button class="ha-send" @click="goFind">搜索</button>
       </view>
       <!-- #endif -->
       <!-- #ifndef H5 -->
-      <view class="ha-search" id="tour-search"><text class="ha-input">遇到什么事？打开后输入</text><button class="ha-send" @click="goFind">找用法</button></view>
+      <view class="ha-search" id="tour-search"><text class="ha-input">遇到什么事？打开后输入</text><button class="ha-send" @click="goFind">搜索</button></view>
       <!-- #endif -->
       <view class="ha-chips"><text v-for="c in quick" :key="c.label" role="link" tabindex="0" @click="goQuick(c)" @keydown.enter.prevent="goQuick(c)">{{c.label}}</text></view>
       <view class="ha-trust"><text><text class="ck">✓</text>零基础也能开始</text><text><text class="ck">✓</text>跟着步骤做</text><text><text class="ck">✓</text>提示词可复制</text></view>
-      <!-- #ifdef H5 -->
-      <text class="ha-replay" role="button" tabindex="0" @click="replayTour" @keydown.enter.prevent="replayTour">第一次来？看看怎么用 ›</text>
-      <!-- #endif -->
       </view>
       <view v-if="tutorialFirst" class="ha-levels" id="tour-make">
         <view class="level-heading"><view><text class="level-kicker">CHOOSE YOUR START</text><view class="level-heading-title">选一件事，开始做</view><text class="level-heading-desc">从适合自己的地方出发，不用按顺序。</text></view><text class="level-all" role="link" tabindex="0" @click="openLearnPage('guides.html')" @keydown.enter.prevent="openLearnPage('guides.html')">全部教程 ↗</text></view>
         <view class="level-list">
           <view class="level-card level-first" role="link" tabindex="0" @click="goQuick({id:'reply'})" @keydown.enter.prevent="goQuick({id:'reply'})">
-            <view class="level-mark" aria-hidden="true"><text>✎</text></view>
+            <view class="level-visual" aria-hidden="true"><image src="/static/design/write-message-illustration.jpg" mode="aspectFill"/><text>配图示意</text></view>
             <view class="level-body"><view class="level-card-top"><text class="level-badge">初级 · 开始使用</text><text class="level-label">第一次来推荐</text></view>
             <view class="level-title">写一条不好开口的消息</view><view class="level-description">告诉 AI 你的情况，试着写一条合适的消息。</view><view class="level-action">开始尝试 <text>↗</text></view></view>
           </view>
@@ -39,7 +41,7 @@
             <view class="level-title">陪孩子讲懂一道题</view><view class="level-description">补充孩子的情况，让 AI 帮你理清讲题思路。</view><view class="level-action">看看怎么用 <text>↗</text></view></view>
           </view>
           <view class="level-card level-future">
-            <view class="level-visual" aria-hidden="true"><image src="/static/design/boat.jpg" mode="aspectFill"/><text>配图示意</text></view>
+            <view class="level-visual" aria-hidden="true"><image src="/static/design/ai-assistant-illustration.jpg" mode="aspectFill"/><text>配图示意</text></view>
             <view class="level-body"><view class="level-card-top"><text class="level-badge level-badge-high">高级 · 完成项目</text><text class="level-soon">筹备中</text></view>
             <view class="level-title">做一个自己的 AI 助手</view><view class="level-description">设定任务、反复调整，做出可复用的助手。</view><view class="level-action level-muted">完整教程正在准备</view></view>
           </view>
@@ -58,13 +60,6 @@
       <view v-if="!tutorialFirst" class="ha-aid ha-aid2" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
     </view>
     <view v-if="tutorialFirst" class="tutorial-shelf">
-      <view class="shelf-heading"><view><view class="shelf-title">值得试试的用法</view><text class="shelf-sub">从一件小事开始，把提示词交给 AI 试试。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')">全部用法 ↗</text></view>
-      <view class="everyday-grid">
-        <view v-for="(item,index) in everydayCards" :key="item.id" class="everyday-card" role="link" tabindex="0" @click="goQuick(item)" @keydown.enter.prevent="goQuick(item)">
-          <view class="everyday-number">{{String(index+1).padStart(2,'0')}}</view>
-          <view class="everyday-content"><text class="everyday-category">{{item.category}}</text><view class="everyday-title">{{item.title}}</view><text class="everyday-description">{{item.description}}</text><text class="everyday-action">看看怎么用 →</text></view>
-        </view>
-      </view>
       <view class="shelf-heading showcase-heading"><view><view class="shelf-title">跟着做，做出自己的作品</view><text class="shelf-sub">从教程开始，按步骤在 AI 工具中亲手完成。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('guides.html')" @keydown.enter.prevent="openLearnPage('guides.html')">全部教程 ↗</text></view>
       <view class="showcase-grid">
         <view v-for="item in showcaseCards" :key="item.page" class="showcase-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)">
@@ -72,9 +67,16 @@
           <view class="showcase-copy"><text class="showcase-tag">跟着步骤做</text><view class="showcase-title">{{item.title}}</view><text class="showcase-description">{{item.description}}</text><view class="showcase-action">查看教程 ↗</view></view>
         </view>
       </view>
-      <view class="shelf-heading more-heading"><view><view class="shelf-title">发现更多用法</view><text class="shelf-sub">每篇都有步骤和提示词，按自己的节奏来。</text></view></view>
+      <view class="shelf-heading more-heading"><view><view class="shelf-title">更多可以跟着做的事</view><text class="shelf-sub">每篇都有步骤和提示词，按自己的节奏来。</text></view></view>
       <view class="tutorial-grid"><view v-for="item in tutorialCards" :key="item.id" class="tutorial-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)"><view v-if="hasCover(item.id)" class="tutorial-card-cover"><image :src="tutorialCovers[item.id].src" :alt="tutorialCovers[item.id].alt" mode="aspectFit" lazy-load loading="lazy" @error="onCoverError(item.id)"/><text>{{tutorialCovers[item.id].label}}</text></view><view class="tutorial-card-top"><text>{{item.category}}</text><text>↗</text></view><text class="tutorial-card-title">{{item.title}}</text><text class="tutorial-card-desc">{{item.description}}</text><text class="tutorial-card-action">跟着步骤做 →</text></view></view>
-      <view class="tutorial-library" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')"><view><text class="tutorial-library-title">生活里遇到小事？</text><text class="tutorial-library-desc">打开用法库，复制一句提示词就能开始。</text></view><text>逛用法库 ↗</text></view>
+      <view class="shelf-heading everyday-heading"><view><view class="shelf-title">日常小事，快速问 AI</view><text class="shelf-sub">从一件小事开始，把提示词交给 AI 试试。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')">全部快捷提示词 ↗</text></view>
+      <view class="everyday-grid">
+        <view v-for="(item,index) in everydayCards" :key="item.id" class="everyday-card" role="link" tabindex="0" @click="goQuick(item)" @keydown.enter.prevent="goQuick(item)">
+          <view class="everyday-number">{{String(index+1).padStart(2,'0')}}</view>
+          <view class="everyday-content"><text class="everyday-category">{{item.category}}</text><view class="everyday-title">{{item.title}}</view><text class="everyday-description">{{item.description}}</text><text class="everyday-action">看看怎么用 →</text></view>
+        </view>
+      </view>
+      <view class="tutorial-library" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')"><view><text class="tutorial-library-title">生活里遇到小事？</text><text class="tutorial-library-desc">打开快捷提示词，复制一句话就能开始。</text></view><text>查看快捷提示词 ↗</text></view>
     </view>
     <view class="content-shell">
       <view v-if="!tutorialFirst" class="highlights-grid">
@@ -114,10 +116,10 @@ function updateJoinBar(){showJoinBar.value=window.scrollY>600}
 onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});updateJoinBar()});
 let tourMounted=false,tourScript=null,tourPendingForce=false,tourTimer=null;
 const tourSteps=[
-  {sel:'#tour-search',title:'遇到事，搜这里',text:'说一句你遇到的事，找一句能复制给 AI 的提示词。'},
+  {sel:'#tour-search',title:'遇到事，搜这里',text:'搜索站内的做事步骤和快捷提示词。'},
   {sel:'#tour-make',title:'选一件事，开始做',text:'从初级到高级，选自己感兴趣的内容。'},
-  {sel:'#tour-lib',title:'用法库',text:'平时的小事，打开一张，复制就行。'},
-  {sel:'.site-nav-scroll',title:'随时回到这里',text:tutorialFirst?'首页、用法库、找用法、教程、我的。':'首页、用法库、找用法、跟着做、我的。'},
+  {sel:'#tour-lib',title:'快捷提示词',text:'遇到日常小事，选一句复制给 AI。'},
+  {sel:'.site-nav-scroll',title:'随时回到这里',text:tutorialFirst?'首页、跟着做、搜索、快捷提示词、我的。':'首页、用法库、找用法、跟着做、我的。'},
 ];
 function loadTour(force){
   const run=()=>{if(!tourMounted)return;if(window.AINPETour)window.AINPETour.start(tourSteps,{force});};
@@ -413,7 +415,9 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 @media(max-width:700px){.shelf-heading{align-items:flex-start;flex-direction:column;gap:5px}.shelf-more{margin-top:2px}}
 @media(max-width:360px){.tutorial-card{padding:12px}.tutorial-card-title{font-size:14px}.drama-foot{align-items:start;flex-direction:column}}
 /* V51 首页：保留醒目搜索与本地教程。 */
-.hero-start-action{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;padding:0 20px;min-height:46px;border-radius:12px;background:#2849e9;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;margin-top:20px}
+.hero-actions .ha-replay{display:inline-flex;align-items:center;min-height:44px}
+.hero-start-action{display:inline-flex;align-items:center;justify-content:center;padding:0 20px;min-height:46px;border-radius:12px;background:#2849e9;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
 .ha-levels{box-sizing:border-box;margin-top:24px;padding:20px;border:1px solid #e0e5ee;border-radius:20px;background:#fff;box-shadow:0 12px 30px -26px #5266a0}
 .level-heading,.level-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
 .level-kicker{display:block;color:#7181a5;font-size:10px;font-weight:800;letter-spacing:.08em}
@@ -454,7 +458,7 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 .everyday-title{margin-top:4px;font-size:15px;line-height:1.4;color:#161a23;font-weight:800}
 .everyday-description{display:block;margin-top:5px;font-size:12px;line-height:1.55;color:#69768a}
 .everyday-action{display:block;margin-top:10px;font-size:12px;font-weight:800;color:#2b44e6}
-.showcase-heading{margin-top:38px}.showcase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.showcase-heading{margin-top:0}.everyday-heading{margin-top:38px}.showcase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
 .showcase-card{min-width:0;overflow:hidden;background:#fff;border:1px solid #e7e9ee;border-radius:17px;cursor:pointer}
 .showcase-image{position:relative;height:145px;overflow:hidden;background:#e9edf2}.showcase-image image{display:block;width:100%;height:100%}.showcase-image text{position:absolute;left:10px;top:10px;padding:4px 8px;border-radius:7px;background:rgba(22,26,35,.62);color:#fff;font-size:11px;font-weight:700}
 .showcase-copy{padding:15px}.showcase-tag{font-size:11px;color:#4261c9;font-weight:700}.showcase-title{margin-top:5px;font-size:16px;line-height:1.4;font-weight:850;color:#161a23}.showcase-description{display:block;margin-top:6px;font-size:12px;color:#69768a;line-height:1.55}.showcase-action{margin-top:14px;color:#2b44e6;font-size:12px;font-weight:800}
@@ -463,6 +467,19 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 @media(min-width:900px){.ha-levels{padding:0}.everyday-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.everyday-card{min-height:168px}.showcase-grid{max-width:750px;gap:16px}.showcase-image{height:190px}.tutorial-shelf{margin-top:64px}}
 @media(max-width:600px){.level-card{min-height:106px}.showcase-grid{grid-template-columns:1fr}.showcase-card{display:grid;grid-template-columns:38% minmax(0,1fr)}.showcase-image{height:auto;min-height:150px}.showcase-image image{position:absolute;inset:0}.showcase-copy{display:flex;flex-direction:column;align-items:flex-start}.showcase-action{margin-top:auto;padding-top:12px}.tutorial-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:360px){.level-card{gap:10px;padding:12px}.level-mark{width:46px;height:46px;flex-basis:46px}.level-title{font-size:15px}.level-label{font-size:10px}.showcase-grid{grid-template-columns:1fr}}
+/* On phones, show things to do before the secondary search and quick prompts. */
+@media(max-width:700px){
+  .home-a.tutorial-home{display:flex;flex-direction:column}
+  .tutorial-home .ha-hero{display:contents}
+  .tutorial-home .home-eyebrow{order:0}
+  .tutorial-home .ha-title{order:1}
+  .tutorial-home .ha-sub{order:2}
+  .tutorial-home .hero-actions{order:3}
+  .tutorial-home .ha-levels{order:4;width:100%}
+  .tutorial-home .ha-search{order:5;width:100%;box-sizing:border-box}
+  .tutorial-home .ha-chips{order:6}
+  .tutorial-home .ha-trust{order:7}
+}
 @media(max-width:360px){.level-visual{flex-basis:62px;width:62px;height:66px}}
 </style>
 

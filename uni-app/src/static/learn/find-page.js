@@ -2,7 +2,7 @@
 (function(){
   var L=window.Learn;L.chrome('find');
   var tutorialFirst=!!(window.AINPE_SITE_MODE&&window.AINPE_SITE_MODE.tutorialFirst);
-  if(tutorialFirst){var intro=L.$('.find-intro');if(intro)intro.textContent='说说你想做什么，找提示词、教程和相近体验。'}
+  if(tutorialFirst){var intro=L.$('.find-intro');if(intro)intro.textContent='搜索站内教程和提示词，找一件你想做的事。'}
   var AIDS=window.AINPE_AIDS||[];
   // 每张卡的关键词（用户常说的话）
   var KW={
@@ -11,7 +11,7 @@
     summary:['文章','长文','总结','太长','重点','没空看','概括','读完'],
     homework:['作业','题目','做题','试题','辅导','数学题','语文题','英语题','不会讲','讲题','孩子学习'],
     menu:['吃什么','菜单','买菜','炒菜','做菜','晚饭','做饭','冰箱','菜谱','食谱','早餐','午饭'],
-    meeting:['会议','纪要','记录','开会','录音','笔记'],
+    meeting:['会议','纪要','开会','会议记录','会议笔记'],
     excel:['表格','公式','excel','数据','wps','统计'],
     trip:['去哪玩','出去玩','周末','旅游','出游','带娃','攻略','行程','景点'],
     caption:['朋友圈','文案','配文','配一句','照片','小红书','发什么'],
@@ -33,6 +33,23 @@
   ]);
 
   function norm(s){return String(s||'').toLowerCase().replace(/\s+/g,'')}
+  // 通用词（如「笔记」）不能压过更具体的「会议笔记」。
+  function matchGuides(q,all){
+    var generic=['笔记','图文','生图'];
+    var hits=all.map(function(g){
+      var words=(g.keywords||[]).map(norm).filter(function(w){return w&&generic.indexOf(w)<0&&q.indexOf(w)>=0});
+      var best=words.reduce(function(n,w){return Math.max(n,w.length)},0);
+      return {guide:g,best:best};
+    }).filter(function(x){return x.best>0});
+    // 没有具体词命中时，再用泛词兜底，避免只搜“笔记”时漏掉教程。
+    if(!hits.length){
+      hits=all.map(function(g){
+        var words=(g.keywords||[]).map(norm).filter(function(w){return generic.indexOf(w)>=0&&q.indexOf(w)>=0});
+        return {guide:g,best:words.reduce(function(n,w){return Math.max(n,w.length)},0)};
+      }).filter(function(x){return x.best>0});
+    }
+    return hits.sort(function(a,b){return b.best-a.best}).slice(0,4).map(function(x){return x.guide});
+  }
   function score(q,words,extra){
     var s=0;words.forEach(function(w){if(q.indexOf(norm(w))>=0)s+=w.length>1?2:1});
     if(extra&&norm(extra).indexOf(q)>=0&&q.length>=3)s+=3;
@@ -86,9 +103,9 @@
     var feed=await feedPromise,r=match(q);
     var extra=window.AINPEFindSearch.search(q,feed.ok?feed.data.articles:[],tutorialFirst?[]:(window.AINPE_FIND_CASES||[]));
     var qnorm=norm(q),allGuides=window.AINPE_GUIDES||[];
-    var guides=allGuides.filter(function(g){return (g.keywords||[]).some(function(k){return qnorm.indexOf(norm(k))>=0})}).slice(0,4);
+    var guides=matchGuides(qnorm,allGuides);
     // 泛化的“做视频”不一定是短剧；给出相关教程供选择，并保留需求反馈。
-    var relatedGuides=!guides.length&&/短片|视频制作|做视频|制作视频|剪视频|剪个视频|视频剪辑/.test(qnorm)
+    var relatedGuides=!guides.length&&/短片|视频制作|做视频|制作视频|剪视频|剪个视频|视频剪辑|ai视频/.test(qnorm)
       ?allGuides.filter(function(g){return g.id==='short-drama'||g.id==='video-script'}):[];
     var direct=!!(r.aids.length||r.proj||guides.length),related=!!(relatedGuides.length||extra.cases.length||(!tutorialFirst&&extra.simulation));
     // 统计以非空提交次数计；快照不可用时不统计，避免误记无结果。
@@ -96,7 +113,7 @@
     var html='';
     if(!feed.ok)html+='<p class="find-partial">部分站内资料暂时无法读取，下面显示当前设备已有的内容。</p>';
     if(!direct&&!related){
-      html+='<div class="card"><b class="h3">暂时没找到，换句话试试</b><p class="note">也可以先看看其他方向。</p><a class="btn ln sm" href="jijiu.html">浏览用法库</a> <a class="btn ln sm" href="index.html">看看跟着做</a></div>';
+      html+='<div class="card"><b class="h3">暂时没找到站内相关内容</b><p class="note">换个词试试，或先看看已有的教程和提示词。你也可以在下方自愿提交想补充的方向。</p><a class="btn ln sm" href="guides.html">浏览教程</a> <a class="btn ln sm" href="jijiu.html">看看实用提示词</a></div>';
     }
     if(extra.isShortDrama&&!guides.some(function(g){return g.id==='short-drama'}))html+='<p class="find-partial">短剧分步教程暂未找到，可以试试其他关键词。</p>';
     if(guides.length){

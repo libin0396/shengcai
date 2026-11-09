@@ -63,11 +63,12 @@
       a.addEventListener('click',function(){track('outbound_click',{target:'camp',from:'learn'})});
       doc.body.insertBefore(a,hdr);
     }
-    var NAVICON={home:'<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',library:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',learn:'<path d="M3 20h6v-5h6v-5h6"/>',mine:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'};
-    var nav=doc.createElement('nav');nav.className='lnav';nav.setAttribute('aria-label','主导航');
-    [['home','首页','/#/pages/discover/index'],['library','用法库','/static/learn/jijiu.html'],['learn',tutorialMode?'教程':'跟着做',tutorialMode?'/static/learn/guides.html':'/static/learn/index.html'],['find','找用法','/static/learn/find.html'],['mine','我的','/#/pages/saved/index']].forEach(function(l){
-      var a=doc.createElement('a');a.href=l[2];var on=l[0]===active;if(l[0]==='find')a.classList.add('nfind');
-      a.innerHTML='<i>'+(NAVICON[l[0]]?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+NAVICON[l[0]]+'</svg>':'')+'</i><span>'+l[1]+'</span>';
+    var NAVICON={home:'<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-5h4v5"/>',library:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',learn:'<path d="M3 20h6v-5h6v-5h6"/>',find:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',mine:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>'};
+    var nav=doc.createElement('nav');nav.className='lnav'+(tutorialMode?' tutorial-nav':'');nav.setAttribute('aria-label','主导航');
+    var navItems=tutorialMode ? [['home','首页','/#/pages/discover/index'],['learn','跟着做','/static/learn/guides.html'],['find','搜索','/static/learn/find.html'],['library','快捷提示词','/static/learn/jijiu.html'],['mine','我的','/#/pages/saved/index']] : [['home','首页','/#/pages/discover/index'],['library','用法库','/static/learn/jijiu.html'],['learn','跟着做','/static/learn/index.html'],['find','找用法','/static/learn/find.html'],['mine','我的','/#/pages/saved/index']];
+    navItems.forEach(function(l){
+      var a=doc.createElement('a');a.href=l[2];var on=l[0]===active;if(l[0]==='find'&&!tutorialMode)a.classList.add('nfind');if(l[0]==='learn'&&tutorialMode)a.classList.add('nlearn');
+      a.innerHTML='<i>'+(NAVICON[l[0]]&&(l[0]!=='find'||tutorialMode)?'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+NAVICON[l[0]]+'</svg>':'')+'</i><span>'+l[1]+'</span>';
       if(on){a.classList.add('on');a.setAttribute('aria-current','page')}nav.appendChild(a);
     });
     hdr.querySelector('.w').appendChild(nav);

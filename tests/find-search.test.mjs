@@ -108,7 +108,7 @@ test('failed feed leaves feedback available without counting an incomplete searc
 
 test('common tutorial searches return the matching guide without sending the query',async()=>{
   const script=await readFile('uni-app/src/static/learn/find-page.js','utf8');
-  for(const [query,id] of [['怎么做短剧','short-drama'],['写短视频脚本','video-script'],['做商品宣传图','product-poster'],['整理会议纪要','meeting-notes'],['写小红书笔记','content-notes']]){
+  for(const [query,id] of [['怎么做短剧','short-drama'],['写短视频脚本','video-script'],['做商品宣传图','product-poster'],['整理会议纪要','meeting-notes'],['写小红书笔记','content-notes'],['笔记','content-notes'],['生图','product-poster']]){
     const form={handlers:{},addEventListener(t,fn){this.handlers[t]=fn}},input={value:query,blur(){}},results={innerHTML:''},chips={innerHTML:''},mount={};
     const byId={'#fsearch':form,'#fq':input,'#fres':results,'#fchips':chips,'#find-feedback-mount':mount},requests=[];
     const L={chrome(){},$(s){return byId[s]},$$(){return []},track(){},esc(s){return String(s)},aidIcon(){return ''}};
@@ -130,5 +130,33 @@ test('generic short-video questions show relevant tutorials as suggestions and k
     form.handlers.submit({preventDefault(){}});await new Promise(resolve=>setImmediate(resolve));
     assert.match(results.innerHTML,/暂时没有完全匹配的教程/);assert.match(results.innerHTML,/guide.html\?id=short-drama/);
     assert.equal(outcomes[0][0],true);assert.equal(outcomes[0][2],true);
+  }
+});
+
+test('specific searches avoid generic mismatches and ambiguous requests do not promise a match',async()=>{
+  const script=await readFile('uni-app/src/static/learn/find-page.js','utf8');
+  const aidsSource=await readFile('uni-app/src/static/learn/aids-data.js','utf8');
+  for(const query of ['会议笔记','录音转文字','AI视频怎么做']){
+    const form={handlers:{},addEventListener(t,fn){this.handlers[t]=fn}},input={value:query,blur(){}},results={innerHTML:''},chips={innerHTML:''},mount={},out={innerHTML:''},copy={addEventListener(){}};
+    const byId={'#fsearch':form,'#fq':input,'#fres':results,'#fchips':chips,'#find-feedback-mount':mount,'#fout':out,'#fcopy':copy},outcomes=[];
+    const L={chrome(){},$(s){return byId[s]},$$(){return []},track(){},esc(s){return String(s)},aidIcon(){return ''}};
+    const win={Learn:L,AINPE_GUIDES:guides,AINPE_SITE_MODE:{tutorialFirst:true},AINPEFindSearch:context.window.AINPEFindSearch,AINPEFindFeedback:{onSearch(...args){outcomes.push(args)}}};
+    const ctx={window:win,location:{search:''},URLSearchParams,sessionStorage:{getItem(){return null},removeItem(){}},Promise,Date,Number,String};
+    vm.runInNewContext(aidsSource,ctx);vm.runInNewContext(script,ctx);
+    form.handlers.submit({preventDefault(){}});await new Promise(resolve=>setImmediate(resolve));
+    if(query==='会议笔记'){
+      assert.match(results.innerHTML,/guide.html\?id=meeting-notes/);
+      assert.doesNotMatch(results.innerHTML,/guide.html\?id=content-notes/);
+      assert.ok(results.innerHTML.indexOf('guide.html?id=meeting-notes')<results.innerHTML.indexOf('复制提示词'));
+    }else if(query==='录音转文字'){
+      assert.match(results.innerHTML,/暂时没找到站内相关内容/);
+      assert.doesNotMatch(results.innerHTML,/会议记录整理成纪要/);
+      assert.match(results.innerHTML,/自愿提交想补充的方向/);
+      assert.equal(outcomes[0][0],false);
+    }else{
+      assert.match(results.innerHTML,/暂时没有完全匹配的教程/);
+      assert.match(results.innerHTML,/guide.html\?id=short-drama/);
+      assert.equal(outcomes[0][2],true);
+    }
   }
 });

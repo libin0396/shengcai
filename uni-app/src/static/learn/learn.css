@@ -333,6 +333,10 @@ html.is-mp .ihero{padding-top:20px}
   .lnav a:nth-child(3){order:4}
   .lnav a:nth-child(4){order:3}
   .lnav a:nth-child(5){order:5}
+  /* 教程站导航按文档顺序显示，并让“跟着做”更容易发现。 */
+  .lnav.tutorial-nav a:nth-child(n){order:initial}
+  .lnav.tutorial-nav a.nlearn{color:#5369a8;font-weight:800}
+  .lnav.tutorial-nav a.nlearn.on{color:var(--blue)}
 }
 @media (min-width:701px){
   body{padding-bottom:32px}
