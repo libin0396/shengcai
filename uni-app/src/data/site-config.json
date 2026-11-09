@@ -1,6 +1,9 @@
 {
   "chineseName": "AI 实战情报站",
   "englishBrand": "AINPE",
+  "contentSync": {
+    "automaticUpdatesPaused": true
+  },
   "promotion": {
     "status": "unverified",
     "eventUrls": {},

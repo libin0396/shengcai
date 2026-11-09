@@ -186,3 +186,13 @@ test('persona events accept only an anonymous boolean and report browser counts'
   }finally{db.close()}
  }finally{await x.close()}
 });
+
+test('coarse activity samples and separated learning categories reject extra data',async()=>{
+ const x=await setup();try{
+  const base={played:false,ts:Date.now(),did:'a'.repeat(32)};
+  assert.equal((await x.post({...base,event:'active_sample'})).status,202);
+  for(const extra of [{page:'home'},{from:'home'},{game:'find'},{tier:'reply'},{target:'camp'},{hidden:true},{played:true},{text:'sensitive'}])assert.equal((await x.post({...base,event:'active_sample',...extra})).status,400);
+  for(const game of ['find','library','jijiu'])assert.equal((await x.post({...base,event:'learn_view',page:'learn',game})).status,202);
+  assert.equal((await x.post({...base,event:'learn_view',page:'learn',game:'input'})).status,400);
+ }finally{await x.close()}
+});

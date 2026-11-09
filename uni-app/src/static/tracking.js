@@ -1,9 +1,10 @@
 (function(root){
   'use strict';
-  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save','learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy'];
+  if(root.AINPETrack)return;
+  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save','learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy','active_sample'];
   var TARGETS=['camp','join','source','event','referral'], SOURCES=['article','camp','result','mine','home','home_bar','event','header','footer','library','events','simulate','bar','learn'];
   var LEARN_EVENTS=['learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy'];
-  var LEARN_TOPICS=['index','kejian','huiben','jijiu'], WANT_CATEGORIES=['kejian','huiben','video','novel','tuwen','assistant','money','other'];
+  var LEARN_TOPICS=['index','kejian','huiben','jijiu','library','find'], WANT_CATEGORIES=['kejian','huiben','video','novel','tuwen','assistant','money','other'];
   var LEARN_TIERS=['basic','pro','start','file','wx','xhs','need','write','pages','redline','cover','caption','excel','homework','learnai','meeting','menu','notice','reply','summary','trip'];
   var KEY='ainpe:anonymous-device', ID=/^[a-z0-9][a-z0-9_-]{0,39}$/, did='';
   // Only this browser is excluded. Consume the URL control so it isn't shared.
@@ -70,4 +71,18 @@
     return false;
   }
   root.AINPETrack={track:track,isInternal:function(){return internal}};
+  // Coarse, best-effort foreground activity samples; no text, URL, or new ID.
+  // Hidden pages, inactive pages, admin pages, and privacy-opted-out visitors
+  // are not sampled. Multiple open tabs can still count separately.
+  if(root.document && typeof root.document.addEventListener==='function' && typeof root.setInterval==='function'){
+    var lastActivity=0,lastTick=Date.now(), doc=root.document;
+    function activity(){if(doc.visibilityState==='visible')lastActivity=Date.now()}
+    ['pointerdown','keydown','scroll','touchstart'].forEach(function(name){doc.addEventListener(name,activity,{passive:true})});
+    doc.addEventListener('visibilitychange',function(){lastActivity=0;lastTick=Date.now()});
+    root.setInterval(function(){
+      var now=Date.now(),elapsed=now-lastTick;lastTick=now;
+      var where=root.location||{},admin=String(where.hash||'').indexOf('#/admin')===0 || String(where.pathname||'').indexOf('/admin')===0;
+      if(!admin && doc.visibilityState==='visible' && lastActivity>0 && now-lastActivity<=30000 && elapsed>=14000 && elapsed<=30000)track('active_sample',{});
+    },15000);
+  }
 })(typeof window==='undefined'?globalThis:window);

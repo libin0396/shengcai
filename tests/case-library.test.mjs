@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary,relatedReviewedCases} from '../uni-app/src/data/case-library.mjs';
+import {isCaseLibraryItem,cleanCaseTitle,shortCaseSummary,relatedReviewedCases,hideEarningsFigures} from '../uni-app/src/data/case-library.mjs';
 
 test('case library filters source promotions, solicitations, events and bypass content even when tagged AI',()=>{
   for(const title of [
@@ -35,6 +35,20 @@ test('short summaries show a truncation cue and remove source labels',()=>{
   assert.equal(shortCaseSummary('标题：作者做了一个项目'),'作者做了一个项目…');
   assert.equal(shortCaseSummary('已经完整。'),'已经完整。');
   assert.equal(shortCaseSummary(''),'当前资料不足，暂无法展示摘要。');
+});
+
+test('display-only earnings masking preserves ordinary prose, costs and nonfinancial results',()=>{
+  assert.equal(cleanCaseTitle('标题：半年变现7w AI定制视频项目经验复盘'),'半年变现（金额未展示） AI定制视频项目经验复盘');
+  assert.equal(hideEarningsFigures('7条视频2000万播放，单月收入1万+'),'7条视频2000万播放，单月收入（金额未展示）');
+  assert.equal(hideEarningsFigures('1500元成本，自然流撬动12万签单'),'1500元成本，自然流撬动（金额未展示）签单');
+  assert.equal(hideEarningsFigures('YouTube月入万刀、视频号百万GMV'),'YouTube月入（金额未展示）、视频号（金额未展示）GMV');
+  assert.equal(hideEarningsFigures('单月利润6位数，收入十多万元'),'单月利润（金额未展示），收入（金额未展示）');
+  assert.equal(cleanCaseTitle('AI视频获奖，拿到5000大洋加2万即梦积分啦'),'AI视频获奖，拿到（金额未展示）加2万即梦积分啦');
+  assert.equal(hideEarningsFigures('获得 3000 元现金奖，奖金五百元'),'获得 （金额未展示）现金奖，奖金（金额未展示）');
+  for(const value of ['收入一直下降','收入一部分来自卖课','收益2个月','花12万找FDE踩坑','投入300元，涨粉3300，成交49单','拿到2000万播放','拿到2万即梦积分','奖金2万积分','收到5000积分'])assert.equal(hideEarningsFigures(value),value);
+  assert.equal(shortCaseSummary('作者月收入5000元，涨粉3300。'),'作者月收入（金额未展示），涨粉3300。');
+  assert.equal(hideEarningsFigures('参与者完成模拟后收入¥500'), '参与者完成模拟后收入（金额未展示）');
+  // This function is applied to article presentation only, not simulation data.
 });
 
 test('related reviewed cases preserve editorial choices and only fill with meaningful matches',()=>{

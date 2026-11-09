@@ -9,6 +9,7 @@ import path from 'node:path';
 const MAX_BODY=1024, SESSION_MS=4*60*60*1000, COOKIE='__Host-ainpe_stats';
 const PARAMS={N:16384,r:8,p:1,maxmem:64*1024*1024};
 const METRICS={
+  activeSamples:{event:'active_sample'},
   siteViews:{event:'site_view'}, simStarts:{event:'sim_start'}, simFinishes:{event:'sim_finish'},
   campViews:{event:'camp_view'}, campClicks:{event:'camp_join_click'},
   posterQrVisits:{sources:[['challenge_open','poster_qr'],['site_view','persona_qr']]},
@@ -83,7 +84,7 @@ function summary(dbPath,root,days){
     if(columns.includes('game')){
       // Fixed topic keys only. Never return visitor-entered text or device identifiers.
       result.wants=Object.fromEntries(db.prepare("SELECT game,COUNT(DISTINCT device_hash) AS browsers FROM events WHERE event='want_submit' AND game IN ('kejian','huiben','video','novel','tuwen','assistant','money','other') AND created_at>=? AND created_at<? GROUP BY game").all(since,until).map(x=>[x.game,Number(x.browsers)]));
-      result.learnByTopic=Object.fromEntries(db.prepare("SELECT game,SUM(CASE WHEN event='learn_view' THEN 1 ELSE 0 END) AS views,COUNT(DISTINCT CASE WHEN event='learn_view' THEN device_hash END) AS browsers,COUNT(DISTINCT CASE WHEN event='learn_done' THEN device_hash END) AS doneBrowsers FROM events WHERE event IN ('learn_view','learn_done') AND game IN ('index','kejian','huiben','jijiu') AND created_at>=? AND created_at<? GROUP BY game").all(since,until).map(x=>[x.game,{views:Number(x.views),browsers:Number(x.browsers),doneBrowsers:Number(x.doneBrowsers)}]));
+      result.learnByTopic=Object.fromEntries(db.prepare("SELECT game,SUM(CASE WHEN event='learn_view' THEN 1 ELSE 0 END) AS views,COUNT(DISTINCT CASE WHEN event='learn_view' THEN device_hash END) AS browsers,COUNT(DISTINCT CASE WHEN event='learn_done' THEN device_hash END) AS doneBrowsers FROM events WHERE event IN ('learn_view','learn_done') AND game IN ('index','kejian','huiben','jijiu','library','find') AND created_at>=? AND created_at<? GROUP BY game").all(since,until).map(x=>[x.game,{views:Number(x.views),browsers:Number(x.browsers),doneBrowsers:Number(x.doneBrowsers)}]));
       const row=db.prepare(`WITH starts AS (
         SELECT device_hash,game,MIN(created_at) AS at FROM events
         WHERE event='sim_start' AND game IS NOT NULL AND created_at>=? AND created_at<? GROUP BY device_hash,game

@@ -1,4 +1,4 @@
-<template><view><SiteHeader :active="active"/><view class="wrap"><view class="hero"><text class="tag">AINPE · 专题</text><text class="title">{{title}}</text><text class="desc">{{description}}</text><button class="topic-action" @click="goSimulation">探索模拟项目 →</button></view><view class="section"><text class="heading">实战文章与一线反馈</text><text class="muted">已收录 {{filtered.length}} 篇 · {{feedMeta.source}}</text></view><view v-for="item in filtered" :key="item.id" class="row" @click="openArticle(item)"><view class="row-top"><text class="kind">{{item.kind || '分享'}}</text><text class="small">一位生财圈友</text></view><text class="article-title">{{item.title}}</text><text class="summary">{{item.overview||item.summary}}</text><view class="row-end"><text>查看站内导读 →</text><text @click.stop="toggle(item)">{{isSaved(item)?'已收藏':'收藏'}}</text></view></view><view v-if="!filtered.length" class="empty">暂未收录相关内容。</view></view><CampFooter/><SiteFooter /></view></template>
+<template><view><SiteHeader :active="active"/><view class="wrap"><view class="hero"><text class="tag">AINPE · 专题</text><text class="title">{{title}}</text><text class="desc">{{description}}</text><button class="topic-action" @click="goSimulation">探索模拟项目 →</button></view><view class="section"><text class="heading">实战文章与一线反馈</text><text class="muted">已收录 {{filtered.length}} 篇 · {{feedMeta.source}}</text></view><view v-for="item in filtered" :key="item.id" class="row" @click="openArticle(item)"><view class="row-top"><text class="kind">{{item.kind || '分享'}}</text><text class="small">一位生财圈友</text></view><text class="article-title">{{cleanCaseTitle(item.title)}}</text><text class="summary">{{hideEarningsFigures(item.overview||item.summary)}}</text><view class="row-end"><text>查看站内导读 →</text><text @click.stop="toggle(item)">{{isSaved(item)?'已收藏':'收藏'}}</text></view></view><view v-if="!filtered.length" class="empty">暂未收录相关内容。</view></view><CampFooter/><SiteFooter /></view></template>
 <script setup>
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';
@@ -6,6 +6,7 @@ import {onLoad,onShow} from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {articles,isAiArticle,feedMeta} from '../../data/content.js';
+import {cleanCaseTitle,hideEarningsFigures} from '../../data/case-library.mjs';
 import {getSaved,setSaved} from '../../data/storage.js';
 const slug=ref('fde'),saved=ref([]);
 onLoad(o=>{const s=o.slug||o.topic;if(['fde','ai-video','ai-cases'].includes(s))slug.value=s});onShow(()=>{saved.value=getSaved()});

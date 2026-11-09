@@ -15,10 +15,10 @@
   function open(el,on){el.classList.toggle('open',on);L.$('.body',el).hidden=!on;L.$('.hd',el).setAttribute('aria-expanded',on?'true':'false')}
   L.$$('.aid',box).forEach(function(el){
     var a=AIDS.filter(function(x){return x.id===el.id})[0];
-    L.$('.hd',el).addEventListener('click',function(){var on=!el.classList.contains('open');open(el,on);if(on)L.track('learn_step',{page:'learn',game:'jijiu',tier:a.id})});
-    L.$('.js-copy',el).addEventListener('click',function(){L.copy(a.prompt,'已复制，粘贴到 AI 里，再把【】换成你的内容');L.track('aid_copy',{page:'learn',game:'jijiu',tier:a.id})});
+    L.$('.hd',el).addEventListener('click',function(){var on=!el.classList.contains('open');open(el,on);if(on)L.track('learn_step',{page:'learn',game:'library',tier:a.id})});
+    L.$('.js-copy',el).addEventListener('click',function(){L.copy(a.prompt,'已复制，粘贴到 AI 里，再把【】换成你的内容');L.track('aid_copy',{page:'learn',game:'library',tier:a.id})});
   });
   var h=(location.hash||'').slice(1),t=h&&document.getElementById(h);
   if(t&&t.classList.contains('aid')){open(t,true);setTimeout(function(){t.scrollIntoView({block:'start'})},50)}
-  L.track('learn_view',{page:'learn',game:'jijiu'});
+  L.track('learn_view',{page:'learn',game:'library'});
 })();

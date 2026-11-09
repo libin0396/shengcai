@@ -147,3 +147,15 @@ test('concurrent split-body logins cannot exceed the password-derivation limit',
   const statuses=await Promise.all(calls);assert.ok(statuses.some(x=>x===429));assert.ok(statuses.every(x=>x===401||x===429));
  }finally{await x.close()}
 });
+
+test('activity and learning topic aggregates preserve historical mixed records',async()=>{
+ const x=await setup();try{
+  events(x.dbPath);const db=new DatabaseSync(x.dbPath),add=db.prepare('INSERT INTO events(event,source,target,game,created_at,device_hash) VALUES(?,?,?,?,?,?)'),now=Date.now();
+  add.run('active_sample',null,null,null,now-100,'1'.repeat(64));add.run('active_sample',null,null,null,now-90,'1'.repeat(64));add.run('active_sample',null,null,null,now-80,'2'.repeat(64));
+  add.run('learn_view',null,null,'find',now-70,'1'.repeat(64));add.run('learn_view',null,null,'library',now-60,'2'.repeat(64));add.run('learn_view',null,null,'jijiu',now-50,'1'.repeat(64));db.close();
+  await chmod(x.dbPath,0o600);const c=await cookie(x),r=await x.call('/api/admin/stats?days=7',{headers:{cookie:c}});
+  assert.equal(r.status,200);assert.deepEqual(r.body.metrics.activeSamples,{events:3,browsers:2});
+  assert.equal(r.body.learnByTopic.find.browsers,1);assert.equal(r.body.learnByTopic.library.browsers,1);assert.equal(r.body.learnByTopic.jijiu.browsers,1);
+  assert.equal(JSON.stringify(r.body).includes('1'.repeat(64)),false);
+ }finally{await x.close()}
+});

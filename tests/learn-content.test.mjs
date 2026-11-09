@@ -66,7 +66,7 @@ test('lesson progress uses the number of actual interactive stages', () => {
   vm.runInNewContext(read('kejian-data.js'), {window});
   const count = window.AINPE_KEJIAN.LEVELS.length;
   assert.equal(count, 5);
-  assert.match(read('kejian.html'), new RegExp(`${count} 关整理助手`));
+  assert.match(read('kejian.html'), new RegExp(`${count} 关选择练习`));
   assert.match(read('index.html'), new RegExp(`中级 · ${count} 关`));
   assert.match(read('kejian.js'), /关 \/ '\+K\.LEVELS\.length/);
 });
@@ -91,7 +91,7 @@ test('custom lesson does not inherit an unrelated preset subject', () => {
 test('find page matches locally and only reports which card was copied', () => {
   const src = read('find-page.js');
   assert.doesNotMatch(src, /fetch\(|XMLHttpRequest|sendBeacon/);
-  assert.match(src, /L\.track\('aid_copy',\{page:'learn',game:'jijiu',tier:a\.id\}\)/);
+  assert.match(src, /L\.track\('aid_copy',\{page:'learn',game:'find',tier:a\.id\}\)/);
   assert.match(src, /sessionStorage\.removeItem/);
   assert.doesNotMatch(src, /URLSearchParams\(location\.search\)\.get\('q'\)/);
   const window = {};

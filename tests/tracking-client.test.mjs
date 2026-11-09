@@ -143,3 +143,29 @@ test('a missing confirmation API cannot silently opt the browser out',()=>{
  assert.equal(window.AINPETrack.isInternal(),false);assert.equal(address.search,'');
  assert.equal(window.AINPETrack.track('site_view',{page:'home'}),true);assert.equal(sent.length,1);
 });
+
+test('activity sampling is coarse, foreground-only and respects privacy controls',async()=>{
+ let now=100000, timer;const listeners={},sent=[];
+ class FakeDate extends Date {static now(){return now}}
+ const document={visibilityState:'visible',addEventListener:(name,fn)=>{listeners[name]=fn}};
+ const window={document,location:{pathname:'/',hash:'#/pages/discover/index'},setInterval:(fn,delay)=>{assert.equal(delay,15000);timer=fn},
+  navigator:{sendBeacon:(url,data)=>{sent.push({url,data});return true}},crypto:{getRandomValues:a=>a.fill(7)},localStorage:{getItem:()=>null,setItem:()=>{}}};
+ vm.runInNewContext(source,{window,Blob,Uint8Array,Date:FakeDate,Array});
+ now+=15000;timer();assert.equal(sent.length,0,'no user interaction should not be counted');
+ listeners.pointerdown();now+=15000;timer();assert.equal(sent.length,1);
+ const sample=JSON.parse(await sent[0].data.text());assert.deepEqual(Object.keys(sample).sort(),['did','event','played','ts']);assert.equal(sample.event,'active_sample');
+ document.visibilityState='hidden';listeners.visibilitychange();now+=15000;timer();assert.equal(sent.length,1);
+ document.visibilityState='visible';listeners.visibilitychange();now+=15000;timer();assert.equal(sent.length,1,'returning to tab without interaction should not count');
+ listeners.keydown();window.navigator.globalPrivacyControl=true;now+=15000;timer();assert.equal(sent.length,1);
+ window.navigator.globalPrivacyControl=false;window.navigator.doNotTrack='1';listeners.scroll();now+=15000;timer();assert.equal(sent.length,1);
+ window.navigator.doNotTrack='0';window.location.hash='#/admin/stats';listeners.scroll();now+=15000;timer();assert.equal(sent.length,1,'admin page should not count');
+});
+
+test('find and library learning events are distinct and still bounded',async()=>{
+ const {window,sent}=setup();
+ for(const game of ['find','library'])assert.equal(window.AINPETrack.track('learn_view',{page:'learn',game}),true);
+ assert.equal(window.AINPETrack.track('aid_copy',{page:'learn',game:'find',tier:'reply',text:'secret'}),true);
+ assert.equal(window.AINPETrack.track('learn_view',{page:'learn',game:'unknown'}),false);
+ const values=await Promise.all(sent.map(async v=>JSON.parse(await v.data.text())));
+ assert.deepEqual(values.map(x=>x.game),['find','library','find']);assert.equal('text' in values[2],false);
+});

@@ -7,7 +7,7 @@
     <view class="home-a">
       <view class="ha-hero">
       <view class="ha-title">让普通人，<br/>也能用 AI 做成事</view>
-      <view class="ha-sub">从一份课件、一本绘本开始，跟着步骤，做出你的第一个作品。</view>
+      <view class="ha-sub">从课件、绘本开始，跟着步骤复制提示词，再到 AI 工具里做出你的作品。</view>
       <!-- #ifdef H5 -->
       <view class="ha-search" id="tour-search" role="search">
         <input v-model="findQ" class="ha-input" maxlength="40" placeholder="你遇到了什么事？" aria-label="你遇到了什么事" confirm-type="search" @confirm="goFind"/>
@@ -26,7 +26,7 @@
       <view class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
         <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
         <view class="ha-ladder"><text class="on">初级 · 看教程</text><text>中级 · 5 关练习</text><text>高级</text></view>
-        <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">教案、逐字稿、3 页插画，手机就能做</text><view class="ha-cta">开始做</view></view>
+        <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">跟着教程复制提示词，到 AI 工具里制作教案和插画</text><view class="ha-cta">查看教程</view></view>
       </view>
       <view class="ha-duo">
         <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image src="/static/learn/img/girl.jpg" mode="aspectFill" class="ha-mimg"/><text class="ha-tag">成品示例</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
@@ -37,8 +37,8 @@
     </view>
     <view class="content-shell">
       <view class="highlights-grid">
-        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{item.title}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in publicNumbers(item.numbers).slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
-        <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ item.name }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
+        <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{cleanCaseTitle(item.title)}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in publicNumbers(item.numbers).slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
+        <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ hideEarningsFigures(item.name) }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <CampFooter from="home" />
       <view class="footer-note">内容来自生财有术，以原帖为准</view>
@@ -58,6 +58,7 @@ import SiteHeader from '../../components/SiteHeader.vue';
 import CampFooter from '../../components/CampFooter.vue';
 import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle, publicNumbers} from '../../data/case-studies.js';
+import {cleanCaseTitle,hideEarningsFigures} from '../../data/case-library.mjs';
 
 const showJoinBar=ref(false);
 onPageScroll(e=>{showJoinBar.value=e.scrollTop>barThreshold()});
@@ -68,7 +69,7 @@ onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});up
 let tourMounted=false,tourScript=null,tourPendingForce=false,tourTimer=null;
 const tourSteps=[
   {sel:'#tour-search',title:'遇到事，搜这里',text:'说一句你遇到的事，找一句能复制给 AI 的提示词。'},
-  {sel:'#tour-make',title:'想做成一件事，从这里开始',text:'跟着步骤，做出你的第一个作品。'},
+  {sel:'#tour-make',title:'想做成一件事，从这里开始',text:'跟着教程，到 AI 工具里制作你的作品。'},
   {sel:'#tour-lib',title:'用法库',text:'平时的小事，打开一张，复制就行。'},
   {sel:'.site-nav-scroll',title:'随时回到这里',text:'首页、用法库、找用法、跟着做、我的。'},
 ];
@@ -127,7 +128,7 @@ onUnmounted(()=>{if(clockTimer)clearInterval(clockTimer)});
 const conference=computed(()=>events.find(e=>String(e?.id)==='10533')||null);
 const featuredFdeLabel=computed(()=>conference.value?'FDE · 线下大会':'FDE · 实战专题');
 const featuredFdeTitle=computed(()=>conference.value?.name||'FDE 实战与同行交流');
-const featuredFdeStatus=computed(()=>{const e=conference.value;if(!e)return '企业 AI 落地 · 案例与讨论';if(/CANCEL/i.test(e.lifecycleStatus||''))return '活动已取消 · 查看大会资料';if(/ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||''))return '活动已结束 · 查看大会资料';if(Number(e.startTime)>0&&Number(e.startTime)*1000<=now.value)return '活动状态以大会资料为准';if(Number(e.submitEnd)>0&&Number(e.submitEnd)*1000<now.value)return '报名已截止 · 查看大会资料';if(e.full)return '资料显示名额已满 · 查看大会资料';const when=Number(e.startTime)>0?eventTime(e.startTime)+'（北京时间）':'';return [e.city,when,'报名与名额以入口说明为准'].filter(Boolean).join(' · ')});
+const featuredFdeStatus=computed(()=>{const e=conference.value;if(!e)return '企业 AI 落地 · 案例与讨论';if(/CANCEL/i.test(e.lifecycleStatus||''))return '活动已取消 · 查看大会资料';if(/ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||''))return '活动已结束 · 查看大会资料';if(Number(e.startTime)>0&&Number(e.startTime)*1000<=now.value)return '活动开始时间已过 · 状态待确认';if(Number(e.submitEnd)>0&&Number(e.submitEnd)*1000<now.value)return '报名已截止 · 查看大会资料';if(e.full)return '资料显示名额已满 · 查看大会资料';const when=Number(e.startTime)>0?eventTime(e.startTime)+'（北京时间）':'';return [e.city,when,'报名与名额以入口说明为准'].filter(Boolean).join(' · ')});
 function openFeaturedFde(){navigate(conference.value?'/pages/events/index?view=conference':'/pages/topic/index?topic=fde')}
 const upcomingEvents=computed(()=>{const seen=new Set();return [...events].filter(e=>e&&e.city&&Number(e.startTime)*1000>now.value&&String(e.id)!=='10533'&&!/CANCEL|ENDED|FINISHED|COMPLETED/i.test(e.lifecycleStatus||'')&&eventAI.test(`${e.name||''} ${e.typeText||''}`)).sort((a,b)=>Number(a.startTime)-Number(b.startTime)).filter(e=>{if(seen.has(e.city))return false;seen.add(e.city);return true}).slice(0,3)});
 function eventDate(t){return new Date(Number(t)*1000+8*3600000)}

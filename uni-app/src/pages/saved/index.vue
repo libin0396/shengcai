@@ -34,9 +34,9 @@
     <PosterGallery ref="gallery" :history="history" @replay="replay" @simulate="goSimulate" />
     <view class="block-head saved-head"><view><text class="block-title">我的收藏</text></view></view>
     <view class="tabs"><button :class="{on:tab==='article'}" @click="tab='article'">文章 {{savedArticles.length}}</button><button :class="{on:tab==='event'}" @click="tab='event'">线下活动 {{savedEvents.length}}</button></view>
-    <view v-if="tab==='article'"><view v-for="a in savedArticles" :key="a.id" class="row" @click="openArticle(a)"><text class="kind">{{a.kind || '分享'}} · 一位生财圈友</text><text class="name">{{a.title}}</text><text class="summary">{{a.overview||a.summary}}</text><view class="row-bottom"><text>查看导读 →</text><text @click.stop="remove('article',a)">取消收藏</text></view></view><view v-if="!savedArticles.length" class="empty">还没有收藏文章。<button @click="goDiscover">去发现</button></view></view>
+    <view v-if="tab==='article'"><view v-for="a in savedArticles" :key="a.id" class="row" @click="openArticle(a)"><text class="kind">{{a.kind || '分享'}} · 一位生财圈友</text><text class="name">{{cleanCaseTitle(a.title)}}</text><text class="summary">{{hideEarningsFigures(a.overview||a.summary)}}</text><view class="row-bottom"><text>查看导读 →</text><text @click.stop="remove('article',a)">取消收藏</text></view></view><view v-if="!savedArticles.length" class="empty">还没有收藏文章。<button @click="goDiscover">去发现</button></view></view>
     <view v-else><view v-for="e in savedEvents" :key="e.id" class="row"><text class="kind">{{e.city}} · {{e.typeText || '活动'}}</text><text class="name">{{e.name}}</text><text class="summary">{{e.summary||e.description}}</text><view class="row-bottom"><text @click="goEvents">在线下活动页查看 →</text><text @click="remove('event',e)">取消收藏</text></view></view><view v-if="!savedEvents.length" class="empty">还没有收藏线下活动。<button @click="goEvents">查看线下活动</button></view></view>
-    <view class="data-notice">本站只记录匿名的页面和按钮点击，不记录你输入的内容，保留约 90 天。</view>
+    <view class="data-notice">网站统计记录匿名浏览器的页面、按钮操作及粗略前台活跃时间，不收集搜索等输入原文，统计记录最多保留约 90 天。若你自愿提交排行榜，昵称、人格和模拟成绩会公开展示，约 7 天后删除，也可在本设备删除。</view>
   </view><CampFooter from="mine"/><SiteFooter /></view>
 </template>
 <script setup>
@@ -46,6 +46,7 @@ import PosterGallery from '../../components/PosterGallery.vue';
 import SiteHeader from '../../components/SiteHeader.vue';import {openGame,openLearn} from '../../data/game-matching.js';import CampFooter from '../../components/CampFooter.vue';
 import {articles,events} from '../../data/content.js';import {getSaved,setSaved} from '../../data/storage.js';import personas from '../../data/personas.json';
 import {caseStudies,caseAsArticle} from '../../data/case-studies.js';
+import {cleanCaseTitle,hideEarningsFigures} from '../../data/case-library.mjs';
 const tab=ref('article'),saved=ref([]),history=ref([]),seenHidden=ref([]),gallery=ref(null),learnProgress=ref({});
 const made=computed(()=>{
   const all=learnProgress.value, items=[];

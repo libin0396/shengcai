@@ -38,11 +38,12 @@
               <text class="metric-detail">{{ count(item.key,'events') }} 次{{ item.unit }}</text>
             </view>
           </view>
+          <view class="notice"><text class="notice-title">前台活跃时长估算</text><text>{{ activeTimeLabel }}</text><text>每 15 秒采样：页面在前台且最近 30 秒内有操作才计入；按有采样的浏览器平均。后台、无操作和屏蔽统计不计，多标签可能重复，结果不是精确阅读或停留时间，仅从功能上线后开始。</text></view>
           <view class="notice"><text class="notice-title">先看懂这些数字</text><text>人数按匿名浏览器估算，同一人使用不同设备会分别计数；屏蔽统计、清除数据或网络异常也会影响结果。</text><text>“海报来源访问”包括人格卡选项目页和挑战或对战卡挑战页的带标记访问；无法确认是否实际扫码或报名。</text><text>体验营按钮点击不等于加入或报名，当前二维码长按也不会产生该点击事件。</text></view>
           <template v-if="stats.funnel"><view class="section-head"><text class="section-title">模拟后的下一步</text><text class="section-note">按浏览器和项目匹配</text></view><view class="funnel-card"><view class="funnel-step"><text>开始模拟</text><strong>{{ funnelCount('started') }}</strong><small>项体验</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成模拟</text><strong>{{ funnelCount('finished') }}</strong><small>完成率 {{ funnelRate('finishRate') }}</small></view><view class="funnel-arrow">→</view><view class="funnel-step"><text>完成后访问体验营</text><strong>{{ funnelCount('campVisitsAfterFinish') }}</strong><small>访问率 {{ funnelRate('campAfterFinishRate') }}</small></view></view><text class="funnel-note">同一浏览器按项目分别计数，并按开始、完成、访问体验营的时间顺序匹配；不是实名人数或实际报名，原帖中转也可能产生访问。</text></template>
           <view class="section-head"><text class="section-title">AI 实操学习</text><text class="section-note">浏览器数 / 次数</text></view>
           <view class="extra-list"><view v-for="item in learningMetrics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">{{ item.hint }}</text></view><text class="extra-count">{{ stats.metrics?.[item.key] === null ? '暂不可统计' : `${count(item.key,'browsers')} / ${count(item.key,'events')}` }}</text></view></view>
-          <view v-if="stats.learnByTopic" class="extra-list" style="margin-top:10px"><view v-for="topic in learningTopics" :key="topic.key" class="extra-row"><view><text class="extra-name">{{ topic.label }}</text><text class="extra-hint">学习页访问 / 标记完成（浏览器数）</text></view><text class="extra-count">{{ learningTopicCount(topic.key,'browsers') }} / {{ learningTopicCount(topic.key,'doneBrowsers') }}</text></view></view>
+          <view v-if="stats.learnByTopic" class="extra-list" style="margin-top:10px"><view v-for="topic in learningTopics" :key="topic.key" class="extra-row"><view><text class="extra-name">{{ topic.label }}</text><text class="extra-hint">{{ topic.key==='jijiu' ? '历史版本将两个入口合并，无法拆分' : (topic.key==='find' || topic.key==='library' ? '页面访问浏览器数；从新版上线后开始' : '学习页访问 / 标记完成（浏览器数）') }}</text></view><text class="extra-count">{{ topic.key==='find' || topic.key==='library' || topic.key==='jijiu' ? learningTopicCount(topic.key,'browsers') : `${learningTopicCount(topic.key,'browsers')} / ${learningTopicCount(topic.key,'doneBrowsers')}` }}</text></view></view>
           <view v-if="stats.wants" class="extra-list" style="margin-top:10px"><view v-for="item in wantedTopics" :key="item.key" class="extra-row"><view><text class="extra-name">{{ item.label }}</text><text class="extra-hint">表达过此方向兴趣的浏览器数</text></view><text class="extra-count">{{ wantCount(item.key) }}</text></view></view>
           <text class="funnel-note">完成以页面内的完成或标记事件计算，不代表已完成真实作品；需求只记录分类，不记录输入原文，不会自动通知用户。</text>
           <view class="section-head"><text class="section-title">更多入口</text><text class="section-note">浏览器数 / 次数</text></view>
@@ -89,8 +90,9 @@ const learningMetrics=[
   {key:'wantSubmits',label:'方向兴趣操作',hint:'仅记录类别，不保存输入原文'},
   {key:'learnCampClicks',label:'学习页访问生财入口',hint:'仅统计点击，不代表报名'}
 ];
-const learningTopics=[{key:'kejian',label:'AI 课件'},{key:'huiben',label:'亲子绘本'},{key:'jijiu',label:'AI 急救卡'}];
+const learningTopics=[{key:'kejian',label:'AI 课件'},{key:'huiben',label:'亲子绘本'},{key:'library',label:'用法库（新版）'},{key:'find',label:'找用法（新版）'},{key:'jijiu',label:'用法库 / 找用法（历史混合）'}];
 const wantedTopics=[{key:'kejian',label:'课件'},{key:'huiben',label:'绘本'},{key:'video',label:'故事短片'},{key:'novel',label:'写小说'},{key:'tuwen',label:'图文号'},{key:'assistant',label:'AI 助手'},{key:'money',label:'副业或变现'},{key:'other',label:'其他'}];
+const activeTimeLabel=computed(()=>{const item=stats.value?.metrics?.activeSamples;if(!item||!Number.isSafeInteger(item.events)||!Number.isSafeInteger(item.browsers)||item.browsers<1)return '暂无可统计的活跃时长样本';const seconds=Math.round(item.events*15/item.browsers);return '平均每个有样本的浏览器约 '+Math.floor(seconds/60)+' 分 '+seconds%60+' 秒（'+item.browsers+' 个浏览器）'});
 function nonnegative(value){return Number.isSafeInteger(value)&&value>=0?value.toLocaleString('zh-CN'):'0'}
 function learningTopicCount(key,field){return nonnegative(stats.value?.learnByTopic?.[key]?.[field])}
 function wantCount(key){return nonnegative(stats.value?.wants?.[key])}

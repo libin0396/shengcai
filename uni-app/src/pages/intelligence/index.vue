@@ -7,26 +7,24 @@
         <view class="toolbar"><view class="search-field"><input v-model="query" placeholder="搜索标题、作者或关键词" confirm-type="search"/><button v-if="query" class="clear-search" aria-label="清空搜索" @click="query='';limit=20">×</button></view><picker :range="sortLabels" :value="sortIndex" @change="changeSort"><view class="sort">{{sortLabels[sortIndex]}} ⌄</view></picker></view>
         <view class="filter-row"><scroll-view scroll-x class="categories" :show-scrollbar="false"><view class="category-row"><button v-for="c in categories" :key="c.id" :class="{active:category===c.id}" @click="category=c.id;limit=20">{{c.label}}</button></view></scroll-view><button class="filter-toggle" :class="{active:showFilters || activeFilterCount}" :aria-expanded="showFilters" @click="showFilters=!showFilters">筛选{{activeFilterCount ? ' '+activeFilterCount : ''}} {{showFilters?'⌃':'⌄'}}</button></view>
         <view v-if="showFilters" class="extra-filters"><picker :range="starts" :value="starts.indexOf(start)" @change="changeStart"><view class="start-picker" :class="{active:start!=='全部起点'}">{{start}} ⌄</view></picker><button :class="{active:onlySaved}" @click="onlySaved=!onlySaved;limit=20">{{onlySaved?'✓ ':''}}只看收藏</button><button :class="{active:onlyFull}" @click="onlyFull=!onlyFull;limit=20">{{onlyFull?'✓ ':''}}完整解读</button><button :class="{active:onlyPlayable}" @click="onlyPlayable=!onlyPlayable;limit=20">{{onlyPlayable?'✓ ':''}}有模拟</button><button v-if="activeFilterCount" class="reset-filters" @click="resetFilters">清除附加筛选</button></view>
-        <view class="list-head"><text>{{filtered.length}} 篇 AI 内容</text><text>{{feedMeta.lastSuccessLabel?'上次更新 '+feedMeta.lastSuccessLabel:'更新状态待确认'}}</text></view>
+        <view class="list-head"><text>{{filtered.length}} 篇 AI 内容</text><text>{{feedMeta.lastSuccessLabel?'上次更新 '+feedMeta.lastSuccessLabel:'更新状态待确认'}} · {{feedMeta.statusText}}</text></view>
         <view v-if="feedMeta.loading && !filtered.length" class="empty">正在加载内容…</view><view v-else-if="!filtered.length" class="empty">{{feedMeta.loadFailed?'暂时无法加载内容，请稍后重试。':'没有找到相关内容，换个方向或关键词试试。'}}</view>
-        <template v-if="featured.length">
-          <view class="case-list-label">精选案例 · {{featured.length}} 篇完整解读 </view>
-          <view class="featured-grid">
-            <view v-for="a in featured" :key="a.id" class="feature-card" @click="openArticle(a)">
+        <view v-if="visible.length" class="case-list-label">{{sortLabels[sortIndex]}} · 精选案例与帖子</view>
+        <view class="featured-grid">
+          <template v-for="a in visible" :key="a.id">
+            <view v-if="getCase(a)" class="feature-card" @click="openArticle(a)">
               <view class="feature-tags"><text>{{getCase(a).direction}}</text><text>完整解读</text><button class="star" :aria-label="isSaved(a)?'取消收藏':'收藏文章'" @click.stop="toggleSaved(a)">{{isSaved(a)?'★':'☆'}}</button></view>
-              <view class="feature-title">{{a.title}}</view>
+              <view class="feature-title">{{cleanCaseTitle(a.title)}}</view>
               <view class="feature-start">起点：<text>{{getCase(a).start.occupation||getCase(a).start.experience||'未披露'}}</text></view>
               <view class="featured-numbers"><view v-for="n in publicNumbers(getCase(a).numbers).slice(0,3)" :key="n.label" :class="['feature-number',{'undisclosed':!n.value}]"><text class="feature-value">{{n.value||'未披露'}}</text><text class="feature-number-note">{{compactNumberNote(n)}}</text></view></view>
               <view class="feature-footer"><text>{{a.author}} · 作者自述</text><text class="read-link">查看解读 ›</text></view>
               <button v-if="matchingGame(a)" class="case-next playable" @click.stop="play(matchingGame(a),a.id)"><view class="case-next-main"><text class="case-next-icon">▶</text><view><text>玩相关模拟：{{matchingGame(a).name}}</text></view></view><text class="case-next-arrow">开始 →</text></button>
               <view v-else class="case-next reserve-next" @click.stop><view><text>这个方向还没有模拟</text><text class="case-next-sub">{{reservationCounts['article:'+a.id]>=10 ? reservationCounts['article:'+a.id]+' 条预约记录' : '想玩的人多了会优先考虑'}}</text></view><button :disabled="reservationBusy===String(a.id)||reservedCases.includes('article:'+a.id)" @click.stop="reserveCase(a)">{{reservedCases.includes('article:'+a.id)?'已预约':reservationBusy===String(a.id)?'记录中…':'我想玩'}}</button></view>
             </view>
-          </view>
-        </template>
-        <view v-if="short.length" class="more-posts">
-          <button class="more-posts-toggle" :aria-expanded="showShort" @click="showShort=!showShort"><text>更多帖子 <text class="more-posts-hint">（只有标题） · {{short.length}} 篇</text></text><text>{{showShort?'收起 ↑':'展开 ↓'}}</text></button>
-          <view v-if="showShort" class="short-list"><view v-for="a in visible" :key="a.id" class="short-row" role="link" tabindex="0" @click="openArticle(a)" @keydown.enter.prevent="openArticle(a)"><text>{{cleanCaseTitle(a.title)}}</text><text class="short-arrow">→</text></view><button v-if="limit<short.length" class="more" @click="limit+=20">继续看更多帖子 ↓</button></view>
+            <view v-else class="short-card" role="link" tabindex="0" @click="openArticle(a)" @keydown.enter.prevent="openArticle(a)"><view class="short-label">帖子导读 · {{formatDate(a.publishedAt)}}</view><view class="feature-title">{{cleanCaseTitle(a.title)}}</view><view class="read-link">查看导读 ›</view></view>
+          </template>
         </view>
+        <button v-if="limit<filtered.length" class="more" @click="limit+=20">继续看更多 ↓</button>
       </view><view class="side"><view class="side-title">先玩再读，读得更懂。</view><button v-for="g in games" :key="g.file" @click="play(g.file)">{{g.name}} →</button><view class="side-note">过程和金额均为模拟，不是收入预测。</view></view></view>
     </view><CampFooter from="library"/>
   <SiteFooter /></view>
@@ -46,7 +44,7 @@ const categories=[{id:'all',label:'全部 AI'},{id:'miniapp',label:'AI 小程序
 const patterns={miniapp:/小程序|mini.?app/i,development:/开发|编程|代码|平台|产品/i,video:/视频|短剧|动画|影视/i,overseas:/(海外|出海).*(AI|建站|游戏站|产品)|热词.*(网站|游戏站)/i,fde:/(?:^|[^a-z])fde(?:$|[^a-z])|企业.*(?:落地|部署|交付)/i,content:/内容创作|自媒体|文案|写作|小红书|公众号/i,agent:/agent|智能体|工具|大模型|工作流/i};
 const starts=['全部起点','上班族','老师','有编程基础','自己有生意','零基础'];
 const games=[{name:'AI 小程序副业',file:'miniapp'},{name:'AI 视频定制',file:'video'},{name:'小红书教育 PPT',file:'education-ppt'}];
-const query=ref(''),category=ref('all'),start=ref('全部起点'),onlySaved=ref(false),onlyFull=ref(false),onlyPlayable=ref(false),limit=ref(20),saved=ref([]),sortIndex=ref(0),showShort=ref(false),showFilters=ref(false);
+const query=ref(''),category=ref('all'),start=ref('全部起点'),onlySaved=ref(false),onlyFull=ref(false),onlyPlayable=ref(false),limit=ref(20),saved=ref([]),sortIndex=ref(0),showFilters=ref(false);
 const activeFilterCount=computed(()=>Number(start.value!=='全部起点')+Number(onlySaved.value)+Number(onlyFull.value)+Number(onlyPlayable.value));
 const reservationCounts=ref({}),reservedCases=ref([]),reservationBusy=ref(''),reservationAvailable=ref(false);
 let reservationEnabled=false;
@@ -58,10 +56,8 @@ async function loadReservations(){if(!reservationEnabled)return;try{const d=awai
 async function reserveCase(a){if(!reservationEnabled){openArticle(a);return;}if(!reservationAvailable.value){uni.showToast({title:'预约暂不可用，请稍后再试',icon:'none'});return;}const id=String(a.id),key='article:'+id;if(reservationBusy.value||reservedCases.value.includes(key)||!/^\d{1,30}$/.test(id))return;reservationBusy.value=id;try{const d=await request({url:'/api/reservations',method:'POST',header:{'Content-Type':'application/json'},data:{projectId:key}});if(d?.projectId!==key||d.reserved!==true||d.countUnit!=='browser'||!Number.isInteger(d.count)||d.count<0)throw Error();reservationCounts.value={...reservationCounts.value,[key]:d.count};reservedCases.value=[...reservedCases.value,key];uni.showToast({title:'已记录你的兴趣',icon:'none'});}catch{uni.showToast({title:'预约未完成，请稍后再试',icon:'none'});}finally{reservationBusy.value='';}}const sortLabels=['最新','精华优先','讨论最多'];
 function searchable(a){return [a.title,a.summary,a.overview,a.author,...(a.topics||[])].join(' ')}
 const curatedIds=computed(()=>new Set(caseStudies.map(c=>c.id)));
-const filtered=computed(()=>{const term=query.value.trim().toLowerCase();const combined=[...caseStudies.map(caseAsArticle),...articles.filter(a=>!curatedIds.value.has(String(a.id))&&isCaseLibraryItem(a))];return combined.filter(a=>category.value==='all'||(caseById(a.id)?.category===category.value)||(!caseById(a.id)&&patterns[category.value].test(searchable(a)))).filter(a=>start.value==='全部起点'||caseById(a.id)?.startTags.includes(start.value)).filter(a=>!onlyFull.value||!!caseById(a.id)).filter(a=>!onlyPlayable.value||!!matchingGame(a)).filter(a=>!onlySaved.value||isSaved(a)).filter(a=>!term||searchable(a).toLowerCase().includes(term)).slice().sort((a,b)=>sortIndex.value===1?(Number(!!b.isDigested)-Number(!!a.isDigested)||Number(b.publishedAt||0)-Number(a.publishedAt||0)):sortIndex.value===2?(Number(b.commentCount||0)-Number(a.commentCount||0)||Number(b.publishedAt||0)-Number(a.publishedAt||0)):Number(b.publishedAt||0)-Number(a.publishedAt||0))});
-const featured=computed(()=>filtered.value.filter(a=>!!caseById(a.id)));
-const short=computed(()=>filtered.value.filter(a=>!caseById(a.id)));
-const visible=computed(()=>short.value.slice(0,limit.value));
+const filtered=computed(()=>{const term=query.value.trim().toLowerCase();const combined=[...caseStudies.map(caseAsArticle),...articles.filter(a=>!curatedIds.value.has(String(a.id))&&isCaseLibraryItem(a))];return combined.filter(a=>category.value==='all'||(caseById(a.id)?.category===category.value)||(!caseById(a.id)&&patterns[category.value].test(searchable(a)))).filter(a=>start.value==='全部起点'||caseById(a.id)?.startTags.includes(start.value)).filter(a=>!onlyFull.value||!!caseById(a.id)).filter(a=>!onlyPlayable.value||!!matchingGame(a)).filter(a=>!onlySaved.value||isSaved(a)).filter(a=>!term||searchable(a).toLowerCase().includes(term)).slice().sort((a,b)=>sortIndex.value===1?(Number(!!caseById(b.id))-Number(!!caseById(a.id))||Number(b.publishedAt||0)-Number(a.publishedAt||0)):sortIndex.value===2?(Number(b.commentCount||0)-Number(a.commentCount||0)||Number(b.publishedAt||0)-Number(a.publishedAt||0)):Number(b.publishedAt||0)-Number(a.publishedAt||0))});
+const visible=computed(()=>filtered.value.slice(0,limit.value));
 function changeSort(e){sortIndex.value=Number(e.detail.value)||0;limit.value=20}
 function changeStart(e){start.value=starts[Number(e.detail.value)]||starts[0];limit.value=20}
 function resetFilters(){start.value=starts[0];onlySaved.value=false;onlyFull.value=false;onlyPlayable.value=false;limit.value=20}

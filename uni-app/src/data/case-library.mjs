@@ -21,12 +21,32 @@ export function isCaseLibraryItem(article){
   return CASE_SIGNAL.test(title);
 }
 
+// Hide figures attached to an earnings claim in public text only. Keep the
+// original feed untouched, and do not remove costs, time or audience counts.
+const EARNINGS='(?:收入|变现|利润|收益|净收|签单(?:额|业绩)?|业绩|GMV|销售额|销售收入|营收|流水|回款|月入|年入|日入|奖金|稿费|分红|到账|赚)';
+// Chinese number words must end in a money unit: ordinary phrases such as
+// “收入一直下降” or “收入一部分” are not figures and must stay intact.
+const CN_AMOUNT='(?:[零一二两三四五六七八九十百千几数]+多?(?:万|千|百|亿)(?:元|美元|美金|大洋|块钱|块|刀)?|[零一二两三四五六七八九十百千几数]+(?:美元|美金|大洋|元|块钱|块|刀)|(?:万|千|百)刀)';
+const ARABIC_AMOUNT='\\d+(?:[.,]\\d+)?\\s*(?:[万千百亿]|[wk])?(?:\\s*(?:美元|美金|大洋|元|块钱|块|刀|位数))?';
+const AMOUNT='(?:[¥￥$]\\s*)?(?:'+ARABIC_AMOUNT+'|'+CN_AMOUNT+')(?:\\s*[+＋])?';
+const VALUE_WITH_UNIT='(?:[¥￥$]\\s*\\d+(?:[.,]\\d+)?|\\d+(?:[.,]\\d+)?\\s*(?:[万千百亿]|[wk]|元|美元|美金|刀|块钱|块|位数)(?:\\s*(?:元|美元|美金|刀|块钱|块))?|'+CN_AMOUNT+')(?:\\s*[+＋])?';
+const AFTER_EARNINGS=new RegExp('('+EARNINGS+'\\s*(?:[：:]\\s*)?(?:(?:突破|超过|超|达到|达成|接近|约为|约|近|实现|做到|累计|合计|破|为|是)\\s*)?)('+AMOUNT+')(?![\\d.年月天小时份个条期万千百亿wk元积分播放])','gi');
+const BEFORE_EARNINGS=new RegExp('('+VALUE_WITH_UNIT+')\\s*('+EARNINGS+')','gi');
+// “拿到 5000 大洋” is a cash award, while “拿到 2 万积分/播放” is not.
+// A generic verb alone is insufficient: require an explicit currency sign or
+// denomination so ordinary customer and audience counts are preserved.
+const EXPLICIT_CASH='(?:[¥￥$]\\s*\\d+(?:[.,]\\d+)?|\\d+(?:[.,]\\d+)?\\s*(?:万|千|百|亿)?\\s*(?:美元|美金|大洋|元|块钱|块|刀)|[零一二两三四五六七八九十百千几数]+多?(?:万|千|百|亿)?(?:美元|美金|大洋|元|块钱|块|刀))';
+const CASH_AWARD=new RegExp('((?:拿到|获得|获奖|领取|赢得|收到)\\s*)('+EXPLICIT_CASH+')(?:\\s*[+＋])?','gi');
+export function hideEarningsFigures(value){
+  return String(value||'').replace(AFTER_EARNINGS,(_match,prefix)=>prefix+'（金额未展示）').replace(BEFORE_EARNINGS,(_match,_amount,metric)=>'（金额未展示）'+metric).replace(CASH_AWARD,(_match,prefix)=>prefix+'（金额未展示）');
+}
+
 export function cleanCaseTitle(value){
-  return String(value||'').trim().replace(/^标题\s*[：:]\s*/,'');
+  return hideEarningsFigures(String(value||'').trim().replace(/^标题\s*[：:]\s*/,''));
 }
 
 export function shortCaseSummary(value){
-  const text=String(value||'').trim().replace(/^标题\s*[：:]\s*/,'');
+  const text=hideEarningsFigures(String(value||'').trim().replace(/^标题\s*[：:]\s*/,''));
   if(!text)return '当前资料不足，暂无法展示摘要。';
   return /[。！？.!?…]$/.test(text) ? text : `${text}…`;
 }

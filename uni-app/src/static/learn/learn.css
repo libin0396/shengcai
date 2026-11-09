@@ -332,3 +332,6 @@ html.is-mp .ihero{padding-top:20px}
 .aid>.hd .em,.fhd .em{display:flex;align-items:center;justify-content:center;flex:0 0 36px;width:36px;height:36px;border-radius:11px;background:var(--blueSoft);color:var(--blue);font-size:0}
 .fmore a>span,.aidrail a>span{display:inline-flex;color:var(--blue)}
 .fmore a>span svg,.aidrail a>span svg{width:18px;height:18px}
+
+/* 桌面上保留示例画面，同时让教程标题进入首屏。 */
+@media (min-width:768px){.course-page .thero{max-width:960px;margin:0 auto}.course-page .thero img{display:block;aspect-ratio:auto;height:240px;object-fit:cover;object-position:center 58%}}

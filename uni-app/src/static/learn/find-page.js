@@ -94,7 +94,7 @@
       L.$('#fcopy').addEventListener('click',function(){
         var text=filled(a.prompt,vals);
         L.copy(text,/【/.test(text)?'已复制，记得把【】换成你的内容':'已复制，去豆包粘贴就行');
-        L.track('aid_copy',{page:'learn',game:'jijiu',tier:a.id});
+        L.track('aid_copy',{page:'learn',game:'find',tier:a.id});
       });
     }else res.innerHTML=html;
   }
@@ -109,5 +109,5 @@
   if(!q&&key)q=fixed[key];
   q=q.slice(0,40);
   if(q){inp.value=q;render(q)}
-  L.track('learn_view',{page:'learn',game:'jijiu'});
+  L.track('learn_view',{page:'learn',game:'find'});
 })();
