@@ -1,13 +1,15 @@
 <template>
   <view class="discover-page">
     <!-- #ifdef H5 -->
-    <view class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
+    <view v-if="!tutorialFirst" class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
     <!-- #endif -->
     <SiteHeader active="discover" :has-banner="true" />
     <view class="home-a">
       <view class="ha-hero">
+      <view v-if="tutorialFirst" class="home-eyebrow"><text class="home-eyebrow-dot">●</text> AI 实用教程 · 从一件小事开始</view>
       <view class="ha-title">让普通人，<br/>也能用 AI 做成事</view>
-      <view class="ha-sub">从课件、绘本开始，跟着步骤复制提示词，再到 AI 工具里做出你的作品。</view>
+      <view class="ha-sub">{{tutorialFirst ? '从生活里的小问题开始，跟着步骤练习，一步步用好 AI。' : '从课件、绘本开始，跟着步骤复制提示词，再到 AI 工具里做出你的作品。'}}</view>
+      <view v-if="tutorialFirst" class="hero-start-action" role="link" tabindex="0" @click="goQuick({id:'reply'})" @keydown.enter.prevent="goQuick({id:'reply'})">开始做第一件事 ↗</view>
       <!-- #ifdef H5 -->
       <view class="ha-search" id="tour-search" role="search">
         <input v-model="findQ" class="ha-input" maxlength="40" placeholder="你遇到了什么事？" aria-label="你遇到了什么事" confirm-type="search" @confirm="goFind"/>
@@ -23,30 +25,70 @@
       <text class="ha-replay" role="button" tabindex="0" @click="replayTour" @keydown.enter.prevent="replayTour">第一次来？看看怎么用 ›</text>
       <!-- #endif -->
       </view>
-      <view class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
+      <view v-if="tutorialFirst" class="ha-levels" id="tour-make">
+        <view class="level-heading"><view><text class="level-kicker">CHOOSE YOUR START</text><view class="level-heading-title">选一件事，开始做</view><text class="level-heading-desc">从适合自己的地方出发，不用按顺序。</text></view><text class="level-all" role="link" tabindex="0" @click="openLearnPage('guides.html')" @keydown.enter.prevent="openLearnPage('guides.html')">全部教程 ↗</text></view>
+        <view class="level-list">
+          <view class="level-card level-first" role="link" tabindex="0" @click="goQuick({id:'reply'})" @keydown.enter.prevent="goQuick({id:'reply'})">
+            <view class="level-mark" aria-hidden="true"><text>✎</text></view>
+            <view class="level-body"><view class="level-card-top"><text class="level-badge">初级 · 开始使用</text><text class="level-label">第一次来推荐</text></view>
+            <view class="level-title">写一条不好开口的消息</view><view class="level-description">告诉 AI 你的情况，试着写一条合适的消息。</view><view class="level-action">开始尝试 <text>↗</text></view></view>
+          </view>
+          <view class="level-card" role="link" tabindex="0" @click="goQuick({id:'homework'})" @keydown.enter.prevent="goQuick({id:'homework'})">
+            <view class="level-visual" aria-hidden="true"><image src="/static/design/kids.jpg" mode="aspectFill"/><text>配图示意</text></view>
+            <view class="level-body"><view class="level-card-top"><text class="level-badge level-badge-mid">中级 · 完成任务</text></view>
+            <view class="level-title">陪孩子讲懂一道题</view><view class="level-description">补充孩子的情况，让 AI 帮你理清讲题思路。</view><view class="level-action">看看怎么用 <text>↗</text></view></view>
+          </view>
+          <view class="level-card level-future">
+            <view class="level-visual" aria-hidden="true"><image src="/static/design/boat.jpg" mode="aspectFill"/><text>配图示意</text></view>
+            <view class="level-body"><view class="level-card-top"><text class="level-badge level-badge-high">高级 · 完成项目</text><text class="level-soon">筹备中</text></view>
+            <view class="level-title">做一个自己的 AI 助手</view><view class="level-description">设定任务、反复调整，做出可复用的助手。</view><view class="level-action level-muted">完整教程正在准备</view></view>
+          </view>
+        </view>
+      </view>
+      <view v-else class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
         <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
-        <view class="ha-ladder"><text class="on">初级 · 看教程</text><text>中级 · 5 关练习</text><text>高级</text></view>
+        <view class="ha-ladder"><text class="on">跟着教程做</text><text>先练一练 · 5 关</text><text>继续探索</text></view>
         <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">跟着教程复制提示词，到 AI 工具里制作教案和插画</text><view class="ha-cta">查看教程</view></view>
       </view>
-      <view class="ha-duo">
+      <view v-if="!tutorialFirst" class="ha-duo">
         <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image src="/static/learn/img/girl.jpg" mode="aspectFill" class="ha-mimg"/><text class="ha-tag">成品示例</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
         <view class="ha-vote"><text class="ha-vt">还在做 · 投一票</text><view class="ha-vs"><text v-for="t in learnTopics.filter(x=>!x.live)" :key="t.id" :class="{on:votes.includes(t.id)}" @click="vote(t)">{{t.short||t.name}}</text></view></view>
       </view>
-      <view class="ha-aid" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">用法库</text><text class="ha-aidd">平时的小事，复制提示词就能用</text></view><text class="ha-arrow">›</text></view>
-      <view class="ha-aid ha-aid2" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
+      <view v-if="!tutorialFirst" class="ha-aid" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">用法库</text><text class="ha-aidd">平时的小事，复制提示词就能用</text></view><text class="ha-arrow">›</text></view>
+      <view v-if="!tutorialFirst" class="ha-aid ha-aid2" role="link" tabindex="0" @click="navigate('/pages/simulate/index')"><view><text class="ha-aidt">项目模拟</text><text class="ha-aidd">体验项目决策和可能遇到的问题</text></view><text class="ha-arrow">›</text></view>
+    </view>
+    <view v-if="tutorialFirst" class="tutorial-shelf">
+      <view class="shelf-heading"><view><view class="shelf-title">值得试试的用法</view><text class="shelf-sub">从一件小事开始，把提示词交给 AI 试试。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')">全部用法 ↗</text></view>
+      <view class="everyday-grid">
+        <view v-for="(item,index) in everydayCards" :key="item.id" class="everyday-card" role="link" tabindex="0" @click="goQuick(item)" @keydown.enter.prevent="goQuick(item)">
+          <view class="everyday-number">{{String(index+1).padStart(2,'0')}}</view>
+          <view class="everyday-content"><text class="everyday-category">{{item.category}}</text><view class="everyday-title">{{item.title}}</view><text class="everyday-description">{{item.description}}</text><text class="everyday-action">看看怎么用 →</text></view>
+        </view>
+      </view>
+      <view class="shelf-heading showcase-heading"><view><view class="shelf-title">跟着做，做出自己的作品</view><text class="shelf-sub">从教程开始，按步骤在 AI 工具中亲手完成。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('guides.html')" @keydown.enter.prevent="openLearnPage('guides.html')">全部教程 ↗</text></view>
+      <view class="showcase-grid">
+        <view v-for="item in showcaseCards" :key="item.page" class="showcase-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)">
+          <view class="showcase-image"><image :src="item.image" mode="aspectFill"/><text>成品示例</text></view>
+          <view class="showcase-copy"><text class="showcase-tag">跟着步骤做</text><view class="showcase-title">{{item.title}}</view><text class="showcase-description">{{item.description}}</text><view class="showcase-action">查看教程 ↗</view></view>
+        </view>
+      </view>
+      <view class="shelf-heading more-heading"><view><view class="shelf-title">发现更多用法</view><text class="shelf-sub">每篇都有步骤和提示词，按自己的节奏来。</text></view></view>
+      <view class="tutorial-grid"><view v-for="item in tutorialCards" :key="item.id" class="tutorial-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)"><view class="tutorial-card-top"><text>{{item.category}}</text><text>↗</text></view><text class="tutorial-card-title">{{item.title}}</text><text class="tutorial-card-desc">{{item.description}}</text><text class="tutorial-card-action">跟着步骤做 →</text></view></view>
+      <view class="tutorial-library" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')"><view><text class="tutorial-library-title">生活里遇到小事？</text><text class="tutorial-library-desc">打开用法库，复制一句提示词就能开始。</text></view><text>逛用法库 ↗</text></view>
     </view>
     <view class="content-shell">
-      <view class="highlights-grid">
+      <view v-if="!tutorialFirst" class="highlights-grid">
         <view class="highlight-block case-block-home"><view class="block-title"><view><view class="section-title">看看真人怎么做的</view><view class="section-subtitle">精选案例匿名展示，数字取大概；详情以原帖为准</view></view><text @click="scrollToIntelligence">进入情报 →</text></view><view class="home-cases"><view v-for="(item,index) in featuredArticles" :key="item.id" class="home-case" :class="{'third-case':index===2}"><view class="home-case-main" @click="openArticle(item)"><view class="home-case-tags"><text>{{item.direction}}</text><text>完整解读</text></view><view class="home-case-title">{{cleanCaseTitle(item.title)}}</view><view class="home-case-start">起点：{{item.start?.occupation || '作者未披露'}}</view><view class="home-case-numbers"><view v-for="n in publicNumbers(item.numbers).slice(0,2)" :key="n.label"><text>{{n.value || '未披露'}}</text><text>{{n.label}} · 作者自述</text></view></view><view class="home-case-by">{{item.author}} · 生财有术</view></view><view v-if="item.simulation" class="home-case-play" @click="goCaseGame(item)"><text>▶</text><view><view>玩同款：{{item.simulation.name}}</view></view><text>开始 →</text></view></view></view><view v-if="!featuredArticles.length" class="highlight-empty">暂无已收录的 AI 内容。</view></view>
         <view class="highlight-block"><view class="block-title"><view><view class="section-title">近期线下活动</view></view><text @click="navigate('/pages/events/index')">全部活动 →</text></view><view class="highlight-list"><view class="conference-link" @click="openFeaturedFde"><view class="conference-copy"><text class="conference-label">{{featuredFdeLabel}}</text><view class="conference-name">{{featuredFdeTitle}}</view><view class="conference-detail">{{featuredFdeStatus}}</view></view><view class="conference-actions"><button v-if="conference" @click.stop="navigate('/pages/topic/index?topic=fde')">FDE 专题</button><button @click.stop="openFeaturedFde">{{conference ? '查看资料 →' : '进入专题 →'}}</button></view></view><view v-for="item in upcomingEvents" :key="item.id" class="highlight-row" @click="navigate('/pages/events/index')"><view class="event-date"><text>{{eventMonth(item.startTime)}}月</text><text>{{eventDay(item.startTime)}}</text></view><view class="highlight-content"><view class="highlight-title">{{ hideEarningsFigures(item.name) }}</view><view class="highlight-meta">{{ item.city }} · {{ eventTime(item.startTime) }}（北京时间）</view></view><text class="row-arrow">›</text></view><view v-if="!upcomingEvents.length" class="highlight-empty">暂未收录即将开始的 AI 活动，可查看全部活动。</view><view class="highlight-footer" @click="navigate('/pages/events/index')">查看城市活动与详情 →</view></view></view>
       </view>
       <CampFooter from="home" />
-      <view class="footer-note">内容来自生财有术，以原帖为准</view>
+      <view v-if="!tutorialFirst" class="footer-note">内容来自生财有术，以原帖为准</view>
     </view>
-  <SiteFooter :space-for-promo="true" :show-icp="true" /></view>
+  <SiteFooter :space-for-promo="!tutorialFirst" :show-icp="true" /></view>
 </template>
 
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {onLoad, onShow, onHide, onPageScroll} from '@dcloudio/uni-app';
@@ -69,9 +111,9 @@ onMounted(()=>{window.addEventListener('scroll',updateJoinBar,{passive:true});up
 let tourMounted=false,tourScript=null,tourPendingForce=false,tourTimer=null;
 const tourSteps=[
   {sel:'#tour-search',title:'遇到事，搜这里',text:'说一句你遇到的事，找一句能复制给 AI 的提示词。'},
-  {sel:'#tour-make',title:'想做成一件事，从这里开始',text:'跟着教程，到 AI 工具里制作你的作品。'},
+  {sel:'#tour-make',title:'选一件事，开始做',text:'从初级到高级，选自己感兴趣的内容。'},
   {sel:'#tour-lib',title:'用法库',text:'平时的小事，打开一张，复制就行。'},
-  {sel:'.site-nav-scroll',title:'随时回到这里',text:'首页、用法库、找用法、跟着做、我的。'},
+  {sel:'.site-nav-scroll',title:'随时回到这里',text:tutorialFirst?'首页、用法库、找用法、教程、我的。':'首页、用法库、找用法、跟着做、我的。'},
 ];
 function loadTour(force){
   const run=()=>{if(!tourMounted)return;if(window.AINPETour)window.AINPETour.start(tourSteps,{force});};
@@ -82,7 +124,7 @@ function loadTour(force){
   el.onload=()=>{tourScript=null;if(!tourMounted||!window.AINPETour)return;const replay=tourPendingForce;tourPendingForce=false;clearTimeout(tourTimer);tourTimer=setTimeout(()=>{if(tourMounted)window.AINPETour.start(tourSteps,{force:replay})},replay?0:700);};
   el.onerror=()=>{tourScript=null;tourPendingForce=false;};document.body.appendChild(el);
 }
-onShow(()=>{document.title='AI 实战情报站';tourMounted=true;loadTour(false)});
+onShow(()=>{document.title=tutorialFirst?'AI 教程站':'AI 实战情报站';tourMounted=true;loadTour(false)});
 onHide(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.AINPETour?.dispose();});
 onUnmounted(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.removeEventListener('scroll',updateJoinBar);window.AINPETour?.dispose();});
 // #endif
@@ -144,7 +186,22 @@ function goCaseGame(item){
 const findQ=ref('');const votes=ref([]);try{const v=uni.getStorageSync('ainpe:votes');if(Array.isArray(v))votes.value=v}catch{}
 function vote(t){if(votes.value.includes(t.id)){uni.showToast({title:'本设备已标记',icon:'none'});return}votes.value=[...votes.value,t.id];try{uni.setStorageSync('ainpe:votes',votes.value)}catch{}track('want_submit',{page:'home',game:t.id});uni.showToast({title:'已在本机标记',icon:'none'})}
 function openLearnPage(page){if(!openLearn(page))uni.showToast({title:'暂时打不开，稍后再试',icon:'none'})}
-const quick=[{label:'做课件',page:'kejian.html?from=home'},{label:'做绘本',page:'huiben.html?from=home'},{label:'辅导作业',id:'homework'},{label:'写请假条',id:'leave'}];
+const quick=tutorialFirst?[{label:'做 AI 短剧',page:'guide.html?id=short-drama'},{label:'写视频脚本',page:'guide.html?id=video-script'},{label:'做宣传图',page:'guide.html?id=product-poster'},{label:'做课件',page:'kejian.html?from=home'}]:[{label:'做课件',page:'kejian.html?from=home'},{label:'做绘本',page:'huiben.html?from=home'},{label:'辅导作业',id:'homework'},{label:'写请假条',id:'leave'}];
+const everydayCards=[
+  {id:'homework',category:'学习',title:'陪孩子讲懂一道题',description:'让 AI 帮你整理讲题思路，引导孩子自己思考。'},
+  {id:'meeting',category:'工作',title:'把会议记录整理清楚',description:'从零散笔记中梳理结论、待办和待确认事项。'},
+  {id:'menu',category:'生活',title:'一周晚饭吃什么',description:'告诉 AI 人数和口味，获取一份菜单和购物清单。'},
+];
+const showcaseCards=[
+  {title:'给孩子做一份课件',description:'跟着步骤整理教案，再到 AI 工具里制作插画。',page:'kejian.html?from=home',image:'/static/design/boat.jpg'},
+  {title:'和孩子做一本绘本',description:'从孩子的故事开始，一起设计画面和文字。',page:'huiben.html?from=home',image:'/static/design/girl.jpg'},
+];
+const tutorialCards=[
+  {id:'video-script',category:'内容创作',title:'写一条短视频脚本',description:'把一个想法整理成开头、内容和结尾。',page:'guide.html?id=video-script'},
+  {id:'product-poster',category:'视觉创作',title:'做一张商品宣传图',description:'梳理卖点，用 AI 工具制作画面。',page:'guide.html?id=product-poster'},
+  {id:'meeting-notes',category:'工作提效',title:'把会议记录整理清楚',description:'提炼结论、待办和负责人，减少遗漏。',page:'guide.html?id=meeting-notes'},
+  {id:'content-notes',category:'内容创作',title:'写一篇小红书笔记',description:'从目标读者到正文，整理一篇笔记。',page:'guide.html?id=content-notes'},
+];
 function goFind(){
   // #ifdef H5
   const value=String(findQ.value||'').trim().slice(0,40);
@@ -323,4 +380,83 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
   .ha-aid2{grid-column:2;margin-top:0}
   .discover-page .content-shell{max-width:1120px;padding-left:32px;padding-right:32px}
 }
+/* Tutorial-first preview: a clear starting point and a compact, useful library. */
+.home-eyebrow{display:flex;align-items:center;gap:7px;margin:4px 0 14px;color:#53627c;font-size:11px;font-weight:800;letter-spacing:.06em}
+.home-eyebrow-dot{color:#5269ea;font-size:11px}
+.drama-feature{box-sizing:border-box;position:relative;overflow:hidden;margin-top:22px;padding:22px;border-radius:20px;background:#192b71;color:#fff;cursor:pointer;box-shadow:0 16px 30px -24px #16266a}
+.drama-top{display:flex;justify-content:space-between;gap:8px;color:#c4d1ff;font-size:10px;font-weight:800;letter-spacing:.05em}
+.drama-title{margin-top:20px;font-size:26px;line-height:1.25;font-weight:900;letter-spacing:-.5px}
+.drama-title text{color:#b8cbff}
+.drama-desc{max-width:360px;margin-top:10px;color:#d6def6;font-size:13px;line-height:1.7}
+.drama-foot{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-top:22px;padding-top:14px;border-top:1px solid #ffffff30;color:#c0ccef;font-size:11px;line-height:1.6}
+.drama-link{flex-shrink:0;color:#fff;font-size:13px;font-weight:800}
+.tutorial-shelf{box-sizing:border-box;max-width:1120px;margin:24px auto 0;padding:0 16px 30px}
+.shelf-heading{display:flex;justify-content:space-between;align-items:end;gap:12px}
+.shelf-kicker{display:block;color:#71809a;font-size:10px;font-weight:800;letter-spacing:.08em}
+.shelf-title{margin-top:7px;color:#161d2a;font-size:23px;font-weight:850;line-height:1.3}
+.shelf-sub{display:block;margin-top:4px;color:#69768a;font-size:13px;line-height:1.6}
+.shelf-more{flex-shrink:0;color:#2b44e6;font-size:13px;font-weight:800;cursor:pointer}
+.tutorial-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.tutorial-card{box-sizing:border-box;display:flex;flex-direction:column;min-width:0;min-height:155px;padding:15px;background:#fff;border:1px solid #e1e6ef;border-radius:15px;cursor:pointer}
+.tutorial-card-top{display:flex;justify-content:space-between;gap:8px;color:#566ce5;font-size:11px;font-weight:800}
+.tutorial-card-title{display:block;margin-top:13px;color:#192336;font-size:15px;font-weight:850;line-height:1.45}
+.tutorial-card-desc{display:block;margin-top:5px;color:#718097;font-size:12px;line-height:1.55}
+.tutorial-card-action{display:block;margin-top:auto;padding-top:12px;color:#2b44e6;font-size:12px;font-weight:800}
+.tutorial-library{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding:17px;background:#e9eefc;border-radius:15px;color:#2b44e6;font-size:12px;font-weight:800;cursor:pointer}
+.tutorial-library-title,.tutorial-library-desc{display:block}.tutorial-library-title{color:#243051;font-size:14px}.tutorial-library-desc{margin-top:4px;color:#687893;font-size:12px;font-weight:500;line-height:1.5}
+@media(min-width:900px){.drama-feature{grid-column:2;grid-row:1;margin-top:0;min-height:300px;padding:30px}.drama-title{font-size:38px;margin-top:32px}.drama-desc{font-size:15px}.drama-foot{margin-top:28px}.tutorial-shelf{padding:0 32px 44px;margin-top:36px}.tutorial-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.tutorial-card{min-height:170px;padding:19px}.shelf-title{font-size:28px}}
+@media(max-width:700px){.shelf-heading{align-items:flex-start;flex-direction:column;gap:5px}.shelf-more{margin-top:2px}}
+@media(max-width:360px){.tutorial-card{padding:12px}.tutorial-card-title{font-size:14px}.drama-foot{align-items:start;flex-direction:column}}
+/* V51 首页：保留醒目搜索与本地教程。 */
+.hero-start-action{display:inline-flex;align-items:center;justify-content:center;margin-top:20px;padding:0 20px;min-height:46px;border-radius:12px;background:#2849e9;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.ha-levels{box-sizing:border-box;margin-top:24px;padding:20px;border:1px solid #e0e5ee;border-radius:20px;background:#fff;box-shadow:0 12px 30px -26px #5266a0}
+.level-heading,.level-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.level-kicker{display:block;color:#7181a5;font-size:10px;font-weight:800;letter-spacing:.08em}
+.level-heading-title{margin-top:6px;color:#18212f;font-size:20px;font-weight:850}
+.level-heading-desc{display:block;margin-top:3px;color:#718097;font-size:12px;line-height:1.5}
+.level-all{padding-top:17px;color:#2b44e6;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+.level-list{display:grid;gap:9px;margin-top:16px}.level-card{padding:14px 15px;border:1px solid #e3e7ef;border-radius:14px;cursor:pointer}.level-first{border-color:#8da3ff;background:#f7f9ff}.level-future{background:#f8f9fb;cursor:default}
+.level-badge{display:inline-block;padding:4px 8px;border-radius:7px;background:#edf1ff;color:#2b4ddb;font-size:11px;font-weight:800}.level-badge-mid{background:#eaf5f0;color:#207257}.level-badge-high{background:#f1edfc;color:#7356aa}.level-label,.level-soon{color:#6c7f9b;font-size:11px;line-height:25px}.level-title{margin-top:9px;color:#182333;font-size:16px;font-weight:850}.level-description{margin-top:4px;color:#6a788d;font-size:12px;line-height:1.6}.level-action{display:flex;justify-content:space-between;margin-top:10px;color:#2b4ddb;font-size:12px;font-weight:800}.level-muted{color:#8590a0}
+@media(min-width:900px){.ha-levels{grid-column:2;grid-row:1;margin-top:0;padding:24px}.home-a{align-items:start}.ha-hero{align-self:center}}
+@media(max-width:360px){.ha-levels{padding:15px}.level-heading-title{font-size:18px}}
+/* Design draft: distinct starting cards, practical use cases and illustrated tutorials. */
+.discover-page{background:#f3f4f6;color:#161a23}
+.ha-levels{padding:0;background:transparent;border:0;box-shadow:none}
+.level-heading{align-items:flex-end}
+.level-kicker{display:none}
+.level-heading-title{margin:0;font-size:19px;color:#161a23}
+.level-heading-desc{color:#758092}
+.level-all{padding-top:0}
+.level-list{gap:10px;margin-top:14px}
+.level-card{display:flex;align-items:center;gap:14px;min-height:112px;box-sizing:border-box;padding:14px;background:#fff;border:1px solid transparent;border-radius:18px}
+.level-first{border:2px solid #5267ee;background:#fff}
+.level-future{background:#fff;color:#161a23}
+.level-body{flex:1;min-width:0}
+.level-mark{display:flex;align-items:center;justify-content:center;flex:0 0 54px;width:54px;height:54px;border-radius:15px;background:#eceffe;color:#2b44e6;font-size:27px;line-height:1}
+.level-visual{position:relative;flex:0 0 86px;width:86px;height:76px;overflow:hidden;border-radius:12px;background:#e8edf5}
+.level-visual image{display:block;width:100%;height:100%}
+.level-visual text{position:absolute;left:4px;bottom:4px;padding:2px 4px;border-radius:4px;background:rgba(22,26,35,.62);color:#fff;font-size:9px;line-height:1.2}
+.level-mark-mid{background:#e8f7ee;color:#15803d}
+.level-mark-high{background:#fff1e8;color:#c2410c}
+.level-badge{background:#e8f7ee;color:#15803d}.level-badge-mid{background:#eceffe;color:#2b44e6}.level-badge-high{background:#fff1e8;color:#c2410c}
+.level-title{font-size:16px;line-height:1.4;margin-top:6px}.level-description{margin-top:3px}.level-action{margin-top:5px}
+.tutorial-shelf{margin-top:42px}
+.shelf-title{color:#161a23}
+.everyday-grid{display:grid;gap:10px;margin-top:14px}
+.everyday-card{display:flex;gap:13px;box-sizing:border-box;padding:17px;background:#fff;border:1px solid #e7e9ee;border-radius:17px;cursor:pointer}
+.everyday-number{display:flex;align-items:center;justify-content:center;flex:0 0 38px;height:38px;border-radius:11px;background:#eceffe;color:#2b44e6;font-size:13px;font-weight:800}
+.everyday-content{flex:1;min-width:0}.everyday-category{font-size:11px;color:#708093;font-weight:700}
+.everyday-title{margin-top:4px;font-size:15px;line-height:1.4;color:#161a23;font-weight:800}
+.everyday-description{display:block;margin-top:5px;font-size:12px;line-height:1.55;color:#69768a}
+.everyday-action{display:block;margin-top:10px;font-size:12px;font-weight:800;color:#2b44e6}
+.showcase-heading{margin-top:38px}.showcase-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.showcase-card{min-width:0;overflow:hidden;background:#fff;border:1px solid #e7e9ee;border-radius:17px;cursor:pointer}
+.showcase-image{position:relative;height:145px;overflow:hidden;background:#e9edf2}.showcase-image image{display:block;width:100%;height:100%}.showcase-image text{position:absolute;left:10px;top:10px;padding:4px 8px;border-radius:7px;background:rgba(22,26,35,.62);color:#fff;font-size:11px;font-weight:700}
+.showcase-copy{padding:15px}.showcase-tag{font-size:11px;color:#4261c9;font-weight:700}.showcase-title{margin-top:5px;font-size:16px;line-height:1.4;font-weight:850;color:#161a23}.showcase-description{display:block;margin-top:6px;font-size:12px;color:#69768a;line-height:1.55}.showcase-action{margin-top:14px;color:#2b44e6;font-size:12px;font-weight:800}
+.more-heading{margin-top:38px}
+.tutorial-card,.tutorial-library{border-radius:17px}
+@media(min-width:900px){.ha-levels{padding:0}.everyday-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.everyday-card{min-height:168px}.showcase-grid{max-width:750px;gap:16px}.showcase-image{height:190px}.tutorial-shelf{margin-top:64px}}
+@media(max-width:600px){.level-card{min-height:106px}.showcase-grid{grid-template-columns:1fr}.showcase-card{display:grid;grid-template-columns:38% minmax(0,1fr)}.showcase-image{height:auto;min-height:150px}.showcase-image image{position:absolute;inset:0}.showcase-copy{display:flex;flex-direction:column;align-items:flex-start}.showcase-action{margin-top:auto;padding-top:12px}.tutorial-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:360px){.level-card{gap:10px;padding:12px}.level-mark{width:46px;height:46px;flex-basis:46px}.level-title{font-size:15px}.level-label{font-size:10px}.showcase-grid{grid-template-columns:1fr}}
+@media(max-width:360px){.level-visual{flex-basis:62px;width:62px;height:66px}}
 </style>

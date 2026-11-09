@@ -64,7 +64,7 @@ function send(res, status, body, method, headers = {}) {
 export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
-  let reservations=null,tracking=null,board=null,stats=null;
+  let reservations=null,tracking=null,board=null,stats=null,feedback=null;
   if(reservation){
     const dbParent=await realpath(path.dirname(reservation.dbPath));
     if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
@@ -74,8 +74,12 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     const trackingPath=path.join(dbParent,'ainpe-tracking.sqlite');
     if(path.resolve(reservation.dbPath)===trackingPath)throw new Error('tracking_db_conflicts_with_reservations');
     tracking=createProductionTrackingApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin});
+    const {createProductionFeedbackApi}=await import('./production-feedback.mjs');
+    const feedbackPath=path.join(dbParent,'ainpe-feedback.sqlite');
+    if(path.resolve(reservation.dbPath)===feedbackPath)throw new Error('feedback_db_conflicts_with_reservations');
+    feedback=createProductionFeedbackApi({root,dbPath:feedbackPath,publicOrigin:reservation.publicOrigin});
     const {createProductionStatsApi}=await import('./production-stats.mjs');
-    stats=createProductionStatsApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin,passwordFile:statsPasswordFile});
+    stats=createProductionStatsApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin,passwordFile:statsPasswordFile,feedback});
     const {createProductionBoardApi}=await import('./production-board.mjs');
     const boardPath=path.join(dbParent,'ainpe-board.sqlite');
     if(path.resolve(reservation.dbPath)===boardPath)throw new Error('board_db_conflicts_with_reservations');
@@ -153,7 +157,8 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
     }); };
-    const afterTracking = () => { if(board)board.middleware(req,res,afterBoard);else afterBoard(); };
+    const afterFeedback = () => { if(board)board.middleware(req,res,afterBoard);else afterBoard(); };
+    const afterTracking = () => { if(feedback)feedback.middleware(req,res,afterFeedback);else afterFeedback(); };
     const afterStats = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
     const afterReservation = () => { if(stats)stats.middleware(req,res,afterStats);else afterStats(); };
     if(reservations){reservations.middleware(req,res,afterReservation);return;}
@@ -162,7 +167,7 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       else res.destroy();
     });
   });
-  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();});
+  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();feedback?.close();});
   return server;
 }
 

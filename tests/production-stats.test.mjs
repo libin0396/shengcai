@@ -107,6 +107,19 @@ test('onboarding metrics count fixed actions without returning identifiers',asyn
   assert.equal(JSON.stringify(r.body).includes('1'.repeat(64)),false);
  }finally{await x.close()}
 });
+test('search aggregates distinguish direct, related and missing results and keep feedback categories bounded',async()=>{
+ const x=await setup();try{
+  events(x.dbPath);const db=new DatabaseSync(x.dbPath);db.exec('ALTER TABLE events ADD COLUMN tier TEXT');
+  const add=db.prepare('INSERT INTO events(event,source,target,game,tier,created_at,device_hash) VALUES(?,?,?,?,?,?,?)'),now=Date.now();
+  for(const tier of ['hit','related','miss','miss'])add.run('find_search',null,null,'find',tier,now-100,'1'.repeat(64));
+  for(const tier of ['drama','drama','other','not-allowed'])add.run('find_feedback',null,null,'find',tier,now-50,'2'.repeat(64));db.close();
+  await chmod(x.dbPath,0o600);const c=await cookie(x),r=await x.call('/api/admin/stats?days=30',{headers:{cookie:c}});
+  assert.equal(r.status,200);assert.deepEqual(r.body.metrics.findSearches,{events:4,browsers:1});
+  assert.deepEqual(r.body.metrics.findMisses,{events:2,browsers:1});assert.deepEqual(r.body.metrics.findRelated,{events:1,browsers:1});
+  assert.deepEqual(r.body.findFeedback,{drama:{events:2,browsers:1},other:{events:1,browsers:1}});
+  assert.equal(JSON.stringify(r.body).includes('not-allowed'),false);assert.equal(JSON.stringify(r.body).includes('1'.repeat(64)),false);
+ }finally{await x.close()}
+});
 test('older databases without target do not misrepresent unavailable joining clicks as zero',async()=>{
  const x=await setup();try{
   const db=new DatabaseSync(x.dbPath);db.exec('CREATE TABLE events(id INTEGER PRIMARY KEY,event TEXT NOT NULL,source TEXT,game TEXT,created_at INTEGER NOT NULL,device_hash TEXT NOT NULL)');db.close();await chmod(x.dbPath,0o600);

@@ -75,7 +75,7 @@ test('homepage tour does not open after navigation and is disposed when hidden',
   const hooks={},scripts=[],calls=[],timers=[];
   const document={createElement(){return {}},body:{appendChild(el){scripts.push(el)}}};
   const window={removeEventListener(){}};
-  vm.runInNewContext(vue.slice(start,end),{window,document,updateJoinBar(){},setTimeout(fn){timers.push(fn);return timers.length},clearTimeout(){},
+  vm.runInNewContext(vue.slice(start,end),{window,document,tutorialFirst:false,updateJoinBar(){},setTimeout(fn){timers.push(fn);return timers.length},clearTimeout(){},
     onShow(fn){hooks.show=fn},onHide(fn){hooks.hide=fn},onUnmounted(fn){hooks.unmount=fn}});
   hooks.show();assert.equal(document.title,'AI 实战情报站');assert.equal(scripts.length,1);hooks.hide();
   window.AINPETour={start(_steps,opts){calls.push(opts.force?'open':'auto')},dispose(){calls.push('dispose')}};

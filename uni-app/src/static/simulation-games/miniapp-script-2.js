@@ -1,5 +1,14 @@
 
 var D=JSON.parse(document.getElementById('game-data').textContent),$=function(q){return document.querySelector(q)},app=$('#app'),UI=D.ui;
+
+var tutorialFirst=!!(window.AINPE_SITE_MODE&&window.AINPE_SITE_MODE.tutorialFirst);
+if(tutorialFirst){
+ D.baseRefNote='起点金额与事件仅为游戏设定，不是预计收入。';
+ UI.intro=String(UI.intro||'').replace(/最后对照\s*\d+\s*个真实案例。?/g,'');
+ UI.steps=UI.steps.map(function(step){return String(step).replace(/[，、]?对照真实案例/g,'').replace(/[，、]?复盘与真实案例/g,'、复盘')});
+ (D.rules||[]).forEach(function(rule){if(Array.isArray(rule.bad))rule.bad=rule.bad.map(function(value){return typeof value==='string'?value.replace('，这也是真实案例里的坑',''):value})});
+}
+
 var S;
 var gameInProgress=false;
 function reset(){var raw=new URLSearchParams(location.search).get("seed"),seed=raw!==null&&/^\d{1,6}$/.test(raw)?Number(raw):(Math.random()*1e6)|0;S={cond:{},talents:[],choice:{},task:null,days:30,seed:seed};var requested=new URLSearchParams(location.search).get('life');var life=D.conditions.find(function(c){return c.id==='life'});var aliases={'上班族':'全职上班','宝妈宝爸':'全职宝妈宝爸','待业中':'待业'};if(life&&requested){var target=aliases[requested]||requested;var idx=life.opts.findIndex(function(o){return o.t===target});if(idx<0&&['全职宝妈宝爸','待业'].indexOf(target)>=0)idx=life.opts.findIndex(function(o){return o.t==='其他'});if(idx>=0)S.cond.life=idx}}
@@ -67,7 +76,7 @@ function review(){var T=D.task;top0();
  function draw(){var R=Engine.task(D,S),miss=R.rows.filter(function(x){return x.st=='miss'}).length,ok=R.rows.filter(function(x){return x.st=='ok'}).length,need=T.items.filter(function(x){return x.need}).length,fp=R.rows.filter(function(x){return x.st=='fp'}).length;
   app.innerHTML='<div class="kick"><span>动手环节 · 检查结果</span></div><h2 style="margin-bottom:0">'+T.rtitle+'</h2><div class="score"><span class="num" style="color:'+(ok==need?'var(--good)':'var(--acc)')+'">'+ok+'</span><small>/ '+need+' 个关键项一次抓到</small></div><p class="mute" style="margin:0 0 6px;font-size:14px;color:var(--sub)">'+(miss?'漏掉的项会在后面的模拟里变成本局模拟事件。现在点「补上」可以修复，但会多花一点返工时间。':'关键项都抓到了。')+(fp?' 多勾的项不算错，但会占用时间。':'')+'</p>'+
   R.rows.filter(function(x){return x.st!='skip'}).map(function(x){var it=x.it,lab={ok:'抓到了',miss:'漏掉了',fixed:'已补上',fp:'不必要'}[x.st];
-   return '<div class="chk '+(x.st=='fixed'?'ok':x.st)+'" style="cursor:default"><span class="bx">'+(x.st=='miss'?'!':x.st=='fp'?'–':'✓')+'</span><span>'+it.t+'<span class="why"><b>'+lab+'</b>'+it.why+(it.fix&&x.st!='fp'?'<br>做法：'+it.fix:'')+(it.ref?'<br><span class="rtag">参考：'+it.ref+' 自述经历</span>':'')+'</span>'+(x.st=='miss'?'<button class="fixb" data-id="'+it.id+'">补上这一项</button>':'')+'</span></div>'}).join('')+
+   return '<div class="chk '+(x.st=='fixed'?'ok':x.st)+'" style="cursor:default"><span class="bx">'+(x.st=='miss'?'!':x.st=='fp'?'–':'✓')+'</span><span>'+it.t+'<span class="why"><b>'+lab+'</b>'+it.why+(it.fix&&x.st!='fp'?'<br>做法：'+it.fix:'')+(it.ref&&!tutorialFirst?'<br><span class="rtag">参考：'+it.ref+' 自述经历</span>':'')+'</span>'+(x.st=='miss'?'<button class="fixb" data-id="'+it.id+'">补上这一项</button>':'')+'</span></div>'}).join('')+
   cta('<button class="btn" id="go">'+(miss?'带着这些问题继续':'继续下一步')+'</button><div class="links"><button class="tlink" id="redo">重新检查</button></div>',miss?'还有 '+miss+' 项没补':'检查完成');
   app.querySelectorAll('.fixb').forEach(function(b){b.onclick=function(){S.task.fixed.push(b.dataset.id);var y=window.scrollY;draw();window.scrollTo(0,y)}});
   $('#go').onclick=function(){T.after+1<D.choices.length?choices(T.after+1):daysPick()};$('#redo').onclick=function(){S.task=null;taskScr()}}
@@ -89,11 +98,11 @@ function run(){top0();wide(1);var R=Engine.sim(D,S,S.days,S.seed),N=S.days,RM=RM
  '<svg id="spk" viewBox="0 0 100 30" preserveAspectRatio="none"><defs><linearGradient id="spg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc23d" stop-opacity=".35"/><stop offset="1" stop-color="#ffc23d" stop-opacity="0"/></linearGradient></defs><polygon id="spa" fill="url(#spg)" points=""/><polyline id="spl" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" points=""/></svg><div class="mute" style="font-size:12px">'+UI.hideNote+'</div></div></div>'+
  '<div class="rnR"><div class="evs" id="evs"><div class="evc idle"><span class="ic">📋</span><div><small class="mute">关键事件</small><b>等待关键事件</b><div class="mute">关键节点会在这里弹出</div></div></div></div><div class="log" id="log" aria-live="polite"></div></div></div>'+
  '<div class="cta runc"><div class="row" style="margin:0"><button class="btn ghost" id="sp" style="flex:1;margin:0">速度 1x</button><button class="btn" id="sk" style="flex:2;margin:0">直接看结果</button></div></div>'+
- '<div class="trans" id="trans" hidden><div><span class="brand">AINPE · 实战情报站</span><h2>模拟结束，进入复盘</h2><p class="mute">正在整理本局数据和真实案例…</p><div class="spin"></div></div></div>';
+ '<div class="trans" id="trans" hidden><div><span class="brand">AINPE · 实战情报站</span><h2>模拟结束，进入复盘</h2><p class="mute">正在整理本局数据与复盘…</p><div class="spin"></div></div></div>';
  var L=$('#log'),i=0,skip=false,spd=1,V=M.map(function(){return 0}),pts=[],cal=$('#cal');
  function add(h,c){var d=document.createElement('div');if(c)d.className=c;d.innerHTML=h;L.appendChild(d);while(L.children.length>60)L.removeChild(L.firstChild);L.scrollTop=L.scrollHeight}
  function tone(e){var m=e.dup?e.m0:e.m;return m<0?'bd':m>0?'gd':'ev'}
- function card(e,d){var t=tone(e),ic=t=='bd'?'⚠️':t=='gd'?'📈':'📌';$('#evs').innerHTML='<div class="evc '+t+(RM?'':' pop')+'"><span class="ic">'+ic+'</span><div><small class="mute">第 '+d+' 天 · 关键事件</small><b>'+e.t+'</b>'+(e.why?'<div class="mute" style="font-size:12.5px;margin-top:4px">原因：'+e.why+'</div>':'')+(e.ref?'<span class="rtag">参考：'+e.ref+' 自述经历</span>':'')+'</div></div>'}
+ function card(e,d){var t=tone(e),ic=t=='bd'?'⚠️':t=='gd'?'📈':'📌';$('#evs').innerHTML='<div class="evc '+t+(RM?'':' pop')+'"><span class="ic">'+ic+'</span><div><small class="mute">第 '+d+' 天 · 关键事件</small><b>'+e.t+'</b>'+(e.why?'<div class="mute" style="font-size:12.5px;margin-top:4px">原因：'+e.why+'</div>':'')+(e.ref&&!tutorialFirst?'<span class="rtag">参考：'+e.ref+' 自述经历</span>':'')+'</div></div>'}
  $('#sp').onclick=function(){spd=spd==1?2:1;this.textContent='速度 '+spd+'x'};
  function fin(){$('#trans').hidden=false;setTimeout(function(){ending(R)},skip||RM?0:900)}
  function step(){if(i>=R.daily.length){fin();return}var x=R.daily[i++],k=ph(x.d);
@@ -104,7 +113,7 @@ function run(){top0();wide(1);var R=Engine.sim(D,S,S.days,S.seed),N=S.days,RM=RM
   M.forEach(function(m,j){$('#m'+j).textContent=Math.round(V[j]).toLocaleString()});
   pts.push(de);var mx=Math.max.apply(null,pts)||1,pp=pts.map(function(v,j){return (j/(N-1)*100).toFixed(1)+','+(29-v/mx*27).toFixed(1)});
   $('#spl').setAttribute('points',pp.join(' '));$('#spa').setAttribute('points','0,30 '+pp.join(' ')+' '+((pts.length-1)/(N-1)*100).toFixed(1)+',30');
-  x.ev.forEach(function(e){add('<em>D'+x.d+'</em>'+e.t+(e.ref?' <span class="rtag">参考：'+e.ref+'</span>':''),tone(e));if(e.m||e.ref||e.dup||e.why)card(e,x.d)});
+  x.ev.forEach(function(e){add('<em>D'+x.d+'</em>'+e.t+(e.ref&&!tutorialFirst?' <span class="rtag">参考：'+e.ref+'</span>':''),tone(e));if(e.m||e.ref||e.dup||e.why)card(e,x.d)});
   if(x.f)add('<em>D'+x.d+'</em>'+x.f);
   setTimeout(step,skip?0:(x.ev.length?900:260)/spd)}
  $('#sk').onclick=function(){skip=true;this.disabled=true;this.textContent='生成复盘…'};step()}
@@ -155,11 +164,11 @@ function caseHtml(c,full){return '<div class="real"><div class="ch"><b>'+esc(c.a
  '<div class="kv" style="color:var(--ink)"><span>项目：</span>'+esc(c.project)+'</div><div class="kv"><span>踩过的坑：</span></div><ul>'+c.pits.map(function(p){return '<li>'+esc(p)+'</li>'}).join('')+'</ul>'+
  c.results.map(function(r){return '<div class="res"><b>自述结果：'+esc(r.amount_text)+'</b><div class="mute">周期：'+esc(r.period)+'</div><div class="mute">口径：'+esc(r.scope)+'</div>'+(full?'<div class="mute">'+esc(r.description)+'</div>':'')+'</div>'}).join('')+
  '<div class="src">'+c.date+'（北京时间）· 原帖在生财有术<div class="src-btns"><a class="src-ref" href="https://t.zsxq.com/6dPqb" rel="noopener" data-track="referral">加入生财，看完整原帖 ↗</a><a class="src-mem" href="/#/pages/camp/index?from=game-case&amp;source='+encodeURIComponent(c.url)+'" rel="noopener">查看原帖</a></div></div></div>'}
-function realBlock(){var M=matchCases(),top=M.filter(function(x){return x.sc>0}).slice(0,2);if(!top.length)top=M.slice(0,1);
+function realBlock(){if(tutorialFirst)return '';var M=matchCases(),top=M.filter(function(x){return x.sc>0}).slice(0,2);if(!top.length)top=M.slice(0,1);
  return '<div class="h2s"><h2>和你条件最像的真实案例</h2><span class="tag real">作者自述</span></div><p class="mute">都是作者自述，金额口径各不相同；只按你的条件和踩的坑粗略匹配。</p>'+
  top.map(function(x){return caseHtml(x.c,false)}).join('')+'<details class="all"><summary>看全部 '+D.cases.length+' 个案例</summary>'+D.cases.map(function(c){return caseHtml(c,true)}).join('')+'</details>'}
 function hitsBlock(R){if(!R.hits.length)return '';return '<div class="grp"><div class="q">本局踩到的坑 <span class="tag">金额为模拟</span></div><div class="tl">'+R.hits.map(function(h){var amt=h.dup?'<span class="mute">（同类问题已计过一次，不重复扣）</span>':h.m?'<span class="'+(h.m<0?'neg':'pos')+'">'+(h.m<0?'−':'+')+'¥'+Math.abs(h.m)+'（模拟）</span>':'<span class="mute">（不计金额）</span>';
- return '<div class="tli '+(h.dup?'':h.m<0?'m':h.m>0?'p':'')+'"><span class="dd">第'+h.d+'天</span>'+esc(h.t)+' <span class="amt">'+amt+'</span>'+(h.why?'<div class="mute">原因：'+esc(h.why)+'</div>':'')+(h.ref?'<div class="mute">参考：'+esc(h.ref)+' 自述经历</div>':'')+'</div>'}).join('')+'</div></div>'}
+ return '<div class="tli '+(h.dup?'':h.m<0?'m':h.m>0?'p':'')+'"><span class="dd">第'+h.d+'天</span>'+esc(h.t)+' <span class="amt">'+amt+'</span>'+(h.why?'<div class="mute">原因：'+esc(h.why)+'</div>':'')+(h.ref&&!tutorialFirst?'<div class="mute">参考：'+esc(h.ref)+' 自述经历</div>':'')+'</div>'}).join('')+'</div></div>'}
 
 /* ---------- 战报图片（结算单样式） ---------- */
 function drawCard(R,V,conds){var c=$('#cv'),x=c.getContext('2d'),W=720,P=48,MW=W-2*P,F='-apple-system,"PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif',NF='"Barlow Condensed","DIN Condensed","DIN Alternate","Bahnschrift","Arial Narrow",'+F;

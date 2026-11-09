@@ -1,0 +1,27 @@
+/* 用法库：保持一屏内能开始查找，筛选和展开交互不改变。 */
+.library-page .ttop{padding-top:32px}
+.library-page .h1{font-size:32px;letter-spacing:-.03em}
+.library-page .library-search{display:flex;align-items:center;gap:10px;height:54px;margin-top:20px;padding:0 16px;border:1px solid transparent;border-radius:16px;background:#fff;color:#9199a8}
+.library-page .library-search:focus-within{border-color:#2b44e6;box-shadow:0 0 0 3px #2b44e61a}
+.library-page .library-search>span[aria-hidden]{font-size:26px;line-height:1;color:#8c96a7}
+.library-page .library-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#161a23;font:inherit;font-size:16px}
+.library-page .library-search input::placeholder{color:#929aa8}
+.library-page .sec{margin-top:18px}
+.library-page .lvfilter{gap:8px;flex-wrap:wrap;white-space:nowrap;margin-bottom:18px;padding:2px 0 5px}
+.library-page .lvfilter button{flex:none;min-height:40px;padding:7px 15px}
+.library-page .aids{gap:10px}
+.library-page .aid{border:1px solid transparent;transition:border-color .18s ease}
+.library-page .aid.open{border-color:#2b44e6;box-shadow:0 0 0 1px #2b44e6}
+.library-page .aid>.hd{min-height:76px;padding:14px 16px}
+.library-page .aid>.hd .em{width:44px;height:44px;flex-basis:44px;border-radius:13px}
+.library-page .aid>.hd .ar{font-size:21px}
+.library-page .aid .body{padding:0 16px 18px}
+.library-page .aid .prompt{background:#161a23;color:#f7f8fb;border-radius:14px;padding:16px;line-height:1.75}
+.library-page .aid .prompt small{color:#aab8ff}
+.library-page .aid .pact{margin-top:12px}
+.library-page .aid .pact .btn{width:100%;min-height:48px}
+.library-page .aid .ex{margin-top:16px;background:#f3f4f6;border:0;border-radius:12px;padding:12px}
+.library-page .library-empty{padding:20px;background:#fff;border-radius:16px;color:#161a23}
+.library-page .library-empty[hidden]{display:none}
+.library-page .library-empty p{margin:5px 0 12px;color:#5f6675;font-size:14px}
+@media(max-width:700px){.library-page .ttop{padding-top:22px}.library-page .h1{font-size:28px}.library-page .library-search{margin-top:16px}.library-page .aid>.hd{min-height:72px}}

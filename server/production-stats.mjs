@@ -4,12 +4,13 @@ import {lstatSync, readFileSync, realpathSync} from 'node:fs';
 import {isIP} from 'node:net';
 import path from 'node:path';
 
-// This endpoint exposes aggregate counts only. Password material is read from
-// a separate private file; neither credentials nor raw events are returned.
+// Anonymous analytics are aggregates only. Explicitly submitted feedback is
+// exposed separately to authenticated owners. Raw tracking events remain private.
 const MAX_BODY=1024, SESSION_MS=4*60*60*1000, COOKIE='__Host-ainpe_stats';
 const PARAMS={N:16384,r:8,p:1,maxmem:64*1024*1024};
 const METRICS={
   activeSamples:{event:'active_sample'},
+  findSearches:{event:'find_search'}, findMisses:{event:'find_search',tier:'miss'}, findRelated:{event:'find_search',tier:'related'},
   siteViews:{event:'site_view'}, simStarts:{event:'sim_start'}, simFinishes:{event:'sim_finish'},
   campViews:{event:'camp_view'}, campClicks:{event:'camp_join_click'},
   posterQrVisits:{sources:[['challenge_open','poster_qr'],['site_view','persona_qr']]},
@@ -59,7 +60,7 @@ function cookieToken(req){
 }
 function summary(dbPath,root,days){
   const until=Date.now(),since=until-days*86400000;
-  const result={period:{days,since:new Date(since).toISOString(),until:new Date(until).toISOString(),retentionDays:90},available:false,metrics:Object.fromEntries(Object.keys(METRICS).map(k=>[k,emptyMetric()])),funnel:{unit:'browser_project',started:0,finished:0,campVisitsAfterFinish:0,finishRate:null,campAfterFinishRate:null},learnByTopic:null,wants:null,daily:[]};
+  const result={period:{days,since:new Date(since).toISOString(),until:new Date(until).toISOString(),retentionDays:90},available:false,metrics:Object.fromEntries(Object.keys(METRICS).map(k=>[k,emptyMetric()])),funnel:{unit:'browser_project',started:0,finished:0,campVisitsAfterFinish:0,finishRate:null,campAfterFinishRate:null},learnByTopic:null,wants:null,findFeedback:null,daily:[]};
   let file;try{file=privateFile(dbPath,root).file}catch(e){if(e.code==='ENOENT')return result;throw e}
   const db=new DatabaseSync(file,{readOnly:true});
   try{
@@ -80,6 +81,9 @@ function summary(dbPath,root,days){
       if(spec.game){sql+=' AND game=?';values.push(spec.game)}
       if(spec.tier){sql+=' AND tier=?';values.push(spec.tier)}
       const row=db.prepare(sql).get(...values);result.metrics[name]={events:Number(row.events),browsers:Number(row.browsers)};
+    }
+    if(columns.includes('tier')){
+      result.findFeedback=Object.fromEntries(db.prepare("SELECT tier,COUNT(*) AS events,COUNT(DISTINCT device_hash) AS browsers FROM events WHERE event='find_feedback' AND tier IN ('drama','video','office','content','education','business','other') AND created_at>=? AND created_at<? GROUP BY tier").all(since,until).map(x=>[x.tier,{events:Number(x.events),browsers:Number(x.browsers)}]));
     }
     if(columns.includes('game')){
       // Fixed topic keys only. Never return visitor-entered text or device identifiers.
@@ -107,7 +111,7 @@ function summary(dbPath,root,days){
     result.available=true;return result;
   }finally{db.close()}
 }
-export function createProductionStatsApi({root,dbPath,publicOrigin,passwordFile}={}){
+export function createProductionStatsApi({root,dbPath,publicOrigin,passwordFile,feedback=null}={}){
   if(!root||!path.isAbsolute(root)||!dbPath||!path.isAbsolute(dbPath))throw new Error('stats_paths_required');
   const origin=new URL(publicOrigin);if(origin.protocol!=='https:'||origin.origin!==publicOrigin||origin.username||origin.password)throw new Error('invalid_public_origin');
   const sessions=new Map(),attempts=new Map(),reads=new Map();let globalStart=0,globalCount=0,readStart=0,readCount=0,deriving=0;
@@ -142,6 +146,15 @@ export function createProductionStatsApi({root,dbPath,publicOrigin,passwordFile}
       if(originHeader!==publicOrigin)return send(res,403,{error:'same_origin_only'});
       const token=cookieToken(req);if(token)sessions.delete(createHash('sha256').update(token).digest('hex'));
       return send(res,200,{ok:true},{'Set-Cookie':`${COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`});
+    }
+    if(url.pathname==='/api/admin/feedback'){
+      if(req.method!=='GET')return send(res,405,{error:'method_not_allowed'},{Allow:'GET'});
+      let config;try{config=passwordConfig(passwordFile,root)}catch{return send(res,503,{error:'not_configured'})}
+      if(!authenticated(req,configTag(config)))return send(res,401,{error:'unauthorized'});
+      if(!readRate(ip))return send(res,429,{error:'rate_limited'},{'Retry-After':'60'});
+      if(url.search)return send(res,400,{error:'invalid_request'});
+      if(!feedback||typeof feedback.list!=='function')return send(res,503,{error:'feedback_unavailable'});
+      try{return send(res,200,feedback.list())}catch{return send(res,503,{error:'feedback_unavailable'})}
     }
     if(url.pathname==='/api/admin/stats'){
       if(req.method!=='GET')return send(res,405,{error:'method_not_allowed'},{Allow:'GET'});

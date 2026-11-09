@@ -130,7 +130,7 @@
   }
 
   // ---------- 信息 ----------
-  if(!L.MP){var a=document.createElement('a');a.className='chip or';a.style.marginLeft='6px';a.href='/#/pages/camp/index?from=learn';a.textContent='看看怎么上船 ›';a.addEventListener('click',function(){L.track('outbound_click',{target:'camp',from:'learn'})});$('#campLink').appendChild(a)}
+  if(!L.MP&&!(window.AINPE_SITE_MODE&&window.AINPE_SITE_MODE.tutorialFirst)){var a=document.createElement('a');a.className='chip or';a.style.marginLeft='6px';a.href='/#/pages/camp/index?from=learn';a.textContent='看看怎么上船 ›';a.addEventListener('click',function(){L.track('outbound_click',{target:'camp',from:'learn'})});$('#campLink').appendChild(a)}
 
   renderTutorial();
   var q=location.search;

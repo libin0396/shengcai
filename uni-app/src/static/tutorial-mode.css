@@ -1,0 +1,9 @@
+/* Reversible presentation-only mode: leave all source assets and data intact. */
+html.tutorial-first .source-case,
+html.tutorial-first .source-promo,
+html.tutorial-first .realwho,
+html.tutorial-first .lbanner,
+html.tutorial-first .ainpe-game-camp,
+html.tutorial-first .camp,
+html.tutorial-first .ainpe-nextstep,
+html.tutorial-first .ainpe-direct-offer { display:none !important; }

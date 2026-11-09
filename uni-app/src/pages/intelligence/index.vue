@@ -1,4 +1,5 @@
 <template>
+  <view><TutorialOnlyGate v-if="tutorialFirst" /><view v-else>
   <view class="intel-page">
     <SiteHeader active="intelligence"/>
     <view class="wrap">
@@ -28,8 +29,11 @@
       </view><view class="side"><view class="side-title">先玩再读，读得更懂。</view><button v-for="g in games" :key="g.file" @click="play(g.file)">{{g.name}} →</button><view class="side-note">过程和金额均为模拟，不是收入预测。</view></view></view>
     </view><CampFooter from="library"/>
   <SiteFooter /></view>
+</view></view>
 </template>
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
+import TutorialOnlyGate from '../../components/TutorialOnlyGate.vue';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed,ref} from 'vue';
 import {onShow} from '@dcloudio/uni-app';

@@ -1,11 +1,12 @@
 (function(root){
   'use strict';
   if(root.AINPETrack)return;
-  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save','learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy','active_sample'];
+  var EVENTS=['site_view','sim_start','sim_finish','camp_view','camp_join_click','share_open','share_save','challenge_open','replay_same_seed','versus_finish','versus_share','board_view','board_join','board_share','outbound_click','contact_copy','persona_unlock','poster_save','learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy','active_sample','find_search'];
   var TARGETS=['camp','join','source','event','referral'], SOURCES=['article','camp','result','mine','home','home_bar','event','header','footer','library','events','simulate','bar','learn'];
   var LEARN_EVENTS=['learn_view','learn_step','learn_done','card_save','want_submit','aid_copy','skill_copy'];
   var LEARN_TOPICS=['index','kejian','huiben','jijiu','library','find'], WANT_CATEGORIES=['kejian','huiben','video','novel','tuwen','assistant','money','other'];
   var LEARN_TIERS=['basic','pro','start','file','wx','xhs','need','write','pages','redline','cover','caption','excel','homework','learnai','meeting','menu','notice','reply','summary','trip'];
+  var FIND_FEEDBACK=['drama','video','office','content','education','business','other'];
   var KEY='ainpe:anonymous-device', ID=/^[a-z0-9][a-z0-9_-]{0,39}$/, did='';
   // Only this browser is excluded. Consume the URL control so it isn't shared.
   var INTERNAL='ainpe:internal', internal=false;
@@ -55,6 +56,7 @@
         var allowedPage=event==='want_submit'?(options.page==='learn'||options.page==='home'):options.page==='learn';
         if(!allowedPage||(!isOnboard&&allowed.indexOf(options.game)<0)||options.from!==undefined||options.target!==undefined||options.hidden!==undefined||(isOnboard?['open','skip','start'].indexOf(options.tier)<0:(options.tier!==undefined&&LEARN_TIERS.indexOf(options.tier)<0)))return false;
       }
+      if(event==='find_search' && (options.page!=='learn'||options.game!=='find'||['hit','related','miss'].indexOf(options.tier)<0||options.played===true||options.from!==undefined||options.target!==undefined||options.hidden!==undefined))return false;
       var isPersonaEvent=event==='persona_unlock'||event==='poster_save';
       if(isPersonaEvent && typeof options.hidden!=='boolean')return false;
       if((event==='outbound_click'||event==='contact_copy') && SOURCES.indexOf(options.from)<0)return false;
@@ -70,7 +72,20 @@
     }catch(e){}
     return false;
   }
-  root.AINPETrack={track:track,isInternal:function(){return internal}};
+  // Explicit feedback sends only an allowed category, and requires the server
+  // response. A queued beacon is not proof that feedback was received.
+  async function submitFindFeedback(category){
+    try{
+      if(internal||!root.navigator||root.navigator.globalPrivacyControl||root.navigator.doNotTrack==='1')return {ok:false,reason:'disabled'};
+      if(FIND_FEEDBACK.indexOf(category)<0||typeof root.fetch!=='function')return {ok:false,reason:'unavailable'};
+      var id=device();if(!id)return {ok:false,reason:'unavailable'};
+      var body=JSON.stringify({event:'find_feedback',page:'learn',game:'find',tier:category,played:false,ts:Date.now(),did:id});
+      var response=await root.fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:body,credentials:'same-origin',cache:'no-store'});
+      if(!response.ok)return {ok:false,reason:'unavailable'};
+      var data=await response.json();return {ok:!!(data&&data.ok===true),reason:'unavailable'};
+    }catch(e){return {ok:false,reason:'unavailable'}}
+  }
+  root.AINPETrack={track:track,submitFindFeedback:submitFindFeedback,isInternal:function(){return internal}};
   // Coarse, best-effort foreground activity samples; no text, URL, or new ID.
   // Hidden pages, inactive pages, admin pages, and privacy-opted-out visitors
   // are not sampled. Multiple open tabs can still count separately.
@@ -84,5 +99,11 @@
       var where=root.location||{},admin=String(where.hash||'').indexOf('#/admin')===0 || String(where.pathname||'').indexOf('/admin')===0;
       if(!admin && doc.visibilityState==='visible' && lastActivity>0 && now-lastActivity<=30000 && elapsed>=14000 && elapsed<=30000)track('active_sample',{});
     },15000);
+  }
+  // A separate, explicitly submitted feedback form never reads search text.
+  if(root.document && root.document.createElement){
+    var feedbackScript=root.document.createElement('script');
+    feedbackScript.src='/static/site-feedback.js';
+    (root.document.head||root.document.documentElement).appendChild(feedbackScript);
   }
 })(typeof window==='undefined'?globalThis:window);

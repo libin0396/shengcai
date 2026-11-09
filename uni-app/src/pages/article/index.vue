@@ -1,4 +1,5 @@
 <template>
+  <view><TutorialOnlyGate v-if="tutorialFirst" /><view v-else>
   <view class="detail-page">
     <SiteHeader active="intelligence" />
     <view class="detail-shell">
@@ -38,9 +39,12 @@
     </view>
     <view v-if="false" class="case-play-sticky"><view><text>{{study.simulation.name}} · 模拟</text><text>读到这里，亲手试一次</text></view><button @click="openSimulation">玩相关模拟 ▶</button><button class="case-play-close" aria-label="关闭模拟推荐" @click="dismissPlayBar=true">×</button></view>
   <SiteFooter /></view>
+</view></view>
 </template>
 
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
+import TutorialOnlyGate from '../../components/TutorialOnlyGate.vue';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, watch, onMounted, onUnmounted, getCurrentInstance} from 'vue';
 import {onLoad, onShow, onPageScroll} from '@dcloudio/uni-app';

@@ -1,4 +1,5 @@
 <template>
+  <view><TutorialOnlyGate v-if="tutorialFirst" /><view v-else>
   <view class="sc-page">
     <SiteHeader hide-camp />
     <view class="sc-back" @tap="goBack">← 返回上页</view>
@@ -86,9 +87,12 @@
     <!-- #endif -->
     <SiteFooter />
   </view>
+</view></view>
 </template>
 
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
+import TutorialOnlyGate from '../../components/TutorialOnlyGate.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { onLoad, onShow } from '@dcloudio/uni-app';
 import SiteHeader from '../../components/SiteHeader.vue';

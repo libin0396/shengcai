@@ -3,7 +3,7 @@
     <view class="site-header-main">
       <view class="site-brand" role="link" tabindex="0" aria-label="返回首页" @tap="go('/pages/discover/index')" @keydown.enter.prevent="go('/pages/discover/index')" @keydown.space.prevent="go('/pages/discover/index')">
         <view class="site-brand-mark">↗</view>
-        <view class="site-brand-name"><text class="site-brand-cn">AI 实战情报站</text><text class="site-brand-en">AINPE.</text></view>
+        <view class="site-brand-name"><text class="site-brand-cn">{{tutorialFirst ? 'AI 教程站' : 'AI 实战情报站'}}</text><text class="site-brand-en">AINPE.</text></view>
       </view>
       <scroll-view scroll-x class="site-nav-scroll" :show-scrollbar="false" :scroll-into-view="active ? 'site-nav-'+active : ''" :scroll-with-animation="true">
         <view class="site-nav" aria-label="主导航">
@@ -11,13 +11,13 @@
         </view>
       </scroll-view>
       <view class="site-actions">
-        <button class="site-contact" @tap="contactOpen = true">联系站长</button>
+        <button v-if="!tutorialFirst" class="site-contact" @tap="contactOpen = true">联系站长</button>
         <!-- #ifdef H5 -->
-        <button v-if="!hideCamp" :class="['site-camp',{'has-banner':hasBanner}]" @tap="go('/pages/camp/index?from=header')">了解生财</button>
+        <button v-if="!hideCamp && !tutorialFirst" :class="['site-camp',{'has-banner':hasBanner}]" @tap="go('/pages/camp/index?from=header')">了解生财</button>
         <!-- #endif -->
       </view>
     </view>
-    <view v-if="contactOpen" class="site-contact-overlay" @tap="contactOpen = false">
+    <view v-if="contactOpen && !tutorialFirst" class="site-contact-overlay" @tap="contactOpen = false">
       <view class="site-contact-modal" @tap.stop>
         <view class="site-contact-head"><text>联系站长</text><button aria-label="关闭" @tap="contactOpen = false">×</button></view>
         <text class="site-contact-description">对内容或体验营有疑问，可以添加站长微信咨询。</text>
@@ -30,6 +30,7 @@
 </template>
 
 <script setup>
+import {tutorialFirst} from '../site-mode.js';
 import {track} from '../data/track.js';
 import {openLearn} from '../data/game-matching.js';
 import { ref, onMounted, onUnmounted } from 'vue';
@@ -48,11 +49,11 @@ try { statusBarHeight = Number(uni.getSystemInfoSync().statusBarHeight) || 0; } 
 const links = [
   { key: 'discover', label: '首页', url: '/pages/discover/index' },
   { key: 'library', label: '用法库', learn: 'jijiu.html' },
-  { key: 'learn', label: '跟着做', learn: 'index.html' },
+  { key: 'learn', label: tutorialFirst ? '教程' : '跟着做', learn: tutorialFirst ? 'guides.html' : 'index.html' },
   { key: 'intelligence', also: ['topic','events','simulate','article'], label: '真人案例', url: '/pages/intelligence/index' },
   { key: 'find', label: '找用法', learn: 'find.html' },
   { key: 'saved', label: '我的', url: '/pages/saved/index' },
-];
+].filter(link => !tutorialFirst || link.key !== 'intelligence');
 function isCurrent(link) { return props.active === link.key || (link.also || []).includes(props.active); }
 function goLink(link) { if (link.learn) { if (!openLearn(link.learn)) go('/pages/discover/index'); } else go(link.url); }
 function go(url) { uni.navigateTo({ url, fail: () => uni.redirectTo({ url }) }); }
@@ -74,6 +75,7 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
 .site-nav-scroll { flex:1; min-width:0; white-space:nowrap; }
 .site-nav { display:flex; align-items:center; gap:23px; width:max-content; min-width:100%; }
 .site-nav-item { margin:0; padding:22px 0 19px; border:0; border-bottom:3px solid transparent; border-radius:0; background:transparent; line-height:20px; font-size:13px; font-weight:600; color:#b4c9bb; }
+.site-nav-item::after { border:0; }
 .site-nav-item.is-current { border-bottom-color:#ffcd55; color:#fff; }
 .site-nav-item:focus-visible { outline:2px solid #ffcd55; outline-offset:-2px; }
 .site-contact-overlay { position:fixed; z-index:9999; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(4,19,12,.64); }
@@ -110,7 +112,20 @@ function copyWechat() { uni.setClipboardData({ data: 'Yandati4', success:()=>tra
   .site-nav-item.n-intelligence{display:none}
   .site-nav-item.n-discover{order:1}.site-nav-item.n-library{order:2}.site-nav-item.n-find{order:3}.site-nav-item.n-learn{order:4}.site-nav-item.n-saved{order:5}
   .site-nav-item.n-find{flex:1;margin:0;height:auto;min-height:52px;padding:8px 2px;line-height:20px;background:transparent;border-radius:0;border-top:3px solid transparent;color:#2B44E6;position:relative;padding-top:30px}
-  .site-nav-item.n-find::before{content:'';position:absolute;left:50%;top:-16px;width:42px;height:42px;margin-left:-21px;border-radius:50%;background:#2B44E6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/20px no-repeat;box-shadow:0 0 0 4px #fff,0 8px 16px -6px rgba(43,68,230,.7)}
+  .site-nav-item.n-find::before{content:'';position:absolute;left:50%;top:2px;width:25px;height:25px;margin-left:-12.5px;border-radius:50%;background:#2B44E6 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") center/15px no-repeat}
   .site-nav-scroll{overflow:visible}
+}
+/* 手机端图标与文字一起提供清楚的导航线索。 */
+@media(max-width:700px){
+  .site-nav-item:not(.n-find){position:relative;min-height:58px;padding:31px 2px 6px;line-height:18px;border-top:0;font-weight:600}
+  .site-nav-item:not(.n-find).is-current{border-top:0;color:#2b44e6}
+  .site-nav-item:not(.n-find)::before{content:'';position:absolute;left:50%;top:7px;width:21px;height:21px;margin-left:-10.5px;background-position:center;background-size:21px;background-repeat:no-repeat;opacity:.72}
+  .site-nav-item:not(.n-find).is-current::before{opacity:1;filter:invert(20%) sepia(90%) saturate(4451%) hue-rotate(231deg) brightness(94%)}
+  .site-nav-item.n-discover::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.4 12 3l9 7.4V21h-6.2v-6.2H9.2V21H3z'/%3E%3C/svg%3E")}
+  .site-nav-item.n-library::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.3'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.3'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.3'/%3E%3Crect x='14' y='14' width='7' height='7' rx='1.3'/%3E%3C/svg%3E")}
+  .site-nav-item.n-learn::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 20h5v-5h5v-5h5V5h3'/%3E%3C/svg%3E")}
+  .site-nav-item.n-saved::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23778292' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='12' cy='8' r='3.2'/%3E%3Cpath d='M5 20v-1.2c0-3.4 3.2-5.5 7-5.5s7 2.1 7 5.5V20'/%3E%3C/svg%3E")}
+  .site-nav-item.n-find{min-height:58px;padding-top:31px}
+  .site-nav-item.n-find::before{top:3px;width:26px;height:26px;margin-left:-13px;background-size:16px}
 }
 </style>

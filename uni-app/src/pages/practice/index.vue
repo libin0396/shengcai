@@ -1,4 +1,5 @@
 <template>
+  <view><TutorialOnlyGate v-if="tutorialFirst" /><view v-else>
   <view class="practice-page">
     <SiteHeader active="discover" />
     <view class="shell"><view class="page-kicker">AINPE · 从看到做到</view><view class="page-title">选一个方向，动手试试。</view><view class="page-subtitle">方向测试、业务实践与视频需求单；输入只保存在当前设备。</view>
@@ -18,9 +19,12 @@
       <view class="camp" @click="goCamp"><image :src="campaign.posterUrl" mode="aspectFit"/><view><text class="eyebrow">下一步 · 动手试试</text><view class="camp-title">想系统了解 AI 实战？</view><view class="muted">了解 AI 成万事三天体验营，具体时间和参与方式以入口说明为准。</view><view class="camp-link">了解体验营 ↗</view></view></view>
     </view>
   <SiteFooter /></view>
+</view></view>
 </template>
 
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
+import TutorialOnlyGate from '../../components/TutorialOnlyGate.vue';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, reactive, ref} from 'vue';
 import {onLoad,onShow} from '@dcloudio/uni-app';

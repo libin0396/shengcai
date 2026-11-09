@@ -90,6 +90,24 @@ test('onboarding accepts only fixed open, skip and start actions',async()=>{
  }finally{await x.close()}
 });
 
+test('search outcomes and feedback accept only bounded categories and reject raw queries',async()=>{
+ const x=await setup();try{
+  const base={page:'learn',game:'find',played:false,ts:Date.now(),did:'a'.repeat(32)};
+  for(const tier of ['hit','related','miss'])assert.equal((await x.post({...base,event:'find_search',tier})).status,202);
+  for(const tier of ['drama','video','office','content','education','business','other'])assert.equal((await x.post({...base,event:'find_feedback',tier})).status,202);
+  for(const invalid of [
+   {...base,event:'find_search',tier:'some-private-query'}, {...base,event:'find_search',tier:'miss',query:'personal query'},
+   {...base,event:'find_feedback',tier:'some-private-query'}, {...base,event:'find_feedback',tier:'other',text:'private input'},
+   {...base,event:'find_feedback',tier:'other',game:'library'}, {...base,event:'find_feedback',tier:'other',played:true},
+   {...base,event:'find_feedback',tier:'other',page:'home'}, {...base,event:'find_feedback',tier:'other',from:'home'}
+  ])assert.equal((await x.post(invalid)).status,400);
+  const db=new DatabaseSync(x.dbPath,{readOnly:true});try{
+   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM events WHERE event='find_search'").get().n,3);
+   assert.equal(db.prepare("SELECT COUNT(*) AS n FROM events WHERE event='find_feedback'").get().n,7);
+  }finally{db.close()}
+ }finally{await x.close()}
+});
+
 test('rejects cross-origin, untrusted proxy, oversized and unapproved data',async()=>{
  const x=await setup();try{
   assert.equal((await x.post(sample(),{origin:'https://evil.example'})).status,403);

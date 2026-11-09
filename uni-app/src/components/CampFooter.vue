@@ -1,11 +1,12 @@
 <template>
   <!-- 减推广：只有首页底部留一句话，其它页面底部不再放推广卡 -->
-  <view v-if="from === 'home'" class="oneline" role="link" tabindex="0" @tap="go" @keydown.enter.prevent="go">
+  <view v-if="!tutorialFirst && from === 'home'" class="oneline" role="link" tabindex="0" @tap="go" @keydown.enter.prevent="go">
     <text class="ol-q">想跟着真人做？</text>
     <text class="ol-a">看看生财有术 ›</text>
   </view>
 </template>
 <script setup>
+import {tutorialFirst} from '../site-mode.js';
 import { track } from '../data/track.js';
 const props = defineProps({ from: { type: String, default: 'footer' } });
 function go() {

@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
+<script src="../site-mode.js"></script>
+<link rel="stylesheet" href="../tutorial-mode.css">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>AI 课件和资料 · AI 实战情报站</title>
@@ -8,23 +10,50 @@
 <meta name="theme-color" content="#F3F4F6">
 <link rel="manifest" href="/static/learn/manifest.webmanifest">
 <link rel="stylesheet" href="learn.css">
+<style>
+.lesson-example{margin:22px 0;padding:22px;border:1px solid #e6e8ec;border-radius:18px;background:#fff;color:#161a23}
+.lesson-example-tag{display:inline-block;margin:0 0 10px;padding:5px 9px;border-radius:8px;background:#eceffe;color:#2b44e6;font-size:12px;font-weight:700}
+.lesson-example h2{margin:0;font-size:21px;line-height:1.4}
+.lesson-example-intro,.lesson-example-process{margin:10px 0 0;color:#5f6675;font-size:14px;line-height:1.75}
+.lesson-example-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0;padding:0;list-style:none}
+.lesson-example-grid li{min-width:0;overflow:hidden;border:1px solid #e6e8ec;border-radius:12px;background:#f7f8fa}
+.lesson-example-grid img{display:block;width:100%;height:auto}
+.lesson-example-grid span{display:block;padding:9px 11px;color:#526073;font-size:12px;line-height:1.5}
+.lesson-example-note{margin:12px 0 0;padding:12px 13px;border-radius:10px;background:#f3f4f6;color:#5f6675;font-size:12px;line-height:1.7}
+.lesson-example-download{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:44px;margin-top:16px;padding:9px 16px;border-radius:10px;background:#2b44e6;color:#fff;font-size:14px;font-weight:700;text-decoration:none}
+.lesson-example-download:focus-visible{outline:3px solid #ffc83d;outline-offset:3px}
+@media(max-width:700px){.lesson-example{padding:18px}.lesson-example h2{font-size:19px}.lesson-example-grid{grid-template-columns:1fr}.lesson-example-download{width:100%}}
+</style>
 </head>
 <body class="course-page">
 <main>
-  <div class="thero"><img src="img/boat.jpg" alt="成品示例：海边小船插画"><span class="sample-tag">成品示例 · 课件第 1 页</span></div>
+  <div class="thero"><img src="media/lesson/slide-1.png" alt="本站试做的认识下雨课件第 1 页局部预览"><span class="sample-tag">本站试做 · 第 1 页局部</span></div>
   <section class="w ttop">
     <a class="back" href="index.html">‹ 跟着做</a>
     <h1 class="h1">给孩子做一份课件</h1>
     <p class="lead">准备手机和可用的 AI 工具，先给自己或孩子做一节课。工具额度和费用以实际说明为准。</p>
   </section>
-  <nav class="tabs" aria-label="选一档"><div class="w">
-    <button class="on" data-tab="tutorial"><b><span class="step s1"><i></i><i></i><i></i></span>初级</b><small>复制提示词到 AI 工具</small></button>
-    <button data-tab="practice"><b><span class="step s2"><i></i><i></i><i></i></span>中级</b><small>5 关选择练习</small></button>
-    <button data-tab="info"><b><span class="step s3"><i></i><i></i><i></i></span>高级</b><small>拿去卖之前</small></button>
+  <nav class="tabs" aria-label="选择学习方式"><div class="w">
+    <button class="on" data-tab="tutorial"><b><span class="step s1"><i></i><i></i><i></i></span>跟着做</b><small>复制提示词到 AI 工具</small></button>
+    <button data-tab="practice"><b><span class="step s2"><i></i><i></i><i></i></span>先练一练</b><small>5 关选择练习</small></button>
+    <button data-tab="info"><b><span class="step s3"><i></i><i></i><i></i></span>继续探索</b><small>拿去卖之前</small></button>
   </div></nav>
 
   <!-- 教程 -->
   <section class="pane w" id="tutorial">
+    <section class="lesson-example" aria-labelledby="lesson-example-title">
+      <p class="lesson-example-tag">本站实操 · 虚构教学示例</p>
+      <h2 id="lesson-example-title">试做一份《认识下雨》课件</h2>
+      <p class="lesson-example-intro">这是小学科学的三页示例。我们先用 Kimi K3.1 Pro 生成教案和课件构想，再用内置 AI 图像生成工具制作插画，最后用本地演示文稿工具重新组织并制作可编辑文字的 PPTX。</p>
+      <ol class="lesson-example-grid">
+        <li><img src="media/lesson/slide-1.png" alt="课件第 1 页：认识下雨" loading="lazy"><span>第 1 页 · 认识下雨</span></li>
+        <li><img src="media/lesson/slide-2.png" alt="课件第 2 页：观察雨后的小水滴" loading="lazy"><span>第 2 页 · 观察小水滴</span></li>
+        <li><img src="media/lesson/slide-3.png" alt="课件第 3 页：雨天安全出行" loading="lazy"><span>第 3 页 · 雨天出行</span></li>
+      </ol>
+      <p class="lesson-example-process">以上是实际制作并渲染检查的三页；最终排版和 Kimi 最初的课件构想并不完全相同。</p>
+      <p class="lesson-example-note">这是原创虚构的教学演示，正式授课前需由老师核对科学内容和安全要求。我们尚未在 WPS 或 PowerPoint 中打开该文件，也没有验证 WPS 导出；不同软件中的显示可能不同。</p>
+      <a class="lesson-example-download" href="media/lesson/rain-lesson-example.pptx" download="认识下雨-三页示例.pptx">下载三页 PPTX 示例（约 8 MB）</a>
+    </section>
     <div class="card" style="margin-top:6px">
       <label class="h3" for="lessonIn">你要做哪节课？</label>
       <input id="lessonIn" maxlength="40" style="display:block;width:100%;margin-top:8px;border:0;border-radius:12px;height:46px;padding:0 12px;font:inherit;background:var(--bg)">
@@ -33,7 +62,7 @@
     <div class="tcards sec" id="tcards"></div>
     <div class="sec card" id="basicDone">
       <b class="h3">做完了？</b>
-      <p class="note">完成教程后，可到 AI 工具中生成教案和课件。想整理一套课件助手提示词，可以继续做中级选择练习。</p>
+      <p class="note">完成教程后，可到 AI 工具中生成教案和课件。想整理一套课件助手提示词，可以继续做站内选择练习。</p>
       <div class="row" style="margin-top:10px"><button class="btn or sm" id="markBasic">我做完了</button><button class="btn ln sm" data-goto="practice">去做选择练习 ›</button></div>
     </div>
   </section>
@@ -46,7 +75,7 @@
 
   <!-- 信息 -->
   <section class="pane w" id="info" hidden>
-    <div class="sec">
+    <div class="sec source-case">
       <h2 class="h2">圈友是怎么做的</h2>
       <p class="note">以下整理自圈友的个人复盘，呈现做法与经验，不代表普遍结果。</p>
       <div class="facts" style="margin-top:10px">
@@ -84,7 +113,7 @@
       <ol class="next" style="margin-top:10px">
         <li><b>先自己用。</b>用练习成果助手给自己或身边的老师做 2 份，看用起来顺不顺手。</li>
         <li><b>想拿去卖，先算成本。</b>保证金、会员、时间都算进去，再翻同行的差评区找需求。</li>
-        <li><b>想有人带着做完。</b>生财有术的航海里有「小红书虚拟产品」这类船，课件是其中一种做法。每期开哪些船不固定，报名条件、费用及退款规则以当期报名页为准。<span id="campLink"></span></li>
+        <li class="source-promo"><b>想有人带着做完。</b>生财有术的航海里有「小红书虚拟产品」这类船，课件是其中一种做法。每期开哪些船不固定，报名条件、费用及退款规则以当期报名页为准。<span id="campLink"></span></li>
       </ol>
     </div>
   </section>

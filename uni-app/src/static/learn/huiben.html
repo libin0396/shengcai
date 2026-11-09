@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
+<script src="../site-mode.js"></script>
+<link rel="stylesheet" href="../tutorial-mode.css">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>和孩子一起做绘本 · AI 实战情报站</title>
@@ -8,6 +10,24 @@
 <meta name="theme-color" content="#F3F4F6">
 <link rel="manifest" href="/static/learn/manifest.webmanifest">
 <link rel="stylesheet" href="learn.css">
+<style>
+.book-example{margin:22px 0;padding:22px;background:#fff;border:1px solid #e6e8ec;border-radius:18px;color:#161a23}
+.book-example-tag{display:inline-block;margin:0 0 10px;padding:5px 9px;border-radius:8px;background:#eceffe;color:#2b44e6;font-size:12px;font-weight:700}
+.book-example h2{margin:0;font-size:21px;line-height:1.4}
+.book-example-intro,.book-example-note{margin:10px 0 0;color:#5f6675;font-size:14px;line-height:1.75}
+.book-example-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0;padding:0;list-style:none}
+.book-example-grid li{min-width:0;overflow:hidden;background:#f5f6f8;border-radius:14px}
+.book-example-scene{width:100%;aspect-ratio:2/1;background-image:url('media/picturebook/fox-story-grid.png');background-size:200% 200%;background-repeat:no-repeat}
+.book-example-scene.one{background-position:0 0}.book-example-scene.two{background-position:100% 0}.book-example-scene.three{background-position:0 100%}.book-example-scene.four{background-position:100% 100%}
+.book-example-caption{padding:11px 13px 14px;font-size:14px;line-height:1.65;color:#29354a}
+.book-example-caption small{display:block;margin-bottom:3px;color:#2b44e6;font-size:12px;font-weight:700}
+.book-example-details{margin:14px 0;color:#2b44e6;font-size:13px}
+.book-example-details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
+.book-example-details summary:focus-visible{outline:3px solid #2b44e6;outline-offset:2px}
+.book-example-details img{display:block;width:100%;height:auto;border-radius:10px;margin:4px 0}
+.book-example-note{padding:12px;background:#f3f4f6;border-radius:10px;font-size:12px}
+@media(max-width:600px){.book-example{padding:18px}.book-example-grid{grid-template-columns:1fr}.book-example h2{font-size:19px}}
+</style>
 </head>
 <body>
 <main>
@@ -17,14 +37,27 @@
     <h1 class="h1">和孩子一起做一本绘本</h1>
     <p class="lead">孩子出主意，你来打字，AI 帮忙写和画。做完是一本 4 页的小书。</p>
   </section>
-  <nav class="tabs" aria-label="选一档"><div class="w">
-    <button class="on" data-tab="tutorial"><b><span class="step s1"><i></i><i></i><i></i></span>初级</b><small>跟着做 4 页</small></button>
-    <button data-tab="practice"><b><span class="step s2"><i></i><i></i><i></i></span>中级</b><small>点一点编故事</small></button>
-    <button data-tab="info"><b><span class="step s3"><i></i><i></i><i></i></span>高级</b><small>做成一套</small></button>
+  <nav class="tabs" aria-label="选择学习方式"><div class="w">
+    <button class="on" data-tab="tutorial"><b><span class="step s1"><i></i><i></i><i></i></span>跟着做</b><small>到 AI 工具做 4 页</small></button>
+    <button data-tab="practice"><b><span class="step s2"><i></i><i></i><i></i></span>先练一练</b><small>站内选择故事示例</small></button>
+    <button data-tab="info"><b><span class="step s3"><i></i><i></i><i></i></span>继续探索</b><small>做成一套</small></button>
   </div></nav>
 
   <section class="pane w" id="tutorial">
     <div class="sec rule"><i aria-hidden="true">🛡️</i><p><b>先说好三件事：</b>账号和手机在家长手里；不上传孩子的照片和声音，主角用画出来的；AI 写的、画的，都由孩子说了算。</p></div>
+    <section class="book-example" aria-labelledby="book-example-title">
+      <p class="book-example-tag">本站原创示例 · AI 生成插画</p>
+      <h2 id="book-example-title">试做：小狐狸和蓝纸船</h2>
+      <p class="book-example-intro">我们先写了一个虚构故事，再用内置 AI 图像生成工具一次生成一张四格插画；下面的四个画面，是本页用同一张图分区排版展示的。</p>
+      <ol class="book-example-grid">
+        <li><div class="book-example-scene one" role="img" aria-label="小狐狸在柳树旁发现蓝纸船"></div><div class="book-example-caption"><small>01 · 发现</small>柳树下，小狐狸发现了一只蓝色的纸船。</div></li>
+        <li><div class="book-example-scene two" role="img" aria-label="小狐狸沿着小溪寻找纸船的主人"></div><div class="book-example-caption"><small>02 · 寻找</small>他沿着小溪，一路寻找纸船的主人。</div></li>
+        <li><div class="book-example-scene three" role="img" aria-label="小狐狸把纸船还给小刺猬"></div><div class="book-example-caption"><small>03 · 相遇</small>原来，纸船是小刺猬不小心弄丢的。</div></li>
+        <li><div class="book-example-scene four" role="img" aria-label="小狐狸和小刺猬一起看纸船漂走"></div><div class="book-example-caption"><small>04 · 分享</small>夕阳下，他们一起看着纸船顺水飘远。</div></li>
+      </ol>
+      <details class="book-example-details"><summary>查看一次生成的完整四格图</summary><img src="media/picturebook/fox-story-grid.png" alt="小狐狸与小刺猬的故事：一次生成的四格插画原图" loading="lazy"></details>
+      <p class="book-example-note">来源：本站原创虚构故事与内置 AI 图像生成工具；故事文字由本站编写、网页排版。四格来自同一张图，尚未导出或装订成册，也不代表本教程在所有外部工具中完整走通。</p>
+    </section>
     <div class="tcards sec" id="tcards"></div>
   </section>
 
@@ -51,7 +84,7 @@
       </table>
     </div>
     <div class="sec">
-      <h2 class="h2">高级：做成一套</h2>
+      <h2 class="h2">继续探索：做成一套</h2>
       <ol class="next" style="margin-top:10px">
         <li><b>固定主角。</b>用绘本助手先定好主角的长相，以后每本都让它照着画。</li>
         <li><b>一个月一本。</b>把孩子这个月经历的事编进去：第一次游泳、换了新同桌。</li>

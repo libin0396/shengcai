@@ -1,4 +1,5 @@
 <template>
+  <view><TutorialOnlyGate v-if="tutorialFirst" /><view v-else>
   <view class="business-page">
     <SiteHeader active="simulate" />
     <view class="wrap">
@@ -56,8 +57,11 @@
       <view v-if="state.showResult"><SimCamp /></view>
     </view>
   <SiteFooter /></view>
+</view></view>
 </template>
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
+import TutorialOnlyGate from '../../components/TutorialOnlyGate.vue';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, reactive, ref, watch} from 'vue';
 import SiteHeader from '../../components/SiteHeader.vue';

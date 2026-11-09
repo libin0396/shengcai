@@ -32,8 +32,8 @@
             </view>
           </view>
         </view>
-        <text v-if="remoteMode" class="interest-note">不收联系方式，也不是航海报名。</text>
-        <text v-else class="interest-note">仅保存在当前设备，站长无法收到或统计；不是官方航海报名。</text>
+        <text v-if="remoteMode" class="interest-note">{{tutorialFirst ? '仅记录兴趣方向，不收联系方式。' : '不收联系方式，也不是航海报名。'}}</text>
+        <text v-else class="interest-note">{{tutorialFirst ? '仅保存在当前设备，站长无法收到或统计。' : '仅保存在当前设备，站长无法收到或统计；不是官方航海报名。'}}</text>
         <view v-if="error" class="interest-error"><text>{{error}}</text><button @tap="load">重试</button></view>
       </view>
       <SimCamp/>
@@ -41,6 +41,7 @@
   <SiteFooter /></view>
 </template>
 <script setup>
+import {tutorialFirst} from '../../site-mode.js';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {ref} from 'vue';
 import {onShow} from '@dcloudio/uni-app';

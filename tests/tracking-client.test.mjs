@@ -28,6 +28,27 @@ test('privacy signals suppress collection before generating a browser identifier
  }
 });
 
+test('search outcome is bounded and never sends search text',async()=>{
+ const {window,sent}=setup();
+ for(const tier of ['hit','related','miss'])assert.equal(window.AINPETrack.track('find_search',{page:'learn',game:'find',tier,text:'private search'}),true);
+ for(const options of [{page:'learn',game:'find',tier:'private'},{page:'learn',game:'library',tier:'miss'},{page:'learn',game:'find',tier:'miss',from:'home'}])assert.equal(window.AINPETrack.track('find_search',options),false);
+ assert.equal(sent.length,3);
+ for(const item of sent){const body=JSON.parse(await item.data.text());assert.deepEqual(Object.keys(body).sort(),['did','event','game','page','played','tier','ts']);assert.equal('text' in body,false)}
+ window.navigator.globalPrivacyControl=true;assert.equal(window.AINPETrack.track('find_search',{page:'learn',game:'find',tier:'miss'}),false);
+});
+
+test('feedback shows success only for acknowledged fixed category and respects privacy signals',async()=>{
+ const {window}=setup();let requests=[];
+ window.fetch=async(url,options)=>{requests.push({url,options});return {ok:true,json:async()=>({ok:true})}};
+ let result=await window.AINPETrack.submitFindFeedback('drama');assert.equal(result.ok,true);assert.equal(requests.length,1);
+ const body=JSON.parse(requests[0].options.body);assert.deepEqual(Object.keys(body).sort(),['did','event','game','page','played','tier','ts']);assert.equal(body.tier,'drama');
+ result=await window.AINPETrack.submitFindFeedback('my private request');assert.equal(result.ok,false);assert.equal(requests.length,1);
+ window.fetch=async()=>({ok:true,json:async()=>({ok:false})});assert.equal((await window.AINPETrack.submitFindFeedback('other')).ok,false);
+ window.fetch=async()=>({ok:false});assert.equal((await window.AINPETrack.submitFindFeedback('other')).ok,false);
+ window.fetch=async()=>{throw Error('network')};assert.equal((await window.AINPETrack.submitFindFeedback('other')).ok,false);
+ window.navigator.doNotTrack='1';result=await window.AINPETrack.submitFindFeedback('drama');assert.equal(result.ok,false);assert.equal(result.reason,'disabled');
+});
+
 test('learning tracking sends fixed categories, not typed wants or personal fields',async()=>{
  const {window,sent}=setup();
  assert.equal(window.AINPETrack.track('want_submit',{page:'learn',game:'other',text:'private request',wechatId:'private'}),true);
@@ -98,6 +119,11 @@ test('internal device is excluded across pages and its control does not leak int
  const other=internalBrowser('https://example.test/#/pages/home');
  assert.equal(other.window.AINPETrack.isInternal(),false);
  assert.equal(other.window.AINPETrack.track('site_view',{page:'home'}),true);
+});
+test('internal devices cannot send search feedback even when users select a category',async()=>{
+ const b=internalBrowser('https://example.test/?ainpe_internal=1#/pages/home');let calls=0;b.window.fetch=async()=>{calls++;return {ok:true,json:async()=>({ok:true})}};
+ const result=await b.window.AINPETrack.submitFindFeedback('drama');assert.equal(result.ok,false);assert.equal(result.reason,'disabled');assert.equal(calls,0);
+ assert.equal(b.window.AINPETrack.track('find_search',{page:'learn',game:'find',tier:'miss'}),false);
 });
 
 test('internal device switch responds to SPA hash route changes and keeps other parameters',()=>{
