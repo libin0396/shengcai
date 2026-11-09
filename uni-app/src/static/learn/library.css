@@ -7,10 +7,22 @@
 .library-page .library-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#161a23;font:inherit;font-size:16px}
 .library-page .library-search input::placeholder{color:#929aa8}
 .library-page .sec{margin-top:18px}
-.library-page .lvfilter{gap:8px;flex-wrap:wrap;white-space:nowrap;margin-bottom:18px;padding:2px 0 5px}
+.library-page .library-category-title{margin-bottom:10px;color:#344052;font-size:15px;font-weight:700}
+.library-page .library-categories{display:flex;flex-wrap:wrap;gap:8px}
+.library-page .library-categories button{min-height:44px;border:1px solid #e4e8f1;border-radius:12px;padding:9px 14px;background:#fff;color:#526074;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.library-page .library-categories button[aria-pressed="true"]{border-color:#294de9;background:#294de9;color:#fff}
+.library-page .library-categories button:focus-visible,.library-page .lvfilter button:focus-visible,.library-page .library-more-filter summary:focus-visible{outline:3px solid #9baeff;outline-offset:2px}
+.library-page .library-more-filter{margin-top:12px;color:#59687a;font-size:14px}
+.library-page .library-more-filter summary{width:max-content;max-width:100%;min-height:44px;display:flex;align-items:center;cursor:pointer;list-style:none}
+.library-page .library-more-filter summary::-webkit-details-marker{display:none}
+.library-page .library-more-filter summary::after{content:'＋';margin-left:8px;color:#294de9}
+.library-page .library-more-filter[open] summary::after{content:'−'}
+.library-page .library-count{margin:4px 0 12px;color:#667588;font-size:13px}
+.library-page .lvfilter{gap:8px;flex-wrap:wrap;white-space:nowrap;margin-bottom:10px;padding:2px 0 5px}
 .library-page .lvfilter button{flex:none;min-height:40px;padding:7px 15px}
 .library-page .aids{gap:10px}
 .library-page .aid{border:1px solid transparent;transition:border-color .18s ease}
+.library-page .aid[hidden]{display:none}
 .library-page .aid.open{border-color:#2b44e6;box-shadow:0 0 0 1px #2b44e6}
 .library-page .aid>.hd{min-height:76px;padding:14px 16px}
 .library-page .aid>.hd .em{width:44px;height:44px;flex-basis:44px;border-radius:13px}

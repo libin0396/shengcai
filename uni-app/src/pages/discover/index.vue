@@ -46,12 +46,12 @@
         </view>
       </view>
       <view v-else class="ha-feature" id="tour-make" role="link" tabindex="0" @click="openLearnPage('kejian.html?from=start')">
-        <view class="ha-pic"><image src="/static/learn/img/boat.jpg" mode="aspectFill" class="ha-img"/><text class="ha-tag">成品示例</text></view>
+        <view class="ha-pic"><image v-if="hasCover('kejian')" :src="tutorialCovers.kejian.src" :alt="tutorialCovers.kejian.alt" mode="aspectFit" class="ha-img" @error="onCoverError('kejian')"/><text v-if="hasCover('kejian')" class="ha-tag">{{tutorialCovers.kejian.label}}</text></view>
         <view class="ha-ladder"><text class="on">跟着教程做</text><text>先练一练 · 5 关</text><text>继续探索</text></view>
         <view class="ha-tx"><text class="ha-name">给孩子做一份课件</text><text class="ha-desc">跟着教程复制提示词，到 AI 工具里制作教案和插画</text><view class="ha-cta">查看教程</view></view>
       </view>
       <view v-if="!tutorialFirst" class="ha-duo">
-        <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image src="/static/learn/img/girl.jpg" mode="aspectFill" class="ha-mimg"/><text class="ha-tag">成品示例</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
+        <view class="ha-mini" role="link" tabindex="0" @click="openLearnPage('huiben.html')"><view class="ha-pic"><image v-if="hasCover('huiben')" :src="tutorialCovers.huiben.src" :alt="tutorialCovers.huiben.alt" mode="aspectFit" class="ha-mimg" @error="onCoverError('huiben')"/><text v-if="hasCover('huiben')" class="ha-tag">{{tutorialCovers.huiben.label}}</text></view><view class="ha-mtx"><text class="ha-mname">和孩子做绘本</text><text class="ha-mdesc">4 页 · 孩子当作者</text></view></view>
         <view class="ha-vote"><text class="ha-vt">还在做 · 投一票</text><view class="ha-vs"><text v-for="t in learnTopics.filter(x=>!x.live)" :key="t.id" :class="{on:votes.includes(t.id)}" @click="vote(t)">{{t.short||t.name}}</text></view></view>
       </view>
       <view v-if="!tutorialFirst" class="ha-aid" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')"><view><text class="ha-aidt">用法库</text><text class="ha-aidd">平时的小事，复制提示词就能用</text></view><text class="ha-arrow">›</text></view>
@@ -68,12 +68,12 @@
       <view class="shelf-heading showcase-heading"><view><view class="shelf-title">跟着做，做出自己的作品</view><text class="shelf-sub">从教程开始，按步骤在 AI 工具中亲手完成。</text></view><text class="shelf-more" role="link" tabindex="0" @click="openLearnPage('guides.html')" @keydown.enter.prevent="openLearnPage('guides.html')">全部教程 ↗</text></view>
       <view class="showcase-grid">
         <view v-for="item in showcaseCards" :key="item.page" class="showcase-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)">
-          <view class="showcase-image"><image :src="item.image" mode="aspectFill"/><text>成品示例</text></view>
+          <view class="showcase-image"><template v-if="hasCover(item.id)"><image :src="tutorialCovers[item.id].src" :alt="tutorialCovers[item.id].alt" mode="aspectFit" lazy-load loading="lazy" @error="onCoverError(item.id)"/><text>{{tutorialCovers[item.id].label}}</text></template></view>
           <view class="showcase-copy"><text class="showcase-tag">跟着步骤做</text><view class="showcase-title">{{item.title}}</view><text class="showcase-description">{{item.description}}</text><view class="showcase-action">查看教程 ↗</view></view>
         </view>
       </view>
       <view class="shelf-heading more-heading"><view><view class="shelf-title">发现更多用法</view><text class="shelf-sub">每篇都有步骤和提示词，按自己的节奏来。</text></view></view>
-      <view class="tutorial-grid"><view v-for="item in tutorialCards" :key="item.id" class="tutorial-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)"><view class="tutorial-card-top"><text>{{item.category}}</text><text>↗</text></view><text class="tutorial-card-title">{{item.title}}</text><text class="tutorial-card-desc">{{item.description}}</text><text class="tutorial-card-action">跟着步骤做 →</text></view></view>
+      <view class="tutorial-grid"><view v-for="item in tutorialCards" :key="item.id" class="tutorial-card" role="link" tabindex="0" @click="openLearnPage(item.page)" @keydown.enter.prevent="openLearnPage(item.page)"><view v-if="hasCover(item.id)" class="tutorial-card-cover"><image :src="tutorialCovers[item.id].src" :alt="tutorialCovers[item.id].alt" mode="aspectFit" lazy-load loading="lazy" @error="onCoverError(item.id)"/><text>{{tutorialCovers[item.id].label}}</text></view><view class="tutorial-card-top"><text>{{item.category}}</text><text>↗</text></view><text class="tutorial-card-title">{{item.title}}</text><text class="tutorial-card-desc">{{item.description}}</text><text class="tutorial-card-action">跟着步骤做 →</text></view></view>
       <view class="tutorial-library" id="tour-lib" role="link" tabindex="0" @click="openLearnPage('jijiu.html')" @keydown.enter.prevent="openLearnPage('jijiu.html')"><view><text class="tutorial-library-title">生活里遇到小事？</text><text class="tutorial-library-desc">打开用法库，复制一句提示词就能开始。</text></view><text>逛用法库 ↗</text></view>
     </view>
     <view class="content-shell">
@@ -89,6 +89,7 @@
 
 <script setup>
 import {tutorialFirst} from '../../site-mode.js';
+import tutorialCovers from '../../static/learn/guide-covers.json';
 import SiteFooter from '../../components/SiteFooter.vue';
 import {computed, ref, onMounted, onUnmounted} from 'vue';
 import {onLoad, onShow, onHide, onPageScroll} from '@dcloudio/uni-app';
@@ -102,6 +103,9 @@ import {track} from '../../data/track.js';
 import {caseStudies, caseAsArticle, publicNumbers} from '../../data/case-studies.js';
 import {cleanCaseTitle,hideEarningsFigures} from '../../data/case-library.mjs';
 
+const coverFailures=ref({});
+const hasCover=id=>Boolean(tutorialCovers[id]&&!coverFailures.value[id]);
+function onCoverError(id){coverFailures.value={...coverFailures.value,[id]:true}}
 const showJoinBar=ref(false);
 onPageScroll(e=>{showJoinBar.value=e.scrollTop>barThreshold()});
 function barThreshold(){try{return Math.max(600,(document.documentElement.scrollHeight-window.innerHeight)*0.5)}catch{return 1200}}
@@ -193,10 +197,11 @@ const everydayCards=[
   {id:'menu',category:'生活',title:'一周晚饭吃什么',description:'告诉 AI 人数和口味，获取一份菜单和购物清单。'},
 ];
 const showcaseCards=[
-  {title:'给孩子做一份课件',description:'跟着步骤整理教案，再到 AI 工具里制作插画。',page:'kejian.html?from=home',image:'/static/design/boat.jpg'},
-  {title:'和孩子做一本绘本',description:'从孩子的故事开始，一起设计画面和文字。',page:'huiben.html?from=home',image:'/static/design/girl.jpg'},
+  {id:'kejian',title:'给孩子做一份课件',description:'跟着步骤整理教案，再到 AI 工具里制作插画。',page:'kejian.html?from=home'},
+  {id:'huiben',title:'和孩子做一本绘本',description:'从孩子的故事开始，一起设计画面和文字。',page:'huiben.html?from=home'},
 ];
 const tutorialCards=[
+  {id:'short-drama',category:'故事创作',title:'从零做一条 AI 短剧',description:'从故事、分镜到剪成短片。',page:'guide.html?id=short-drama'},
   {id:'video-script',category:'内容创作',title:'写一条短视频脚本',description:'把一个想法整理成开头、内容和结尾。',page:'guide.html?id=video-script'},
   {id:'product-poster',category:'视觉创作',title:'做一张商品宣传图',description:'梳理卖点，用 AI 工具制作画面。',page:'guide.html?id=product-poster'},
   {id:'meeting-notes',category:'工作提效',title:'把会议记录整理清楚',description:'提炼结论、待办和负责人，减少遗漏。',page:'guide.html?id=meeting-notes'},
@@ -459,4 +464,8 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
 @media(max-width:600px){.level-card{min-height:106px}.showcase-grid{grid-template-columns:1fr}.showcase-card{display:grid;grid-template-columns:38% minmax(0,1fr)}.showcase-image{height:auto;min-height:150px}.showcase-image image{position:absolute;inset:0}.showcase-copy{display:flex;flex-direction:column;align-items:flex-start}.showcase-action{margin-top:auto;padding-top:12px}.tutorial-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:360px){.level-card{gap:10px;padding:12px}.level-mark{width:46px;height:46px;flex-basis:46px}.level-title{font-size:15px}.level-label{font-size:10px}.showcase-grid{grid-template-columns:1fr}}
 @media(max-width:360px){.level-visual{flex-basis:62px;width:62px;height:66px}}
+</style>
+
+<style scoped>
+.tutorial-card-cover{position:relative;margin:-4px -4px 12px;border-radius:11px;overflow:hidden;background:#eef1f6;height:110px}.tutorial-card-cover image{width:100%;height:100%}.tutorial-card-cover text{position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:6px;background:#152033cc;color:white;font-size:10px}
 </style>

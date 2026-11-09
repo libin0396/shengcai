@@ -94,7 +94,7 @@ test('find page does not put search text in the address', () => {
   assert.doesNotMatch(src, /URLSearchParams\(location\.search\)\.get\('q'\)/);
 });
 
-test('use cards are grouped by what the user needs to do', () => {
+test('use cards filter by life situations, operation and search together', () => {
   const window = {};
   vm.runInNewContext(read('aids-data.js'), { window });
   const AIDS = window.AINPE_AIDS;
@@ -106,21 +106,46 @@ test('use cards are grouped by what the user needs to do', () => {
   assert.equal(AIDS.find(a => a.id === 'notice').tags.join(','), '需粘贴原文');
   const nodes = AIDS.map(a => ({ id:a.id, hidden:false, classList:{ contains:()=>false },
     hd:{ addEventListener(){} }, copy:{ addEventListener(){} } }));
-  const box = {innerHTML:'',parentNode:{insertBefore(bar){this.bar=bar}}};
+  const box = {innerHTML:''};
+  const categoryBar={children:[],appendChild(button){this.children.push(button)}};
+  const bar={children:[],appendChild(button){this.children.push(button)}};
+  const query={value:'',addEventListener(_type,fn){this.input=fn},focus(){this.focused=true}};
+  const empty={hidden:true},count={textContent:''},summary={textContent:''},reset={addEventListener(_type,fn){this.click=fn}},tracked=[];
   const document = {createElement(type){
-    if (type === 'div') return {children:[],setAttribute(){},appendChild(button){this.children.push(button)}};
-    return {attrs:{},setAttribute(k,v){this.attrs[k]=v},addEventListener(_type,fn){this.click=fn}};
+    return {dataset:{},attrs:{},setAttribute(k,v){this.attrs[k]=v},addEventListener(_type,fn){this.click=fn}};
   },getElementById(){return null}};
-  const L = {chrome(){},aidIcon(){return ''},esc(value){return value},track(){},
-    $(selector,node){if(selector==='#aids')return box;if(selector==='.hd')return node.hd;if(selector==='.js-copy')return node.copy},
+  const L = {chrome(){},aidIcon(){return ''},esc(value){return value},track(...args){tracked.push(args)},
+    $(selector,node){if(selector==='#aids')return box;if(selector==='#library-categories')return categoryBar;if(selector==='#library-operations')return bar;if(selector==='#library-query')return query;if(selector==='#library-empty')return empty;if(selector==='#library-count')return count;if(selector==='#library-operation-summary')return summary;if(selector==='#library-reset')return reset;if(selector==='.hd')return node.hd;if(selector==='.js-copy')return node.copy},
     $$(selector,node){return node===box ? nodes : node ? node.children : nodes}};
   vm.runInNewContext(read('jijiu-page.js'), {window:{Learn:L,AINPE_AIDS:AIDS},document,location:{hash:''}});
-  const bar = box.parentNode.bar;
   const visible = () => nodes.filter(n=>!n.hidden).map(n=>n.id).join(',');
+  assert.equal(categoryBar.children.map(b=>b.textContent).join(','),'全部 10,生活 4,工作 5,学习 2,内容创作 1,AI入门 1');
+  categoryBar.children[1].click();
+  assert.equal(visible(), 'notice,reply,menu,trip');
+  assert.equal(categoryBar.children[1].attrs['aria-pressed'],'true');
+  assert.equal(count.textContent,'找到 4 个用法');
   bar.children[1].click();
-  assert.equal(visible(), 'notice,summary,meeting');
+  assert.equal(visible(), 'notice');
+  assert.equal(summary.textContent,'操作方式：需粘贴原文');
+  query.value='周末';query.input();
+  assert.equal(visible(),'');
+  assert.equal(empty.hidden,false);
+  assert.equal(count.textContent,'找到 0 个用法');
+  reset.click();
+  assert.equal(visible(), AIDS.map(a=>a.id).join(','));
+  assert.equal(query.value,'');assert.equal(query.focused,true);assert.equal(empty.hidden,true);
+  assert.equal(summary.textContent,'更多筛选：按操作方式');
   bar.children[3].click();
   assert.equal(visible(), 'excel');
   bar.children[0].click();
   assert.equal(nodes.filter(n=>!n.hidden).length, AIDS.length);
+  categoryBar.children[2].click();
+  assert.equal(visible(), 'notice,reply,summary,meeting,excel');
+  query.value='工作';query.input();
+  assert.equal(visible(), 'notice,reply,summary,meeting,excel');
+  reset.click();query.value='报销';query.input();
+  assert.equal(visible(),'excel'); // 报销出现在静态提示词中，不在标题中。
+  reset.click();query.value='做饭';query.input();
+  assert.equal(visible(),'menu,learnai'); // 同时覆盖静态提示词与示例。
+  assert.doesNotMatch(JSON.stringify(tracked),/报销|做饭/); // 搜索文本没有上传到统计。
 });

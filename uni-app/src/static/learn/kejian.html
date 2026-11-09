@@ -9,7 +9,7 @@
 <meta name="description" content="不懂 AI 也能跟着学习：参考示例，尝试制作一节课的教案、课件页和课件助手提示词。">
 <meta name="theme-color" content="#F3F4F6">
 <link rel="manifest" href="/static/learn/manifest.webmanifest">
-<link rel="stylesheet" href="learn.css">
+<link rel="stylesheet" href="learn.css"><link rel="stylesheet" href="guide-cover.css">
 <style>
 .lesson-example{margin:22px 0;padding:22px;border:1px solid #e6e8ec;border-radius:18px;background:#fff;color:#161a23}
 .lesson-example-tag{display:inline-block;margin:0 0 10px;padding:5px 9px;border-radius:8px;background:#eceffe;color:#2b44e6;font-size:12px;font-weight:700}
@@ -27,7 +27,7 @@
 </head>
 <body class="course-page">
 <main>
-  <div class="thero"><img src="media/lesson/slide-1.png" alt="本站试做的认识下雨课件第 1 页局部预览"><span class="sample-tag">本站试做 · 第 1 页局部</span></div>
+  <div class="thero" data-guide-cover="kejian" data-cover-eager hidden><img alt=""><span class="sample-tag" data-cover-label></span></div>
   <section class="w ttop">
     <a class="back" href="index.html">‹ 跟着做</a>
     <h1 class="h1">给孩子做一份课件</h1>
@@ -125,5 +125,5 @@
 <script src="learn.js"></script>
 <script src="kejian-data.js"></script>
 <script src="kejian.js"></script>
-</body>
+<script src="guide-covers.js"></script></body>
 </html>

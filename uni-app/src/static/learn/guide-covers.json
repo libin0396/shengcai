@@ -1,0 +1,72 @@
+{
+  "short-drama": {
+    "src": "/static/learn/media/covers/short-drama.jpg",
+    "alt": "本站试做的 AI 短剧：公交站找伞",
+    "label": "AI 角色参考图",
+    "source": {
+      "path": "media/short-drama/doubao-character-original.jpeg",
+      "sha256": "d11d25679f2f0d5de00f74eb66d106a5e837b2802598421ac378da83a91f3e1d",
+      "maintenance": "源素材变化时重新生成封面并核对标签"
+    }
+  },
+  "video-script": {
+    "src": "/static/learn/media/covers/video-script.jpg",
+    "alt": "为绿萝养护准备短视频脚本的示意插画",
+    "label": "AI 生成示意图",
+    "source": {
+      "path": "guides-data.js",
+      "sha256": "eaa76382c6ba5a7be0257b2c93e960eafdf9f4679382e6aeeb183cf382000fba",
+      "maintenance": "教程示例变化时核对并必要时重新制作示意图"
+    }
+  },
+  "product-poster": {
+    "src": "/static/learn/media/covers/product-poster.jpg",
+    "alt": "本站试做的虚构马克杯商品宣传图",
+    "label": "实操成品",
+    "source": {
+      "path": "media/product-poster/preview-manual-lettered.png",
+      "sha256": "34ff6fcbc61fb78c25e8c11d7a8834c283ae012da13d281ac7800e5ef31bbc1d",
+      "maintenance": "源素材变化时重新生成封面并核对标签"
+    }
+  },
+  "meeting-notes": {
+    "src": "/static/learn/media/covers/meeting-notes.jpg",
+    "alt": "整理社区图书交换角会议纪要的示意插画",
+    "label": "AI 生成示意图",
+    "source": {
+      "path": "guides-data.js",
+      "sha256": "eaa76382c6ba5a7be0257b2c93e960eafdf9f4679382e6aeeb183cf382000fba",
+      "maintenance": "教程示例变化时核对并必要时重新制作示意图"
+    }
+  },
+  "content-notes": {
+    "src": "/static/learn/media/covers/content-notes.jpg",
+    "alt": "为桌面整理写笔记的示意插画",
+    "label": "AI 生成示意图",
+    "source": {
+      "path": "guides-data.js",
+      "sha256": "eaa76382c6ba5a7be0257b2c93e960eafdf9f4679382e6aeeb183cf382000fba",
+      "maintenance": "教程示例变化时核对并必要时重新制作示意图"
+    }
+  },
+  "kejian": {
+    "src": "/static/learn/media/covers/kejian.jpg",
+    "alt": "本站试做的认识下雨课件第 1 页",
+    "label": "实操成品",
+    "source": {
+      "path": "media/lesson/slide-1.png",
+      "sha256": "244ec1e153547be977b82196b8fbeeda842dc4d13af9d08994b1ea1afe1170d1",
+      "maintenance": "源素材变化时重新生成封面并核对标签"
+    }
+  },
+  "huiben": {
+    "src": "/static/learn/media/covers/huiben.jpg",
+    "alt": "本站试做的小狐狸和蓝纸船绘本插画",
+    "label": "实操成品",
+    "source": {
+      "path": "media/picturebook/fox-page-1.png",
+      "sha256": "fc433795298d20276cae738563c9381d8226978ec45b636829e2ef3fdea82901",
+      "maintenance": "源素材变化时重新生成封面并核对标签"
+    }
+  }
+}

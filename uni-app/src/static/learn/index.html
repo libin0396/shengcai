@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/static/learn/img/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AI 情报站">
-<link rel="stylesheet" href="learn.css">
+<link rel="stylesheet" href="learn.css"><link rel="stylesheet" href="guide-cover.css">
 </head>
 <body>
 <main class="w">
@@ -28,12 +28,12 @@
       </ol>
     </div>
     <a class="feature" href="kejian.html?from=start" id="feat">
-      <div class="pic"><img src="img/boat.jpg" alt="成品示例：海边小船插画"><span class="sample-tag">成品示例</span></div>
+      <div class="pic" data-guide-cover="kejian" hidden><img alt=""><span class="sample-tag" data-cover-label></span></div>
       <div class="ladder"><span class="on"><span class="step s1"><i></i><i></i><i></i></span>跟着教程做</span><span>先练一练 · 5 关</span><span>继续探索</span></div>
       <div class="tx"><b class="t">给孩子做一份课件</b><p>教案、逐字稿、3 页插画，手机就能做</p><span class="btn pri block">开始做</span></div>
     </a>
     <div class="duo">
-      <a class="mini" href="huiben.html" id="miniHb"><img src="img/girl.jpg" alt="成品示例：绘本插画"><span class="sample-tag">成品示例</span><div>和孩子做绘本<small>4 页 · 孩子当作者</small></div></a>
+      <a class="mini" href="huiben.html" id="miniHb"><div class="mini-pic" data-guide-cover="huiben" hidden><img alt=""><span class="sample-tag" data-cover-label></span></div><div>和孩子做绘本<small>4 页 · 孩子当作者</small></div></a>
       <div class="vote" id="vote"><b>还在做 · 投一票</b></div>
     </div>
     <form class="want" id="want" autocomplete="off">
@@ -45,7 +45,7 @@
   <section class="sec">
     <div class="shead"><h2 class="h2">更多分步教程</h2><a href="guides.html">查看全部教程 ›</a></div>
     <p class="lead">从 AI 短剧、短视频脚本到办公小事，选一件跟着做。</p>
-    <div class="aidrail"><a href="guide.html?id=short-drama"><b>从零做一条 AI 短剧</b><small>从故事、分镜到剪成短片</small></a><a href="guide.html?id=video-script"><b>写一条短视频脚本</b><small>从想法到可拍的脚本草稿</small></a><a href="guide.html?id=product-poster"><b>做一张商品宣传图</b><small>整理真实卖点，制作图片草稿</small></a></div>
+    <div class="aidrail"><a href="guide.html?id=short-drama"><div class="guide-cover" data-guide-cover="short-drama" hidden><img alt=""><span data-cover-label></span></div><b>从零做一条 AI 短剧</b><small>从故事、分镜到剪成短片</small></a><a href="guide.html?id=video-script"><div class="guide-cover" data-guide-cover="video-script" hidden><img alt=""><span data-cover-label></span></div><b>写一条短视频脚本</b><small>从想法到可拍的脚本草稿</small></a><a href="guide.html?id=product-poster"><div class="guide-cover" data-guide-cover="product-poster" hidden><img alt=""><span data-cover-label></span></div><b>做一张商品宣传图</b><small>整理真实卖点，制作图片草稿</small></a></div>
   </section>
   <section class="sec">
     <div class="shead"><h2 class="h2">用法库</h2><a href="jijiu.html">全部 10 张 ›</a></div>
@@ -63,5 +63,5 @@
 <script src="aids-data.js"></script>
 <script src="index-page.js"></script>
 <script src="onboarding.js"></script>
-</body>
+<script src="guide-covers.js"></script></body>
 </html>
