@@ -1,7 +1,12 @@
 <script>
+// #ifndef MP-WEIXIN
 import {refreshFeed} from './data/content.js';
 let feedTimer;
 export default {onShow(){refreshFeed();if(!feedTimer)feedTimer=setInterval(refreshFeed,300000)},onHide(){if(feedTimer)clearInterval(feedTimer);feedTimer=null}};
+// #endif
+// #ifdef MP-WEIXIN
+export default {};
+// #endif
 </script>
 
 <style>

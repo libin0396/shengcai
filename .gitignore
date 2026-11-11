@@ -32,6 +32,10 @@ uni-app/src/data/*
 !uni-app/src/data/article-summaries.json
 !uni-app/src/data/event-reviews.json
 !uni-app/src/data/verified-offline-events.json
+!uni-app/src/data/mini-guides.json
+!uni-app/src/data/mini-aids.js
+!uni-app/src/data/mini-search-data.js
+!uni-app/src/data/mini-course-practice.json
 资料库/
 sync/RUNBOOK.md
 
@@ -39,6 +43,7 @@ sync/RUNBOOK.md
 qa/
 qa-*.png
 preview-*.png
+outputs-preview-weixin-*/
 AGENTS.md
 DOT-HANDOFF.md
 design-qa.md

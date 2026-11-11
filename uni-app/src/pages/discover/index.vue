@@ -1,4 +1,8 @@
 <template>
+  <!-- #ifdef MP-WEIXIN -->
+  <MiniHome />
+  <!-- #endif -->
+  <!-- #ifndef MP-WEIXIN -->
   <view class="discover-page">
     <!-- #ifdef H5 -->
     <view v-if="!tutorialFirst" class="learn-banner" role="link" tabindex="0" @click="openCampBar"><text class="lb-tag">生财有术</text><text>想用 AI 赚钱？看看真人怎么做</text><text class="lb-go">›</text></view>
@@ -87,9 +91,14 @@
       <view v-if="!tutorialFirst" class="footer-note">内容来自生财有术，以原帖为准</view>
     </view>
   <SiteFooter :space-for-promo="!tutorialFirst" :show-icp="true" /></view>
+  <!-- #endif -->
 </template>
 
 <script setup>
+// #ifdef MP-WEIXIN
+import MiniHome from '../../components/MiniHome.vue';
+// #endif
+// #ifndef MP-WEIXIN
 import {tutorialFirst} from '../../site-mode.js';
 import tutorialCovers from '../../static/learn/guide-covers.json';
 import SiteFooter from '../../components/SiteFooter.vue';
@@ -250,9 +259,11 @@ function navigate(url){uni.navigateTo({url});}
 function openCamp(){navigate('/pages/camp/index?from=home')}
 function openArticle(a){try{uni.setStorageSync('ainpe:last-article',{id:String(a.id),openedAt:Date.now()});}catch{}uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(String(a.id))}`});}
 function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return Number.isNaN(d.getTime())?'时间待确认':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`;}
+// #endif
 </script>
 
 <style scoped>
+/* #ifndef MP-WEIXIN */
 .discover-page{min-height:100vh;background:#f4f3ee;color:#1b3a2d}.feature{background:#142a20;padding:28rpx 34rpx;color:#fff}.feature-top{display:flex;align-items:center;gap:22rpx}.feature-content{flex:1;min-width:0}.feature-image{width:110rpx;height:145rpx;flex-shrink:0;border:1px solid #809374;border-radius:6rpx}.feature-label{font-size:20rpx;color:#cbe98d;font-weight:700}.feature-heading{font-size:30rpx;line-height:1.3;font-weight:800;margin-top:10rpx}.feature-copy{font-size:21rpx;color:#becdb9;margin-top:8rpx;line-height:1.55}.feature-toggle{font-size:20rpx;color:#d4ed91;white-space:nowrap}.feature-more{padding:20rpx 0 4rpx 132rpx;font-size:23rpx;line-height:1.65;color:#bfcfbd}.feature-link{display:inline-block;color:#d4ed91;font-size:24rpx;font-weight:700;margin-top:12rpx}.feature-legend{font-size:18rpx;color:#859b82;margin-top:8rpx}.content-shell{max-width:1280px;margin:auto;padding:40rpx 28rpx 130rpx}.section-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12rpx}.eyebrow{font-size:18rpx;letter-spacing:2rpx;font-weight:700;color:#849d7c}.section-title{font-size:36rpx;font-weight:800;margin-top:8rpx}.section-subtitle{font-size:23rpx;color:#78887a;margin-top:8rpx}.feed-status{font-size:19rpx;color:#8b9d86;white-space:nowrap}.shortcuts{display:flex;gap:16rpx;margin:26rpx 0}.shortcut{flex:1;min-width:0;display:flex;align-items:center;gap:14rpx;padding:20rpx;background:#fff;border:1px solid #dfe8dc;border-radius:12rpx}.shortcut-icon{width:56rpx;height:56rpx;line-height:56rpx;text-align:center;border-radius:12rpx;background:#e9f2e5;color:#417654;font-size:28rpx;flex-shrink:0}.shortcut-icon.orange{background:#faebdd;color:#bd743a}.shortcut-name,.shortcut-copy{display:block}.shortcut-name{font-size:25rpx;font-weight:700}.shortcut-copy{font-size:19rpx;margin-top:4rpx;color:#839486}.shortcut-arrow{margin-left:auto;color:#79947d;font-size:28rpx}.library{background:#fff;border:1px solid #dfe7dc;border-radius:14rpx;overflow:hidden}.category-scroll{width:100%;white-space:nowrap;border-bottom:1px solid #e4eae0}.categories{display:inline-flex;align-items:center;white-space:nowrap;padding:0 22rpx}.category{padding:26rpx 17rpx;font-size:23rpx;color:#798b7d;border-bottom:4rpx solid transparent}.category text{font-size:18rpx;color:#9cac98}.category.selected{color:#174b35;border-bottom-color:#264e36;font-weight:750}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:16rpx;padding:20rpx 24rpx;background:#fbfcf8;border-bottom:1px solid #e8ede4}.filter-buttons{display:flex;gap:12rpx;white-space:nowrap}.filter-button{font-size:22rpx;color:#839280;padding:12rpx}.filter-button.active{background:#eaf2e5;color:#2e643e;border-radius:8rpx}.search{flex:1;max-width:350rpx;min-width:0;background:#fff;border:1px solid #dfe8db;border-radius:8rpx;font-size:22rpx;padding:12rpx 14rpx;height:40rpx;color:#304d39}.result-note{padding:18rpx 26rpx;color:#98a792;font-size:19rpx}.article{display:flex;gap:14rpx;padding:24rpx 26rpx;border-top:1px solid #edf0ea}.article-main{flex:1;min-width:0}.article-title{font-size:27rpx;line-height:1.5;font-weight:750;color:#243d31}.tag{font-size:18rpx;color:#72976c;border:1px solid #dce9d7;border-radius:5rpx;padding:3rpx 6rpx;margin-right:10rpx;font-weight:400}.article-summary{font-size:22rpx;line-height:1.7;color:#7b8b7e;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:9rpx}.article-meta{font-size:19rpx;color:#9ba99b;margin-top:11rpx}.article-meta text{padding:0 5rpx}.save-button{font-size:38rpx;color:#759b70;padding:4rpx 6rpx}.load-more,.empty{text-align:center;font-size:23rpx;color:#64836b;padding:28rpx}.camp{display:flex;align-items:center;gap:28rpx;margin-top:28rpx;padding:25rpx;background:#eaf3e5;border:1px solid #d8e7d0;border-radius:12rpx}.camp-image{width:110rpx;height:240rpx;flex-shrink:0}.camp-kicker{font-size:19rpx;color:#7b9c6c;font-weight:700}.camp-title{font-size:29rpx;font-weight:750;margin:10rpx 0}.camp-copy{font-size:21rpx;color:#728873;line-height:1.6}.camp-link{font-size:23rpx;color:#326e45;font-weight:700;margin-top:15rpx}.footer-note{font-size:19rpx;line-height:1.6;color:#9bac98;text-align:center;margin:28rpx 0}@media(min-width:768px){.feature{padding-left:max(32px,calc((100% - 1180px)/2));padding-right:max(32px,calc((100% - 1180px)/2))}.content-shell{padding-left:28px;padding-right:28px}.article-title{font-size:16px}.article-summary{font-size:14px}}@media(max-width:450px){.feature-top{gap:12rpx}.feature-image{width:85rpx;height:120rpx}.feature-heading{font-size:26rpx}.feature-copy{font-size:19rpx}.feature-toggle{font-size:18rpx}.feature-more{padding-left:0}.section-top{align-items:flex-start;flex-direction:column}.feed-status{white-space:normal}}
 .practice-card{background:#fff;border:1px solid #dfe7dc;border-radius:12rpx;padding:24rpx;margin:0 0 24rpx}.practice-card-title{font-size:27rpx;font-weight:750;color:#284b34}.practice-card-copy{font-size:21rpx;color:#829681;margin-top:8rpx}.practice-links{display:flex;flex-wrap:wrap;gap:12rpx;margin-top:17rpx}.practice-links view{padding:12rpx 16rpx;border-radius:6rpx;background:#eff6e9;color:#467250;font-size:21rpx}
 @media(min-width:768px){.feature-label{font-size:12px}.feature-heading{font-size:24px}.feature-copy,.feature-more{font-size:14px}.feature-toggle,.feature-legend,.eyebrow,.feed-status{font-size:12px}.feature-link{font-size:14px}.section-title{font-size:24px}.section-subtitle,.shortcut-name,.category,.filter-button,.search,.practice-card-title{font-size:14px}.shortcut-copy,.result-note,.article-meta,.tag,.practice-card-copy,.footer-note{font-size:12px}.shortcut-arrow{font-size:20px}.practice-links view,.camp-copy,.camp-link{font-size:14px}.camp-kicker{font-size:12px}.camp-title{font-size:20px}.load-more,.empty{font-size:14px}}
@@ -481,8 +492,11 @@ function formatDate(value){const d=new Date(Number(value)*1000+8*3600000);return
   .tutorial-home .ha-trust{order:7}
 }
 @media(max-width:360px){.level-visual{flex-basis:62px;width:62px;height:66px}}
+/* #endif */
 </style>
 
 <style scoped>
+/* #ifndef MP-WEIXIN */
 .tutorial-card-cover{position:relative;margin:-4px -4px 12px;border-radius:11px;overflow:hidden;background:#eef1f6;height:110px}.tutorial-card-cover image{width:100%;height:100%}.tutorial-card-cover text{position:absolute;left:7px;bottom:7px;padding:3px 6px;border-radius:6px;background:#152033cc;color:white;font-size:10px}
+/* #endif */
 </style>

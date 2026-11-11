@@ -81,7 +81,7 @@ function videoRange(header, size) {
 export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
-  let reservations=null,tracking=null,board=null,stats=null,feedback=null;
+  let reservations=null,tracking=null,board=null,stats=null,feedback=null,miniFeedback=null;
   if(reservation){
     const dbParent=await realpath(path.dirname(reservation.dbPath));
     if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
@@ -95,8 +95,23 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     const feedbackPath=path.join(dbParent,'ainpe-feedback.sqlite');
     if(path.resolve(reservation.dbPath)===feedbackPath)throw new Error('feedback_db_conflicts_with_reservations');
     feedback=createProductionFeedbackApi({root,dbPath:feedbackPath,publicOrigin:reservation.publicOrigin});
+    const {createProductionMiniFeedbackApi}=await import('./production-mini-feedback.mjs');
+    const miniFeedbackPath=path.join(dbParent,'ainpe-mini-feedback.sqlite');
+    if(path.resolve(reservation.dbPath)===miniFeedbackPath)throw new Error('mini_feedback_db_conflicts_with_reservations');
+    miniFeedback=createProductionMiniFeedbackApi({root,dbPath:miniFeedbackPath,publicOrigin:reservation.publicOrigin});
     const {createProductionStatsApi}=await import('./production-stats.mjs');
-    stats=createProductionStatsApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin,passwordFile:statsPasswordFile,feedback});
+    // Preserve the existing authenticated feedback endpoint and its security;
+    // append only a clearly labelled anonymous mini-program aggregate.
+    const combinedFeedback={list(){
+      const result=feedback.list(),s=miniFeedback.summary();
+      if(!s)return result;
+      const names={drama:'AI 短剧',video:'AI 视频',office:'办公与工作',content:'内容创作',education:'教育与学习',other:'其他'};
+      const parts=Object.entries(s.categories).map(([key,n])=>`${names[key]} ${n} 次`);
+      const message=`【小程序近 30 天汇总】搜索 ${s.searches.hit+s.searches.miss} 次，未找到 ${s.searches.miss} 次；需求反馈：${parts.length?parts.join('、'):'暂无'}。仅为匿名次数，可能包含重复或异常请求。`;
+      const items=[...miniFeedback.listMessages(),...result.items].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+      return {...result,items:[{message,createdAt:new Date().toISOString()},...items].slice(0,100)};
+    }};
+    stats=createProductionStatsApi({root,dbPath:trackingPath,publicOrigin:reservation.publicOrigin,passwordFile:statsPasswordFile,feedback:combinedFeedback});
     const {createProductionBoardApi}=await import('./production-board.mjs');
     const boardPath=path.join(dbParent,'ainpe-board.sqlite');
     if(path.resolve(reservation.dbPath)===boardPath)throw new Error('board_db_conflicts_with_reservations');
@@ -198,7 +213,8 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     }); };
     const afterFeedback = () => { if(board)board.middleware(req,res,afterBoard);else afterBoard(); };
     const afterTracking = () => { if(feedback)feedback.middleware(req,res,afterFeedback);else afterFeedback(); };
-    const afterStats = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
+    const afterMiniFeedback = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
+    const afterStats = () => { if(miniFeedback)miniFeedback.middleware(req,res,afterMiniFeedback);else afterMiniFeedback(); };
     const afterReservation = () => { if(stats)stats.middleware(req,res,afterStats);else afterStats(); };
     if(reservations){reservations.middleware(req,res,afterReservation);return;}
     void feed(req, res, fallback).catch(() => {
@@ -206,7 +222,7 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
       else res.destroy();
     });
   });
-  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();feedback?.close();});
+  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();feedback?.close();miniFeedback?.close();});
   return server;
 }
 
