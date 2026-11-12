@@ -47,7 +47,9 @@ test('mini home recommends real step-by-step guides and keeps future challenges 
   }
   assert.doesNotMatch(home,/开始做第一件事/);
   assert.doesNotMatch(home,/第一次来？看看怎么用/);
-  assert.match(home,/class="bottom-note"[\s\S]*?<button class="help-link" @tap="showHelp">第一次来？让小 A 带你看看 ›<\/button>[\s\S]*?<MiniNav active="home"/);
+  assert.match(home,/生活里遇到小事？[\s\S]*?复制一句提示词，到你常用的 AI 里试试。/);
+  assert.doesNotMatch(home,/提示词需要在你常用的 AI 工具中使用。/);
+  assert.match(home,/class="prompt-entry"[\s\S]*?<button class="help-link" @tap="showHelp">第一次来？让小 A 带你看看 ›<\/button>[\s\S]*?<MiniNav active="home"/);
   assert.match(home,/@tap="openGuide\(guide\.id\)"/);
   assert.match(home,/:src="guide\.cover"/);
   assert.doesNotMatch(home,/@tap="openPrompt/);
