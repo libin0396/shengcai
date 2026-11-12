@@ -45,7 +45,9 @@ test('mini home recommends real step-by-step guides and keeps future challenges 
     const guide=guides.find(g=>g.id===id);
     assert.ok(guide?.steps?.length && guide.cover && scripts[id],`home guide ${id} must be a real guide with a matching cover and guided steps`);
   }
-  assert.match(home,/@tap="openGuides">开始做第一件事/);
+  assert.doesNotMatch(home,/开始做第一件事/);
+  assert.doesNotMatch(home,/第一次来？看看怎么用/);
+  assert.match(home,/class="bottom-note"[\s\S]*?<button class="help-link" @tap="showHelp">第一次来？让小 A 带你看看 ›<\/button>[\s\S]*?<MiniNav active="home"/);
   assert.match(home,/@tap="openGuide\(guide\.id\)"/);
   assert.match(home,/:src="guide\.cover"/);
   assert.doesNotMatch(home,/@tap="openPrompt/);
