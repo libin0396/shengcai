@@ -21,6 +21,7 @@ for name in EXPECTED:
     validate(name,file.read_text(encoding='utf-8'))
 target.mkdir()
 APPROVED_LESSON = Path('src/static/learn/media/lesson/rain-lesson-example.pptx')
+PUBLIC_METADATA = {Path('src/static/qr-generator.LICENSE.txt'), Path('src/static/learn/manifest.webmanifest')}
 APPROVED_LESSON_SHA256 = '52761f528629b313612b23c08743609589e2a87f2eeb3996d9b719bb2f9fb51e'
 APPROVED_MEDIA = {
     Path('src/static/learn/media/lesson/rain-lesson-export.pdf'): ('98197378c1c73f8334a2e262d635895485780cb18c4eddb6fa707824dc77bcd4', 2 * 1024 * 1024, 'pdf'),
@@ -64,8 +65,14 @@ def copy_file(rel):
     dst.parent.mkdir(parents=True,exist_ok=True)
     shutil.copyfile(src,dst)
 for rel in ['package.json','package-lock.json','index.html','vite.config.js',
-            'src/App.vue','src/main.js','src/site-mode.js','src/manifest.json','src/pages.json',
-            'src/data/content.js','src/data/storage.js','src/data/article-categories.js','src/data/case-library.mjs',
+            'src/App.vue','src/main.js','src/site-mode.js','src/manifest.json','src/pages.json','src/admin/stats.vue',
+            'src/data/ai-core.js','src/data/ai-runner.js','src/data/article-categories.js',
+            'src/data/case-display.mjs','src/data/case-library.mjs','src/data/case-studies.js',
+            'src/data/content.js','src/data/game-matching.js','src/data/learn-topics.js',
+            'src/data/mini-ai.json','src/data/mini-aids.js','src/data/mini-course-practice.json',
+            'src/data/mini-guides.json','src/data/mini-potential.js','src/data/mini-search-data.js',
+            'src/data/mini-zuo.json','src/data/offer.js','src/data/personas.json','src/data/storage.js',
+            'src/data/track.js','src/data/zuo-core.js',
             'src/data/site-config.json']:
     copy_file(Path(rel))
 for sub in ['src/pages','src/components','src/static']:
@@ -80,6 +87,8 @@ for sub in ['src/pages','src/components','src/static']:
                 validate_lesson(src)
             elif rel in APPROVED_MEDIA:
                 validate_media(src, APPROVED_MEDIA[rel])
+            elif rel in PUBLIC_METADATA:
+                pass
             elif src.suffix.lower() not in {'.vue','.js','.css','.html','.png','.jpg','.jpeg','.webp','.gif','.svg','.json'}:
                 raise ValueError('unexpected source file type: '+str(src))
             copy_file(rel)

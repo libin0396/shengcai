@@ -1,6 +1,6 @@
 <template>
   <!-- #ifdef MP-WEIXIN -->
-  <MiniHome />
+  <MiniHome :tick="homeTick" />
   <!-- #endif -->
   <!-- #ifndef MP-WEIXIN -->
   <view class="discover-page">
@@ -97,6 +97,11 @@
 <script setup>
 // #ifdef MP-WEIXIN
 import MiniHome from '../../components/MiniHome.vue';
+import {ref as mpRef} from 'vue';
+import {onShow as onMpShow} from '@dcloudio/uni-app';
+// 从每日 AI、学 AI 返回首页时，让首页卡片重新读一次本机记录
+const homeTick=mpRef(0);
+onMpShow(()=>{homeTick.value++});
 // #endif
 // #ifndef MP-WEIXIN
 import {tutorialFirst} from '../../site-mode.js';
@@ -139,7 +144,7 @@ function loadTour(force){
   el.onload=()=>{tourScript=null;if(!tourMounted||!window.AINPETour)return;const replay=tourPendingForce;tourPendingForce=false;clearTimeout(tourTimer);tourTimer=setTimeout(()=>{if(tourMounted)window.AINPETour.start(tourSteps,{force:replay})},replay?0:700);};
   el.onerror=()=>{tourScript=null;tourPendingForce=false;};document.body.appendChild(el);
 }
-onShow(()=>{document.title=tutorialFirst?'AI 教程站':'AI 实战情报站';tourMounted=true;loadTour(false)});
+onShow(()=>{if(tutorialFirst){window.location.replace('/static/learn/home.html');return}document.title=tutorialFirst?'AI 教程站':'AI 实战情报站';tourMounted=true;loadTour(false)}); // 教程站：站内跳回首页时也打开新首页
 onHide(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.AINPETour?.dispose();});
 onUnmounted(()=>{tourMounted=false;tourPendingForce=false;clearTimeout(tourTimer);window.removeEventListener('scroll',updateJoinBar);window.AINPETour?.dispose();});
 // #endif

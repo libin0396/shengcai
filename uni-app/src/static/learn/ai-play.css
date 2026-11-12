@@ -1,0 +1,113 @@
+/* 学 AI、每日 AI 共用样式。颜色沿用 A+ 规范：蓝只给按钮和当前项，黄只在「做成了」时出现。 */
+:root{
+  --bg:#F3F4F6; --surface:#FFFFFF; --ink:#161A23; --ink2:#5F6675; --line:#E6E8EC;
+  --blue:#2B44E6; --on-blue:#FFFFFF; --blue-soft:#ECEFFE; --yellow:#FFC83D; --on-yellow:#161A23;
+  --night:#1C2550; --night2:#33407F; --shadow:rgba(22,26,35,.16);
+  --font:-apple-system,"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1218; --surface:#1B202B; --ink:#EEF0F5; --ink2:#A9B0BE; --line:#2C3342;
+  --blue:#8E9BFF; --on-blue:#10131B; --blue-soft:#252C52;
+  --night:#121838; --night2:#222C5E; --shadow:rgba(0,0,0,.5); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0F1218; --surface:#1B202B; --ink:#EEF0F5; --ink2:#A9B0BE; --line:#2C3342;
+  --blue:#8E9BFF; --on-blue:#10131B; --blue-soft:#252C52;
+  --night:#121838; --night2:#222C5E; --shadow:rgba(0,0,0,.5); color-scheme:dark }
+
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 32px}
+.app{max-width:420px;margin:0 auto}
+.view{display:flex;flex-direction:column;gap:14px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+h1{margin:0;font-size:28px;line-height:1.2;font-weight:900;letter-spacing:-.3px}
+.sub{font-size:13px;font-weight:700;color:var(--ink2)}
+.card{background:var(--surface);border-radius:20px;padding:14px 16px}
+.foot{font-size:12px;color:var(--ink2);text-align:center;line-height:1.7;margin:0}
+
+/* 按钮和选项 */
+.btn{border:0;border-radius:14px;min-height:54px;padding:0 18px;font-size:17px;font-weight:800;background:var(--blue);color:var(--on-blue);width:100%}
+.btn.soft{background:var(--blue-soft);color:var(--blue)}
+.btn.done{background:var(--yellow);color:var(--on-yellow)}
+.btn:disabled{opacity:.45;cursor:default}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+.opt{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:14px 16px;font-size:16px;line-height:1.55;text-align:left;font-weight:600}
+.opt.right{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chip{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;min-height:64px;padding:6px 4px;font-size:15px;font-weight:800;line-height:1.3;transition:transform .15s,border-color .2s,background .2s}
+.chip small{display:block;font-size:12px;font-weight:700;color:var(--ink2)}
+.chip:active{transform:scale(.96)}
+.chip.used{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.chip.used small{color:var(--blue)}
+.sortcard{background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:18px 16px;text-align:center;font-size:19px;font-weight:800;line-height:1.5}
+.sortcard small{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:4px}
+.fb{background:var(--surface);border-radius:16px;padding:12px 16px;font-size:15px}
+.fb b.tag{display:inline-block;background:var(--yellow);color:var(--on-yellow);font-size:13px;font-weight:900;border-radius:8px;padding:2px 10px;margin-right:8px}
+.shake{animation:shake .4s ease!important}
+
+/* 排顺序 */
+.orderlist{display:flex;flex-direction:column;gap:6px}
+.orderlist li{list-style:none;display:flex;align-items:center;gap:10px;background:var(--blue-soft);color:var(--blue);border-radius:12px;padding:8px 12px;font-weight:800;animation:pop .28s cubic-bezier(.3,1.5,.5,1) both}
+.orderlist li b{flex:none;width:24px;height:24px;border-radius:8px;background:var(--blue);color:var(--on-blue);font-size:13px;display:flex;align-items:center;justify-content:center}
+.orderlist{margin:0;padding:0}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.pool button{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;min-height:48px;padding:6px 14px;font-size:15px;font-weight:800}
+
+/* 课内与每期的顶部 */
+.top{display:flex;align-items:center;gap:10px}
+.back{flex:none;width:44px;height:44px;border:0;border-radius:14px;background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center}
+.prog{display:flex;gap:5px;margin-top:6px}
+.prog span{flex:1;height:6px;border-radius:3px;background:var(--line);transition:background .3s}
+.prog span.on{background:var(--blue)}
+.narr{min-height:54px;font-size:17px;font-weight:700;line-height:1.5;display:flex;align-items:center}
+.narr span{animation:rise .35s ease both}
+.panel{display:flex;flex-direction:column;gap:10px;min-height:60px}
+.panel>*{animation:rise .3s ease both}
+.replay{align-self:center;border:0;background:transparent;color:var(--ink2);font-size:14px;font-weight:700;min-height:44px;padding:0 12px}
+
+/* 对话舞台 */
+.stage{background:var(--surface);border-radius:22px;padding:16px 14px 12px;display:flex;flex-direction:column;gap:14px;min-height:236px;box-shadow:0 14px 34px -26px var(--shadow)}
+.row{display:flex;align-items:flex-end;gap:10px}
+.row.ai{flex-direction:row-reverse}
+.who{flex:none;width:88px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.who small{font-size:12px;font-weight:700;color:var(--ink2)}
+.bubble{min-width:0;max-width:calc(100% - 98px);border-radius:18px;padding:10px 14px;font-size:16px;line-height:1.65;position:relative;animation:pop .28s cubic-bezier(.3,1.5,.5,1) both;white-space:pre-line}
+.you .bubble{background:var(--blue-soft);border-bottom-left-radius:6px}
+.ai .bubble{background:var(--bg);border-bottom-right-radius:6px}
+.bubble .art{display:block;width:100%;height:auto;border-radius:12px;margin-bottom:8px;animation:pop .4s cubic-bezier(.3,1.5,.5,1) both}
+.typing::after{content:"";display:inline-block;width:2px;height:1em;margin-left:2px;vertical-align:-2px;background:var(--blue);animation:blink .7s steps(1) infinite}
+.add{background:var(--blue);color:var(--on-blue);border-radius:6px;padding:1px 3px;margin:0 1px;display:inline-block;animation:pop .3s cubic-bezier(.3,1.6,.5,1) both}
+.stamp{position:absolute;right:-6px;top:-14px;background:var(--yellow);color:var(--on-yellow);font-size:13px;font-weight:900;border-radius:9px;padding:3px 10px;transform:rotate(6deg);animation:stamp .45s cubic-bezier(.2,1.8,.4,1) both;white-space:nowrap}
+.demo{font-size:12px;color:var(--ink2);text-align:right;margin-top:auto}
+
+/* 角色 */
+.char{position:relative;width:88px;height:88px;border-radius:50%;overflow:hidden;display:block;transform-origin:50% 90%;animation:bob 2.6s ease-in-out infinite}
+.char img{display:block;width:100%;height:100%;border-radius:50%}
+.face{position:absolute;inset:0;width:100%;height:100%;display:none;filter:drop-shadow(0 0 1.5px #5CCBFF)}
+.ai-flat .face,.ai-confused .face{display:block}
+.f{display:none}.ai-flat .f.flat,.ai-confused .f.wavy{display:inline}
+.ai-confused .ai .char{animation:tilt 1.1s ease-in-out infinite}
+.ai-happy .ai .char{animation:jump .7s cubic-bezier(.3,1.4,.5,1) 2, bob 2.6s ease-in-out 1.4s infinite}
+.nod .char{animation:nod .4s ease 1}
+.marks{position:absolute;inset:-14px -4px auto -4px;height:26px;pointer-events:none}
+.marks b{position:absolute;top:0;font-size:20px;font-weight:900;color:var(--blue);animation:float 1.4s ease-in-out infinite}
+.marks b:nth-child(1){left:12px}.marks b:nth-child(2){left:38px;animation-delay:.2s;top:-8px}.marks b:nth-child(3){left:64px;animation-delay:.4s}
+.marks b.gone{animation:vanish .35s ease forwards}
+
+/* 提示条 */
+.toast{position:fixed;z-index:60;left:50%;bottom:calc(100px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:14px;font-weight:700;border-radius:12px;padding:10px 16px;max-width:calc(100% - 48px);animation:rise .25s ease both}
+
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes tilt{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(7deg)}}
+@keyframes jump{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-16px) scale(1.04,.97)}70%{transform:translateY(0) scale(.97,1.04)}}
+@keyframes nod{0%,100%{transform:translateY(0)}50%{transform:translateY(5px) scale(1.03,.96)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes vanish{to{transform:translateY(-16px) scale(.3);opacity:0}}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes stamp{from{transform:rotate(-20deg) scale(2.2);opacity:0}to{transform:rotate(6deg) scale(1);opacity:1}}
+@keyframes rise{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes blink{50%{opacity:0}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}

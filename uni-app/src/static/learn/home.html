@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script src="../site-mode.js"></script>
+<link rel="stylesheet" href="../tutorial-mode.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI 教程站 · 让普通人也能用 AI 做成事</title>
+<meta name="description" content="每天 3 分钟玩一期每日 AI，按顺序学会用 AI，遇到事说一句就能找到用法。">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="stylesheet" href="ai-play.css">
+<link rel="stylesheet" href="ai-nav.css">
+<style>
+/* 布局：手机一列；宽屏时上面左右两栏（口号和小A｜今天的每日 AI），下面卡片两两一排。 */
+.home{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brandrow a.b{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:900;font-size:16px}
+.brandrow a.b i{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:var(--yellow);color:var(--on-yellow);font-style:normal;font-size:19px}
+.brandrow a.b small{font-size:11px;color:var(--ink2);font-weight:800}
+.lvpill{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:5px 12px 5px 6px;font-size:13px;font-weight:800;min-height:36px}
+.lvpill b{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--blue);color:var(--on-blue);font-size:13px}
+.eyebrow{font-size:12px;font-weight:800;color:var(--ink2)}.eyebrow i{color:var(--blue);font-style:normal;margin-right:4px}
+.hero h1{font-size:32px;line-height:1.18;letter-spacing:-.5px;margin-top:8px;text-wrap:balance}
+/* 小A 和三个朋友 */
+.meet{position:relative;margin-top:14px;background:var(--surface);border-radius:24px;padding:16px 14px 14px;box-shadow:0 14px 34px -26px var(--shadow)}
+.meet .top{display:flex;align-items:flex-end;gap:12px}
+.meet .bigA{position:relative;flex:none;width:96px;height:96px;border-radius:50%;overflow:hidden;animation:bob 2.6s ease-in-out infinite;transform-origin:50% 90%}
+.meet .bigA img{display:block;width:100%;height:100%}
+.meet .bigA .face{display:none}
+.meet .bigA.blinking .face{display:block}.meet .bigA.blinking .f.blink{display:inline}
+.meet .bigA.hop{animation:jump .7s cubic-bezier(.3,1.4,.5,1) 1,bob 2.6s ease-in-out .7s infinite}
+.speech{position:relative;flex:1;min-width:0;background:var(--blue-soft);border-radius:18px 18px 18px 6px;padding:10px 14px;min-height:62px;font-size:16px;font-weight:700;line-height:1.55;color:var(--ink)}
+.speech b.who{display:block;font-size:12px;color:var(--blue);font-weight:900;margin-bottom:2px}
+.friends{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.friend{display:flex;align-items:center;gap:8px;border:2px solid transparent;background:var(--bg);border-radius:16px;padding:6px 8px;min-height:56px;color:var(--ink);text-align:left}
+.friend img{flex:none;width:40px;height:40px;border-radius:50%;animation:bob 2.6s ease-in-out infinite}
+.friend:nth-child(2) img{animation-delay:.3s}.friend:nth-child(3) img{animation-delay:.6s}
+.friend b{display:block;font-size:14px;font-weight:900}.friend small{display:block;font-size:11px;font-weight:700;color:var(--ink2);line-height:1.3}
+.friend.on{border-color:var(--blue);background:var(--surface)}
+.go{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;min-height:46px;border-radius:14px;padding:0 14px;background:var(--blue);color:var(--on-blue);text-decoration:none;font-weight:800;font-size:15px}
+.go[hidden]{display:none}
+/* 搜索 */
+.search{display:flex;gap:8px;align-items:center;background:var(--surface);border-radius:18px;padding:6px 6px 6px 16px;box-shadow:inset 0 0 0 1.5px var(--line)}
+.search input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);height:44px;outline:none}
+.search input::placeholder{color:var(--ink2)}
+.search button{flex:none;width:auto;min-height:44px;padding:0 18px;border-radius:12px;font-size:15px}
+.search:focus-within{box-shadow:inset 0 0 0 2px var(--blue)}
+.chipsrow{display:flex;flex-wrap:wrap;gap:6px}
+.chipsrow a{font-size:13px;font-weight:700;color:var(--ink2);background:var(--surface);border-radius:999px;padding:8px 12px;text-decoration:none}
+/* 今天的每日 AI */
+.daily{background:var(--surface);border-radius:22px;overflow:hidden;box-shadow:0 14px 34px -24px var(--shadow);text-decoration:none;color:var(--ink);display:block}
+.daily .cv{position:relative;height:150px;background:linear-gradient(160deg,var(--night),var(--night2));overflow:hidden}
+.daily .cv .tag{position:absolute;left:12px;top:12px;font-size:12px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 9px}
+.daily .cv .q{position:absolute;left:14px;top:44px;max-width:calc(100% - 170px);color:#fff;font-size:15px;font-weight:800;line-height:1.5}
+.daily .cv img{position:absolute;border-radius:50%;border:4px solid rgba(255,255,255,.9)}
+.daily .cv .ca{right:12px;bottom:-10px;width:78px;height:78px;animation:bob 2.6s ease-in-out infinite}
+.daily .cv .cb{right:78px;bottom:-16px;width:66px;height:66px;animation:bob 2.6s ease-in-out .4s infinite}
+.star{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;animation:twinkle 2.4s ease-in-out infinite}
+.daily .tx{padding:12px 16px 16px}
+.daily .k{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.daily .k span{font-size:12px;font-weight:800;color:var(--blue)}
+.week{display:flex;gap:4px}.week i{width:9px;height:9px;border-radius:50%;background:var(--line)}.week i.done{background:var(--blue)}.week i.today{box-shadow:0 0 0 2px var(--blue);background:var(--surface);animation:pulse 1.6s ease-in-out infinite}.week i.done.today{background:var(--blue)}
+.daily h2{margin:6px 0 0;font-size:21px;font-weight:900;line-height:1.3}
+.daily .m{font-size:13px;color:var(--ink2);margin-top:2px}
+.daily .btn{margin-top:12px;display:flex;align-items:center;justify-content:center}
+/* 学 AI */
+.learn{background:var(--surface);border-radius:22px;padding:14px 16px 16px;text-decoration:none;color:var(--ink);display:block}
+.learn .k{font-size:12px;font-weight:800;color:var(--blue)}
+.learn h2{margin:4px 0 0;font-size:20px;font-weight:900}
+.stairs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;align-items:end;margin-top:12px;height:46px}
+.stairs i{display:block;border-radius:6px 6px 3px 3px;background:var(--line);transition:background .4s}
+.stairs i:nth-child(1){height:30%}.stairs i:nth-child(2){height:42%}.stairs i:nth-child(3){height:56%}.stairs i:nth-child(4){height:70%}.stairs i:nth-child(5){height:84%}.stairs i:nth-child(6){height:100%}
+.stairs i.done{background:var(--yellow)}.stairs i.now{background:var(--blue);animation:pulseBar 1.8s ease-in-out infinite}
+.stairs-lb{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:4px;font-size:10px;font-weight:700;color:var(--ink2);text-align:center}
+.learn .meta{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;font-weight:700;color:var(--ink2)}
+.learn .btn{margin-top:12px;display:flex;align-items:center;justify-content:center}
+/* 选一件事 */
+.sec-h{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:6px}
+.sec-h h2{margin:0;font-size:19px;font-weight:900}.sec-h p{margin:2px 0 0;font-size:12px;color:var(--ink2)}
+.sec-h a{flex:none;font-size:13px;font-weight:800;color:var(--blue);text-decoration:none}
+.levels{display:grid;gap:9px}
+.lvcard{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;text-decoration:none;color:var(--ink)}
+.lvcard.first{border:2px solid var(--blue)}
+.lvcard .pic{position:relative;flex:none;width:76px;height:76px;border-radius:12px;overflow:hidden;background:var(--bg)}
+.lvcard .pic img{display:block;width:100%;height:100%;object-fit:cover}
+.lvcard .pic span{position:absolute;left:3px;bottom:3px;background:rgba(0,0,0,.55);color:#fff;font-size:9px;border-radius:3px;padding:1px 3px}
+.lvcard .bd{flex:1;min-width:0}
+.lvcard .top2{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.badge2{font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px}
+.b1{color:#0B7A43;background:#E4F8EC}.b2{color:var(--blue);background:var(--blue-soft)}.b3{color:#B4441A;background:#FFF0E8}.b4{color:#B4441A;background:#FFF0E8}
+.lvcard .top2 small{font-size:11px;color:var(--ink2)}
+.lvcard b.t{display:block;margin-top:5px;font-size:15px;font-weight:900}
+.lvcard .d{display:block;font-size:12px;color:var(--ink2);line-height:1.5;margin-top:2px}
+.lvcard .a{display:block;margin-top:5px;font-size:12px;font-weight:800;color:var(--blue)}
+.lvcard.future{opacity:.85}.lvcard.future .a{color:var(--ink2)}
+/* 日常小事 */
+.everyday{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.everyday a{background:var(--surface);border-radius:16px;padding:12px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:2px}
+.everyday small{font-size:11px;font-weight:800;color:var(--blue)}.everyday b{font-size:14px;font-weight:900;line-height:1.35}
+.everyday span{font-size:12px;color:var(--ink2);line-height:1.45}
+.replay2{align-self:center;border:0;background:transparent;color:var(--blue);font-size:14px;font-weight:800;min-height:44px}
+.icp{text-align:center;font-size:12px;color:var(--ink2)}.icp a{color:inherit;text-decoration:none}
+.rise{animation:rise .45s ease both}.rise.d1{animation-delay:.06s}.rise.d2{animation-delay:.12s}.rise.d3{animation-delay:.18s}.rise.d4{animation-delay:.24s}
+/* 第一次来：小A 带着走一遍 */
+.intro{position:fixed;z-index:120;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(22,26,35,.55);padding:16px;padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+.intro .card{width:100%;max-width:420px;background:var(--surface);border-radius:22px;padding:16px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);animation:pop .3s cubic-bezier(.3,1.5,.5,1) both}
+.intro .who{display:flex;align-items:center;gap:10px;width:auto}
+.intro .who img{width:56px;height:56px;border-radius:50%;animation:bob 2.6s ease-in-out infinite}
+.intro h2{margin:0;font-size:19px;font-weight:900}
+.intro p{margin:8px 0 0;font-size:15px;line-height:1.6;color:var(--ink2)}
+.intro .dots{display:flex;gap:5px;margin-top:12px}.intro .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.intro .dots i.on{background:var(--blue);width:18px;border-radius:4px}
+.intro .row3{display:flex;gap:8px;margin-top:12px}.intro .row3 .btn{flex:1}
+.ainav-items a.spot{animation:spot 1.2s ease-in-out infinite;border-radius:14px}
+@keyframes spot{0%,100%{box-shadow:0 0 0 0 rgba(43,68,230,0)}50%{box-shadow:0 0 0 6px rgba(43,68,230,.35)}}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(43,68,230,.25)}}
+@keyframes pulseBar{50%{opacity:.7}}
+@media (min-width:900px){
+  .home{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);column-gap:28px;row-gap:16px;align-items:start}
+  .brandrow{grid-column:1/-1}.brandrow a.b{display:none}
+  .hero{grid-column:1;grid-row:2/5}.hero h1{font-size:46px}
+  .daily{grid-column:2;grid-row:2}.learn{grid-column:2;grid-row:3}
+  .wide{grid-column:1/-1}
+  .levels{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .intro{align-items:center;padding-bottom:16px}
+}
+@media (max-width:380px){.friends{grid-template-columns:1fr}.everyday{grid-template-columns:1fr}.hero h1{font-size:28px}}
+</style>
+</head>
+<body>
+<main class="app home" id="home">
+  <div class="brandrow">
+    <a class="b" href="home.html"><i aria-hidden="true">↗</i>AI 教程站 <small>AINPE.</small></a>
+    <a class="lvpill" id="lvPill" href="wode.html" aria-label="我的 AI 等级"><b id="lvNum">1</b><span id="lvName">AI 新朋友</span></a>
+  </div>
+
+  <section class="hero">
+    <div class="eyebrow"><i>●</i>AI 实用教程 · 从一件小事开始</div>
+    <h1>让普通人，<br>也能用 AI 做成事</h1>
+    <div class="meet rise" id="meet">
+      <div class="top">
+        <div class="bigA" id="bigA"><img id="bigAImg" src="" alt="小A"></div>
+        <div class="speech" aria-live="polite"><b class="who" id="sayWho">小A</b><span id="sayText"></span></div>
+      </div>
+      <div class="friends" id="friends" role="group" aria-label="三位朋友"></div>
+      <a class="go" id="sayGo" href="#" hidden><span id="sayGoText"></span><span aria-hidden="true">›</span></a>
+    </div>
+    <form class="search rise d1" id="search" role="search" autocomplete="off" style="margin-top:14px">
+      <label for="q" class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">你遇到了什么事</label>
+      <input id="q" maxlength="40" placeholder="你遇到了什么事？说一句就行" enterkeyhint="search">
+      <button class="btn" type="submit">找用法</button>
+    </form>
+    <div class="chipsrow rise d2" id="chips" style="margin-top:10px"></div>
+  </section>
+
+  <a class="daily rise d2" id="daily" href="meiri-ai.html">
+    <div class="cv" id="dCover"><span class="tag" id="dTag"></span><div class="q" id="dQ"></div><img class="cb" id="dB" src="" alt=""><img class="ca" id="dA" src="" alt=""></div>
+    <div class="tx">
+      <div class="k"><span id="dDate"></span><span class="week" id="dWeek" aria-label="本周打卡"></span></div>
+      <h2 id="dTitle"></h2>
+      <div class="m" id="dMeta"></div>
+      <span class="btn" id="dGo"></span>
+    </div>
+  </a>
+
+  <a class="learn rise d3" id="learn" href="xue-ai.html">
+    <div class="k" id="lK"></div>
+    <h2 id="lTitle"></h2>
+    <div class="stairs" id="stairs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="stairs-lb" aria-hidden="true"><span>认识</span><span>表达</span><span>文字</span><span>图声</span><span>视频</span><span>作品</span></div>
+    <div class="meta"><span id="lMeta"></span><span id="lBadge"></span></div>
+    <span class="btn" id="lGo"></span>
+  </a>
+
+  <section class="wide">
+    <div class="sec-h"><div><h2>选一件事，开始做</h2><p>从适合自己的地方出发，不用按顺序。</p></div><a href="guides.html">全部教程 ↗</a></div>
+    <div class="levels" id="levels" style="margin-top:10px">
+      <a class="lvcard first" href="find.html?quick=reply"><span class="pic"><img src="/static/design/write-message-illustration.jpg" alt=""><span>配图示意</span></span><span class="bd"><span class="top2"><span class="badge2 b1">简单</span><small>第一次来推荐</small></span><b class="t">写一条不好开口的消息</b><span class="d">告诉 AI 你的情况，试着写一条合适的消息。</span><span class="a">开始尝试 ↗</span></span></a>
+      <a class="lvcard" href="find.html?quick=homework"><span class="pic"><img src="/static/design/kids.jpg" alt=""><span>配图示意</span></span><span class="bd"><span class="top2"><span class="badge2 b2">一般</span></span><b class="t">陪孩子讲懂一道题</b><span class="d">补充孩子的情况，让 AI 帮你理清讲题思路。</span><span class="a">看看怎么用 ↗</span></span></a>
+      <a class="lvcard" href="zuo.html?id=short-drama"><span class="pic"><img src="/static/learn/media/covers/short-drama.jpg" alt=""><span>AI 角色参考图</span></span><span class="bd"><span class="top2"><span class="badge2 b3">困难</span></span><b class="t">从零做一条 AI 短剧</b><span class="d">从故事、分镜到剪成一条短片。</span><span class="a">跟着步骤做 ↗</span></span></a>
+      <div class="lvcard future"><span class="pic"><img src="/static/design/ai-assistant-illustration.jpg" alt=""><span>配图示意</span></span><span class="bd"><span class="top2"><span class="badge2 b4">超级挑战</span><small>筹备中</small></span><b class="t">做一个自己的 AI 助手</b><span class="d">设定任务、反复调整，做出可复用的助手。</span><span class="a">完整教程正在准备</span></span></div>
+    </div>
+  </section>
+
+  <section class="wide">
+    <div class="sec-h"><div><h2>日常小事，快速问 AI</h2><p>复制一句提示词，到你常用的 AI 里试试。</p></div><a href="jijiu.html">全部快捷提示词 ↗</a></div>
+    <div class="everyday" style="margin-top:10px">
+      <a href="find.html?quick=homework"><small>学习</small><b>陪孩子讲懂一道题</b><span>整理讲题思路，引导孩子自己想。</span></a>
+      <a href="jijiu.html#meeting"><small>工作</small><b>把会议记录整理清楚</b><span>梳理结论、待办和待确认的事。</span></a>
+      <a href="jijiu.html#menu"><small>生活</small><b>一周晚饭吃什么</b><span>说人数和口味，拿一份菜单。</span></a>
+    </div>
+  </section>
+
+  <button class="replay2 wide" id="replayIntro" type="button">第一次来？让小A 带你看看</button>
+  <p class="icp wide"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">辽ICP备2025071127号-1</a></p>
+</main>
+<script src="../tracking.js"></script>
+<script src="ai-nav.js"></script>
+<script src="ai-play.js"></script>
+<script src="meiri-ai-data.js"></script>
+<script src="xue-ai-data.js"></script>
+<script src="home.js"></script>
+</body>
+</html>

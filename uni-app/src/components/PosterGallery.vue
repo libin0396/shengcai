@@ -59,7 +59,7 @@ const idOf=record=>typeof record?.recordId==='string'?record.recordId:'';
 const imageFor=record=>urls.value[idOf(record)]||'';
 const loading=record=>states.value[idOf(record)]==='loading';
 function isHidden(record){const n=Number(record?.personaIndex);return Number.isInteger(n)&&n>=18&&n<24}
-function formatDate(value){const d=new Date(value);return Number.isNaN(d.getTime())?'时间未记录':`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
+function formatDate(value){const d=new Date(new Date(value).getTime()+8*3600000);return Number.isNaN(d.getTime())?'时间未记录':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`}
 function release(){
   generation++;
   urls.value={};states.value={};

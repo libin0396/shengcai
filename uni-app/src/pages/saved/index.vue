@@ -96,7 +96,11 @@ function openFeedback(event){
   if(button){button._ainpeFeedbackOpener=event?.currentTarget;button.click()}else uni.showToast({title:'反馈暂不可用，请稍后再试',icon:'none'});
   // #endif
 }
-onShow(()=>{loadLearnProgress();saved.value=getSaved();let v=readLocal('ainpe:history');if(!Array.isArray(v)){const last=readLocal('ainpe:played');v=last&&typeof last==='object'?[last]:[]}history.value=v.filter(x=>x&&typeof x==='object').slice(0,50);const seen=readLocal('ainpe:hidden-seen');seenHidden.value=Array.isArray(seen)?seen.filter(index=>Number.isInteger(index)&&index>=18&&index<24):[];gallery.value?.resume()});
+onShow(()=>{
+  // #ifdef H5
+  if(tutorialFirst){window.location.replace('/static/learn/wode.html');return} // 教程站：「我的」用新的静态页
+  // #endif
+  loadLearnProgress();saved.value=getSaved();let v=readLocal('ainpe:history');if(!Array.isArray(v)){const last=readLocal('ainpe:played');v=last&&typeof last==='object'?[last]:[]}history.value=v.filter(x=>x&&typeof x==='object').slice(0,50);const seen=readLocal('ainpe:hidden-seen');seenHidden.value=Array.isArray(seen)?seen.filter(index=>Number.isInteger(index)&&index>=18&&index<24):[];gallery.value?.resume()});
 onHide(()=>gallery.value?.pause());
 const ordinaryPersonas=personas.slice(0,18).map((persona,index)=>({...persona,index}));
 const hiddenPersonas=personas.slice(18,24).map((persona,index)=>({...persona,index:index+18}));
@@ -111,7 +115,7 @@ function gameName(record){const raw=String(record?.game||'').replace(/\.html$/,'
 const remainingGames=computed(()=>Math.max(0,6-new Set(history.value.map(gameName).filter(x=>['miniapp','video','education-ppt','books','brain','trends'].includes(x))).size));
 const savedArticles=computed(()=>{const curated=caseStudies.map(caseAsArticle),ids=new Set(curated.map(a=>a.id));return [...curated,...articles.filter(a=>!ids.has(String(a.id)))].filter(a=>saved.value.includes(`article:${a.id}`))});
 const savedEvents=computed(()=>events.filter(e=>saved.value.includes(`event:${e.id}`)));
-function formatPlayed(value){const d=new Date(value);return Number.isNaN(d.getTime())?'时间未记录':`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
+function formatPlayed(value){const d=new Date(new Date(value).getTime()+8*3600000);return Number.isNaN(d.getTime())?'时间未记录':`${d.getUTCFullYear()}/${d.getUTCMonth()+1}/${d.getUTCDate()}`}
 function remove(t,item){saved.value=saved.value.filter(k=>k!==`${t}:${item.id}`);setSaved(saved.value)}
 function openArticle(a){uni.navigateTo({url:`/pages/article/index?id=${encodeURIComponent(a.id)}`})}
 function goSimulate(){uni.navigateTo({url:'/pages/simulate/index'})}

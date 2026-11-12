@@ -115,7 +115,8 @@
     },
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/short-drama.jpg",
     "coverLabel": "AI 角色参考图",
-    "coverAlt": "本站试做的 AI 短剧：公交站找伞"
+    "coverAlt": "本站试做的 AI 短剧：公交站找伞",
+    "level": "困难"
   },
   {
     "id": "video-script",
@@ -164,7 +165,8 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/video-script.jpg",
     "coverLabel": "AI 生成示意图",
-    "coverAlt": "为绿萝养护准备短视频脚本的示意插画"
+    "coverAlt": "为绿萝养护准备短视频脚本的示意插画",
+    "level": "一般"
   },
   {
     "id": "product-poster",
@@ -241,7 +243,8 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/product-poster.jpg",
     "coverLabel": "实操成品",
-    "coverAlt": "本站试做的虚构马克杯商品宣传图"
+    "coverAlt": "本站试做的虚构马克杯商品宣传图",
+    "level": "困难"
   },
   {
     "id": "meeting-notes",
@@ -288,7 +291,8 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/meeting-notes.jpg",
     "coverLabel": "AI 生成示意图",
-    "coverAlt": "整理社区图书交换角会议纪要的示意插画"
+    "coverAlt": "整理社区图书交换角会议纪要的示意插画",
+    "level": "一般"
   },
   {
     "id": "content-notes",
@@ -335,7 +339,8 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/content-notes.jpg",
     "coverLabel": "AI 生成示意图",
-    "coverAlt": "为桌面整理写笔记的示意插画"
+    "coverAlt": "为桌面整理写笔记的示意插画",
+    "level": "一般"
   },
   {
     "id": "kejian",
@@ -408,7 +413,8 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/kejian.jpg",
     "coverLabel": "实操成品",
-    "coverAlt": "本站试做的认识下雨课件第 1 页"
+    "coverAlt": "本站试做的认识下雨课件第 1 页",
+    "level": "困难"
   },
   {
     "id": "huiben",
@@ -484,6 +490,7 @@
     ],
     "cover": "https://ainpe.aisen.xin/static/learn/media/covers/huiben.jpg",
     "coverLabel": "实操成品",
-    "coverAlt": "本站试做的小狐狸和蓝纸船绘本插画"
+    "coverAlt": "本站试做的小狐狸和蓝纸船绘本插画",
+    "level": "困难"
   }
 ]

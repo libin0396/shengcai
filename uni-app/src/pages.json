@@ -7,6 +7,12 @@
     ,{"path": "pages/learn/find", "style": {"navigationBarTitleText": "搜索", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
     ,{"path": "pages/learn/library", "style": {"navigationBarTitleText": "快捷提示词", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
     ,{"path": "pages/learn/mine", "style": {"navigationBarTitleText": "我的"}}
+    ,{"path": "pages/learn/potential", "style": {"navigationBarTitleText": "AI 潜力卡", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
+    ,{"path": "pages/learn/learning", "style": {"navigationBarTitleText": "学 AI", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
+    ,{"path": "pages/learn/daily", "style": {"navigationBarTitleText": "每日 AI", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
+    ,{"path": "pages/learn/lesson", "style": {"navigationBarTitleText": "学 AI", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
+    ,{"path": "pages/learn/play", "style": {"navigationBarTitleText": "每日 AI", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
+    ,{"path": "pages/learn/zuo", "style": {"navigationBarTitleText": "跟着做", "navigationStyle": "default", "navigationBarBackgroundColor": "#ffffff", "navigationBarTextStyle": "black"}}
     // #endif
     // #ifndef MP-WEIXIN
     ,{"path": "pages/intelligence/index", "style": {"navigationBarTitleText": "情报"}}

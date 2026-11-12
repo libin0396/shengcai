@@ -55,8 +55,10 @@
   function chrome(active,bannerFrom){
     var hdr=doc.createElement('header');hdr.className='lhdr';
     var tutorialMode=!!(root.AINPE_SITE_MODE&&root.AINPE_SITE_MODE.tutorialFirst);
-    hdr.innerHTML='<div class="w"><a class="lbrand" href="/#/pages/discover/index"><i>↗</i>'+(tutorialMode?'AI 教程站':'AI 实战情报站')+' <small>AINPE.</small></a></div>';
+    hdr.innerHTML='<div class="w"><a class="lbrand" href="'+(tutorialMode?'/static/learn/home.html':'/#/pages/discover/index')+'"><i>↗</i>'+(tutorialMode?'AI 教程站':'AI 实战情报站')+' <small>AINPE.</small></a></div>';
     doc.body.insertBefore(hdr,doc.body.firstChild);
+    // 教程站模式：换成新的五个入口（首页 / 每日 AI / 找用法 / 学 AI / 我的），和新页面共用 ai-nav.js
+    if(tutorialMode&&root.AINPENav){root.AINPENav.mount(active,{into:hdr.querySelector('.w')});doc.body.classList.add('has-lhdr');return}
     if(bannerFrom&&!MP&&!(root.AINPE_SITE_MODE&&root.AINPE_SITE_MODE.tutorialFirst)){
       var a=doc.createElement('a');a.className='lbanner';a.href='/#/pages/camp/index?from='+bannerFrom;
       a.innerHTML='<em>生财有术</em>想用 AI 赚钱？看看真人怎么做<span>›</span>';

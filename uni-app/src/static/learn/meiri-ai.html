@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script src="../site-mode.js"></script>
+<link rel="stylesheet" href="../tutorial-mode.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>每日 AI · AI 教程站</title>
+<meta name="description" content="每天一期 3 分钟的 AI 小互动：故事分支、找茬、防骗练习、拼一句好问法。">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="stylesheet" href="ai-play.css">
+<link rel="stylesheet" href="ai-nav.css">
+<style>
+/* 等级卡 */
+.level{display:flex;align-items:center;gap:14px}
+.badge{flex:none;width:58px;height:58px;border-radius:18px;background:var(--blue);color:var(--on-blue);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.badge b{font-size:24px;font-weight:900}.badge small{font-size:11px;font-weight:800}
+.level .info{flex:1;min-width:0}
+.level .name{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:17px;font-weight:900}
+.level .name small{font-size:12px;font-weight:700;color:var(--ink2)}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--blue);transition:width .8s cubic-bezier(.3,1.2,.5,1)}
+.bar.up i{background:var(--yellow)}
+.level .meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:5px;font-size:12px;font-weight:700;color:var(--ink2)}
+/* 本周 */
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}
+.day{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--ink2);font-weight:700}
+.day i{width:34px;height:34px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:800;color:var(--ink2)}
+.day.done i{background:var(--blue);color:var(--on-blue)}
+.day.late i{background:var(--surface);color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue-soft)}
+.day.today span{color:var(--blue);font-weight:900}
+.day.today:not(.done) i{box-shadow:inset 0 0 0 2.5px var(--blue);background:var(--surface);color:var(--blue)}
+/* 今天这一期 */
+.today{background:var(--surface);border-radius:22px;overflow:hidden;box-shadow:0 14px 34px -24px var(--shadow)}
+.cover{position:relative;height:170px;background:linear-gradient(160deg,var(--night),var(--night2));overflow:hidden}
+.cover .tag{position:absolute;left:12px;top:12px;font-size:12px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 9px}
+.cover img{position:absolute;width:80px;height:80px;border-radius:50%;bottom:-10px;border:4px solid rgba(255,255,255,.9)}
+.cover .ca{right:14px;animation:bob 2.6s ease-in-out infinite}
+.cover .cb{right:82px;bottom:-16px;width:70px;height:70px;animation:bob 2.6s ease-in-out .4s infinite}
+.cover .q{position:absolute;left:16px;top:46px;max-width:calc(100% - 190px);color:#fff;font-size:15px;font-weight:800;line-height:1.5}
+.star{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;animation:twinkle 2.4s ease-in-out infinite}
+.today .tx{padding:14px 16px 16px}
+.today h2{margin:0;font-size:22px;font-weight:900;line-height:1.3}
+.today .m{margin-top:2px;font-size:14px;color:var(--ink2)}
+.tested{display:inline-block;margin-top:8px;font-size:12px;font-weight:700;color:var(--ink2);background:var(--bg);border-radius:8px;padding:3px 8px}
+.today .btn{margin-top:14px}
+.today .note{margin:8px 0 0;font-size:12px;color:var(--ink2)}
+/* 往期 */
+.past{display:flex;flex-direction:column}
+.pi{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;padding:8px 0}
+.pi:first-of-type{border-top:0}
+.pi img{flex:none;width:40px;height:40px;border-radius:50%}
+.pi .t{flex:1;min-width:0}.pi .t small{display:block;font-size:12px;color:var(--ink2);font-weight:700}.pi .t b{display:block;font-size:15px;font-weight:800}
+.pill{flex:none;font-size:12px;font-weight:800;border-radius:8px;padding:4px 9px;background:var(--blue-soft);color:var(--blue)}
+.pill.ok{background:var(--yellow);color:var(--on-yellow)}
+.pill.lock{background:var(--bg);color:var(--ink2)}
+.pi:disabled{cursor:default}.pi:disabled .t b{color:var(--ink2)}
+/* 故事 */
+.scene{position:relative;height:230px;border-radius:22px;overflow:hidden;background:linear-gradient(170deg,var(--night),var(--night2));transition:background 1s}
+.scene.forest{background:linear-gradient(170deg,#1D4A3A,#3E7A57)}
+.scene.sea{background:linear-gradient(170deg,#0F3F66,#2C79A8)}
+.scene.home{background:linear-gradient(170deg,#4A2E55,#8E5A6E)}
+.moon{position:absolute;right:26px;top:22px;width:40px;height:40px;border-radius:50%;background:#FFE7A1;box-shadow:0 0 30px 6px rgba(255,231,161,.35)}
+.ground{position:absolute;left:-10%;right:-10%;bottom:-60px;height:110px;border-radius:50%;background:rgba(0,0,0,.22)}
+.bunny{position:absolute;left:50%;bottom:22px;width:96px;margin-left:-48px;animation:hop 1.6s ease-in-out infinite}
+.bunny.sleep{animation:breathe 3s ease-in-out infinite}
+.zz{position:absolute;left:58%;bottom:110px;color:#fff;font-weight:900;font-size:18px;opacity:0}
+.bunny.sleep~.zz{animation:zz 2.4s ease-in-out infinite}
+.prop{position:absolute;bottom:26px;opacity:0;transform:scale(.6);transition:opacity .6s,transform .6s}
+.prop.on{opacity:1;transform:scale(1)}
+.storyline{margin-top:12px;background:var(--surface);border-radius:18px;padding:12px 16px;min-height:76px;font-size:16px;line-height:1.7}
+/* 对话（找茬、拼一句） */
+.chat{background:var(--surface);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.row2{display:flex;gap:10px;align-items:flex-start}
+.row2 img{flex:none;width:44px;height:44px;border-radius:50%}
+.bub{background:var(--blue-soft);border-radius:16px;padding:9px 13px;font-size:15px;font-weight:600;min-width:0;line-height:1.65}
+.bub.ai{background:var(--bg);font-weight:500}
+.bub .ph{color:var(--ink2);font-weight:500}
+.ans{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.sent{border:2px solid transparent;background:var(--bg);color:var(--ink);border-radius:12px;padding:8px 12px;text-align:left;font-size:15px;line-height:1.55;font-weight:500}
+.sent.hit{border-color:var(--yellow);background:var(--surface)}
+.sent.hit::after{content:" ← 错在这";font-weight:900;color:var(--ink)}
+/* 防骗聊天 */
+.phone{background:var(--surface);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:10px;align-items:flex-start}
+.ava{flex:none;width:40px;height:40px;border-radius:12px;background:var(--line);display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--ink2)}
+.voice{display:flex;align-items:center;gap:10px;background:var(--blue-soft);border-radius:14px;padding:10px 14px;font-weight:700;color:var(--ink)}
+.wave{display:flex;align-items:center;gap:3px;height:20px}
+.wave i{width:3px;border-radius:2px;background:var(--blue);animation:wave 1s ease-in-out infinite}
+.wave i:nth-child(odd){animation-delay:.2s}.wave i:nth-child(3n){animation-delay:.4s}
+.text-msg{background:var(--bg);border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.6}
+.red{border-radius:6px;padding:0;transition:background .3s,padding .3s}
+.red.on{background:var(--yellow);color:var(--on-yellow);font-weight:800;padding:1px 4px}
+/* 今日一句 */
+.oneline{background:var(--surface);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.oneline .scene-tx{margin:0;font-size:15px;color:var(--ink2)}
+.quote{background:var(--blue-soft);border-radius:16px;padding:14px 16px;font-size:18px;font-weight:800;line-height:1.6;min-height:84px}
+.oneline .tip{margin:0;font-size:14px;color:var(--ink2)}
+/* 能不能 */
+.sorthero{display:flex;justify-content:center;gap:16px;background:var(--surface);border-radius:20px;padding:16px}
+.sorthero img{width:76px;height:76px;border-radius:50%;animation:bob 2.6s ease-in-out infinite}
+.sorthero img+img{animation-delay:.4s}
+/* 新工具尝鲜：手机样子 */
+.mock{background:var(--surface);border-radius:26px;border:8px solid var(--ink);overflow:hidden;display:flex;flex-direction:column;height:360px}
+.screen{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;background:var(--bg)}
+.viewfinder{border-radius:12px;overflow:hidden;box-shadow:0 0 0 3px var(--blue);animation:pop .35s ease both}
+.viewfinder .art,.mine .art{display:block;width:100%;height:auto}
+.mine{align-self:flex-end;width:60%;border-radius:12px;overflow:hidden}
+.mine-q{align-self:flex-end;max-width:80%;background:var(--blue);color:var(--on-blue);border-radius:14px;padding:6px 10px;font-size:13px;font-weight:700}
+.mine-q:empty{display:none}
+.reply{align-self:flex-start;max-width:90%;background:var(--surface);border-radius:14px;padding:8px 12px;font-size:13px;line-height:1.6;white-space:pre-line}
+.inputbar{display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:var(--surface)}
+.cam{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink2);transition:box-shadow .3s}
+.field{flex:1;min-width:0;font-size:13px;color:var(--ink2);background:var(--bg);border-radius:12px;padding:6px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sendbtn{flex:none;font-size:13px;font-weight:800;color:var(--ink2);padding:6px 8px;border-radius:10px}
+.glow{color:var(--blue);box-shadow:0 0 0 3px var(--blue);animation:pulse 1.2s ease-in-out infinite}
+/* 完成 */
+.done-box{background:var(--surface);border-radius:22px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.done-box img{width:96px;height:96px;border-radius:50%;animation:jump .7s cubic-bezier(.3,1.4,.5,1) 2}
+.xp{font-size:34px;font-weight:900;color:var(--on-yellow);background:var(--yellow);border-radius:14px;padding:2px 16px;animation:stamp2 .5s cubic-bezier(.2,1.8,.4,1) both}
+.done-box p{margin:0;font-size:15px;color:var(--ink2)}
+.done-box p.strong{color:var(--ink);font-weight:900;font-size:17px}
+@keyframes hop{0%,100%{transform:translateY(0)}45%{transform:translateY(-14px)}60%{transform:translateY(0) scale(1.05,.95)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.97)}}
+@keyframes zz{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(18px,-30px)}}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes wave{0%,100%{height:5px}50%{height:18px}}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(43,68,230,.25)}}
+@keyframes stamp2{from{transform:rotate(-14deg) scale(2);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="view" id="home">
+    <div>
+      <div class="sub" id="hDate"></div>
+      <h1>每日 AI</h1>
+    </div>
+    <div class="card level" aria-label="我的 AI 等级">
+      <div class="badge"><small>等级</small><b id="lv">1</b></div>
+      <div class="info">
+        <div class="name"><span id="lvName"></span><small id="lvMore"></small></div>
+        <div class="bar" id="bar"><i id="barFill"></i></div>
+        <div class="meta"><span id="xpText"></span><span id="todayText"></span></div>
+      </div>
+    </div>
+    <div class="card week" id="week" aria-label="本周打卡"></div>
+    <article class="today">
+      <div class="cover" id="cover">
+        <span class="tag" id="cTag"></span>
+        <div class="q" id="cQ"></div>
+        <img class="cb" id="cB" src="" alt="">
+        <img class="ca" id="cA" src="" alt="小A">
+      </div>
+      <div class="tx">
+        <h2 id="tTitle"></h2>
+        <div class="m" id="tMeta"></div>
+        <span class="tested" id="tTested"></span>
+        <button class="btn" id="tGo" type="button"></button>
+        <p class="note" id="tNote" hidden>今天这期还在准备，先玩最近一期。</p>
+      </div>
+    </article>
+    <div class="card past" id="past"></div>
+    <p class="foot" id="foot"></p>
+  </section>
+
+  <section class="view" id="play" hidden>
+    <div class="top">
+      <button class="back" id="back" type="button" aria-label="回到每日 AI"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div style="flex:1;min-width:0">
+        <div class="sub" id="pTag"></div>
+        <h1 id="pTitle" style="font-size:22px"></h1>
+      </div>
+    </div>
+    <div class="prog" id="prog"></div>
+    <div class="narr" id="narr" aria-live="polite"></div>
+    <div id="stage"></div>
+    <div class="panel" id="panel"></div>
+  </section>
+</main>
+<script src="../tracking.js"></script>
+<script src="ai-nav.js"></script>
+<script src="ai-play.js"></script>
+<script src="ai-art.js"></script>
+<script src="meiri-ai-data.js"></script>
+<script src="meiri-ai.js"></script>
+</body>
+</html>

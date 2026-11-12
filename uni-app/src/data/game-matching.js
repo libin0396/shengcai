@@ -22,7 +22,7 @@ export function isGamePath(path) {
 }
 // Learning pages also use a fixed allowlist; do not permit arbitrary web-view destinations.
 export function isLearnPath(path) {
-  return /^\/static\/learn\/(?:index|kejian|huiben|jijiu|find|guides|guide)\.html(?:\?[^#]*)?$/.test(String(path || ''));
+  return /^\/static\/learn\/(?:index|kejian|huiben|jijiu|find|guides|guide|home|meiri-ai|xue-ai|wode|zuo)\.html(?:\?[^#]*)?$/.test(String(path || ''));
 }
 export function openGame(path) {
   const p=String(path||'');

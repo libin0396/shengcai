@@ -1,0 +1,86 @@
+name: Build AINPE release
+on:
+  push:
+    branches: [main]
+    paths: ['.github/ainpe-v51-release-once']
+  workflow_dispatch:
+concurrency:
+  group: ainpe-main-release
+  cancel-in-progress: true
+permissions: {}
+jobs:
+  build:
+    if: github.repository == 'libin0396/shengcai' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npm run build
+      - run: npm ci --prefix uni-app
+      - run: npm run build:mp-weixin --prefix uni-app
+      - run: node --test tests/*.test.mjs
+      - run: python3 tests/deploy-release.test.py
+      - run: python3 tests/deploy-pipeline.test.py
+      - run: python3 tests/deploy-attestation.test.py
+      - run: python3 tests/deploy-download.test.py
+      - run: python3 deploy/check_uni_source.py
+      - run: python3 tests/curated-content.test.py
+      - run: npm run build:h5 --prefix uni-app
+      - run: python3 deploy/install_uni_h5.py
+      - run: node --test tests/uni-release.check.mjs
+      - run: python3 deploy/build_artifact.py "$GITHUB_SHA" "$RUNNER_TEMP/ainpe-release"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ainpe-runtime
+          path: ${{ runner.temp }}/ainpe-release/
+          retention-days: 1
+          if-no-files-found: error
+  attest:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ainpe-runtime
+          path: ${{ runner.temp }}/ainpe-release
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: ${{ runner.temp }}/ainpe-release/ainpe-runtime.tar.gz
+  publish:
+    needs: [build, attest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: ainpe-runtime
+          path: ${{ runner.temp }}/ainpe-release
+      - name: Publish artifact for current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -eu
+          head_sha="$(gh api "repos/$GH_REPO/git/ref/heads/main" --jq .object.sha)"
+          if [ "$head_sha" != "$GITHUB_SHA" ]; then
+            echo "Main advanced; skipping this release."
+            exit 0
+          fi
+          tag="ainpe-deploy-$GITHUB_SHA"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --target "$GITHUB_SHA" --title "AINPE $GITHUB_SHA" --notes 'Automated build of main.' --prerelease --latest=false
+          fi
+          gh release upload "$tag" "$RUNNER_TEMP/ainpe-release/ainpe-runtime.tar.gz" "$RUNNER_TEMP/ainpe-release/ainpe-runtime.sha256" --clobber

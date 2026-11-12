@@ -36,6 +36,12 @@ uni-app/src/data/*
 !uni-app/src/data/mini-aids.js
 !uni-app/src/data/mini-search-data.js
 !uni-app/src/data/mini-course-practice.json
+!uni-app/src/data/mini-potential.js
+!uni-app/src/data/ai-core.js
+!uni-app/src/data/ai-runner.js
+!uni-app/src/data/mini-ai.json
+!uni-app/src/data/mini-zuo.json
+!uni-app/src/data/zuo-core.js
 资料库/
 sync/RUNBOOK.md
 
@@ -43,6 +49,8 @@ sync/RUNBOOK.md
 qa/
 qa-*.png
 preview-*.png
+# 教程里真的在用的图片（商品宣传图的手工排字成品），不是预览截图
+!uni-app/src/static/learn/media/product-poster/preview-manual-lettered.png
 outputs-preview-weixin-*/
 AGENTS.md
 DOT-HANDOFF.md

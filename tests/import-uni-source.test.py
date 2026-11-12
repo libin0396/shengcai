@@ -14,6 +14,13 @@ MEDIA = {
     Path('src/static/learn/media/picturebook/fox-book.pdf'): 'c8975c6bf6e17ee511c74d2a7cb231033c314977b5c3ba27e2624a30cfa34b78',
     Path('src/static/learn/media/short-drama/finished-story.mp4'): '7b85ae27c34b55b3d6c32ab487fc2a045bbead9c60a6d2f963cecf20beffc99c',
 }
+PUBLIC_DATA = (
+    'ai-core.js', 'ai-runner.js', 'case-display.mjs', 'case-studies.js',
+    'game-matching.js', 'learn-topics.js', 'mini-ai.json', 'mini-aids.js',
+    'mini-course-practice.json', 'mini-guides.json', 'mini-potential.js',
+    'mini-search-data.js', 'mini-zuo.json', 'offer.js', 'personas.json',
+    'track.js', 'zuo-core.js',
+)
 
 
 class UniImportTest(unittest.TestCase):
@@ -27,7 +34,7 @@ class UniImportTest(unittest.TestCase):
         for name in ('import_uni_source.py', 'curated_content.py'):
             shutil.copyfile(REPO / 'deploy' / name, self.release / 'deploy' / name)
         for rel in ('package.json', 'package-lock.json', 'index.html', 'vite.config.js',
-                    'src/App.vue', 'src/main.js', 'src/site-mode.js', 'src/manifest.json', 'src/pages.json',
+                    'src/App.vue', 'src/main.js', 'src/site-mode.js', 'src/manifest.json', 'src/pages.json', 'src/admin/stats.vue',
                     'src/data/content.js', 'src/data/storage.js', 'src/data/article-categories.js',
                     'src/data/case-library.mjs', 'src/data/site-config.json',
                     'src/data/article-summaries.json', 'src/data/verified-offline-events.json',
@@ -35,6 +42,8 @@ class UniImportTest(unittest.TestCase):
             target = self.source / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(REPO / 'uni-app' / rel, target)
+        for name in PUBLIC_DATA:
+            shutil.copyfile(REPO / 'uni-app/src/data' / name, self.source / 'src/data' / name)
         for rel in ('src/pages', 'src/components', 'src/static'):
             (self.source / rel).mkdir(parents=True, exist_ok=True)
         document = self.source / APPROVED
@@ -58,6 +67,34 @@ class UniImportTest(unittest.TestCase):
         for rel in MEDIA:
             self.assertEqual((self.release / 'uni-app' / rel).read_bytes(), (self.source / rel).read_bytes())
 
+    def test_includes_app_data_but_excludes_private_snapshots(self):
+        private_data = self.source / 'src/data/private-snapshot.json'
+        private_data.write_text('{"private": true}')
+        (self.source / 'src/data/feed.json').write_text('{"private": true}')
+        result = self.run_import()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in PUBLIC_DATA:
+            self.assertEqual((self.release / 'uni-app/src/data' / name).read_bytes(),
+                             (self.source / 'src/data' / name).read_bytes(), name)
+        self.assertFalse((self.release / 'uni-app/src/data/private-snapshot.json').exists())
+        self.assertNotIn('private', (self.release / 'uni-app/src/data/feed.json').read_text())
+
+    def test_includes_only_approved_admin_page(self):
+        (self.source / 'src/admin/private.json').write_text('{"private":true}')
+        result = self.run_import()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.release / 'uni-app/src/admin/stats.vue').read_bytes(),
+                         (self.source / 'src/admin/stats.vue').read_bytes())
+        self.assertFalse((self.release / 'uni-app/src/admin/private.json').exists())
+
+    def test_rejects_symlinked_app_data(self):
+        target = self.source / 'src/data/mini-ai.json'
+        target.unlink()
+        target.symlink_to(self.source / 'src/data/mini-zuo.json')
+        result = self.run_import()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('missing file or symlink', result.stderr)
+
     def test_rejects_changed_document(self):
         (self.source / APPROVED).write_bytes(b'not an approved PowerPoint')
         result = self.run_import()
@@ -78,6 +115,20 @@ class UniImportTest(unittest.TestCase):
 
     def test_rejects_unapproved_media_path(self):
         shutil.copyfile(self.source / next(iter(MEDIA)), self.source / 'src/static/other.pdf')
+        result = self.run_import()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('unexpected source file type', result.stderr)
+
+    def test_includes_only_named_public_metadata(self):
+        for rel in ('src/static/qr-generator.LICENSE.txt', 'src/static/learn/manifest.webmanifest'):
+            dst = self.source / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(REPO / 'uni-app' / rel, dst)
+        result = self.run_import()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.release / 'uni-app/src/static/learn/manifest.webmanifest').is_file())
+        shutil.rmtree(self.release / 'uni-app')
+        (self.source / 'src/static/unapproved.txt').write_text('private')
         result = self.run_import()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('unexpected source file type', result.stderr)

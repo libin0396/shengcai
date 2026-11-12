@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script src="../site-mode.js"></script>
+<link rel="stylesheet" href="../tutorial-mode.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>学 AI · AI 教程站</title>
+<meta name="description" content="六个单元，按顺序学会用 AI：认识 AI、表达需求、处理文字与资料、制作图片与声音、制作视频、完成综合作品。">
+<meta name="theme-color" content="#F3F4F6">
+<link rel="stylesheet" href="ai-play.css">
+<link rel="stylesheet" href="ai-nav.css">
+<style>
+/* 目录页 */
+.cast{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:18px;padding:12px 14px}
+.cast .faces{display:flex;flex:none}
+.cast img{width:42px;height:42px;border-radius:50%;border:3px solid var(--surface);margin-left:-12px}
+.cast img:first-child{margin-left:0}
+.cast p{margin:0;font-size:14px;line-height:1.5;color:var(--ink2)}
+.resume{background:var(--surface);border-radius:22px;padding:14px 16px 16px;box-shadow:0 14px 34px -24px var(--shadow)}
+.resume .k{font-size:12px;font-weight:800;color:var(--blue)}
+.resume h2{margin:4px 0 12px;font-size:20px;font-weight:900}
+.unit{background:var(--surface);border-radius:18px;padding:14px 16px 4px}
+.unit-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.unit-head h2{margin:0;font-size:18px;font-weight:900;display:inline}
+.unit-head .lv{display:inline-block;font-size:11px;font-weight:800;color:var(--blue);background:var(--blue-soft);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:3px}
+.unit-head .count{flex:none;font-size:12px;font-weight:800;color:var(--ink2);padding-top:3px}
+.unit-head.got .count{color:var(--on-yellow);background:var(--yellow);border-radius:8px;padding:2px 8px}
+.unit .sub{margin-top:2px}
+.item{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink);text-align:left;padding:8px 0}
+.unit .item:first-of-type{margin-top:10px}
+.item .n{flex:none;width:28px;height:28px;border-radius:9px;background:var(--blue-soft);color:var(--blue);font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.item.done .n{background:var(--yellow);color:var(--on-yellow)}
+.item .t{flex:1;min-width:0}.item .t b{display:block;font-size:16px;font-weight:800}.item .t small{display:block;font-size:12px;font-weight:700;color:var(--ink2)}
+.item .w{flex:none;font-size:13px;font-weight:800;color:var(--ink2)}
+/* 跟着做 · 真实教程 */
+.proj-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px;padding:10px 0 4px;border-top:1px dashed var(--line)}
+.proj-head b{font-size:14px;font-weight:900}.proj-head small{font-size:12px;font-weight:700;color:var(--ink2)}
+.proj{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;border:0;background:transparent;color:var(--ink);text-align:left;padding:6px 0}
+.proj .pcover{flex:none;width:56px;height:56px;border-radius:12px;overflow:hidden;background:var(--bg)}
+.proj .pcover img{display:block;width:100%;height:100%;object-fit:cover}
+.proj:not(:has(.pcover:not([hidden])))::before{content:"";flex:none;width:56px;height:56px;border-radius:12px;background:var(--blue-soft)}
+.proj .t{flex:1;min-width:0}.proj .t b{display:block;font-size:15px;font-weight:800}.proj .t small{display:block;font-size:12px;font-weight:700;color:var(--ink2)}
+.proj .w{flex:none;font-size:13px;font-weight:800;color:var(--blue)}
+.proj.done .w{color:var(--on-yellow);background:var(--yellow);border-radius:8px;padding:2px 8px}
+</style>
+</head>
+<body>
+<main class="app">
+  <section class="view" id="home">
+    <div>
+      <div class="sub" id="sum">学 AI</div>
+      <h1>学 AI</h1>
+    </div>
+    <div class="cast">
+      <div class="faces" id="castFaces"></div>
+      <p>小A 和小林、小圆、老周陪你学。按顺序一步步来，每节 3～5 分钟。</p>
+    </div>
+    <div class="resume" id="resume" hidden>
+      <div class="k" id="rUnit"></div>
+      <h2 id="rTitle"></h2>
+      <button class="btn" id="rGo" type="button">继续学</button>
+    </div>
+    <div class="view" id="units"></div>
+    <p class="foot" id="demoNote">课里小A 的回答目前是示意，上线前会换成实测结果。</p>
+  </section>
+
+  <section class="view" id="lesson" hidden>
+    <div class="top">
+      <button class="back" id="back" type="button" aria-label="回到目录"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div style="flex:1;min-width:0">
+        <div class="sub" id="lUnit"></div>
+        <h1 id="lTitle" style="font-size:24px"></h1>
+      </div>
+    </div>
+    <div class="prog" id="prog" role="img" aria-label="这节课的进度"></div>
+    <div class="narr" id="narr" aria-live="polite"></div>
+    <div class="stage ai-flat" id="stage">
+      <div class="row you">
+        <div class="who"><div class="char"><img id="personImg" src="" alt="" width="88" height="88"></div><small id="personName"></small></div>
+        <div class="bubble" id="youBubble" hidden><span id="youText"></span></div>
+      </div>
+      <div class="row ai">
+        <div class="who" id="aiWho">
+          <div class="marks" id="marks" hidden><b>?</b><b>?</b><b>?</b></div>
+          <div class="char" id="aiChar"><img src="" alt="" width="88" height="88"></div>
+          <small>小A</small>
+        </div>
+        <div class="bubble" id="aiBubble" hidden><span id="aiArt"></span><span id="aiText"></span></div>
+      </div>
+      <div class="demo" id="demo" hidden>示意回答，上线前换成实测结果</div>
+    </div>
+    <div class="panel" id="panel"></div>
+    <button class="replay" id="replay" type="button">重看这一幕</button>
+  </section>
+</main>
+<script src="../tracking.js"></script>
+<script src="ai-nav.js"></script>
+<script src="ai-play.js"></script>
+<script src="ai-art.js"></script>
+<script src="guides-data.js"></script>
+<script src="guide-covers.js"></script>
+<script src="xue-ai-data.js"></script>
+<script src="zuo-data.js"></script>
+<script src="xue-ai.js"></script>
+</body>
+</html>

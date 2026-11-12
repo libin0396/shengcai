@@ -4,47 +4,96 @@
     <view class="content">
       <view class="title">我的</view>
       <view class="intro">学习记录保存在当前设备</view>
+      <view class="ai-lv"><AiLevelCard :xp="ai.xp" :streak="aiStreak" :plays="aiPlays" :lessons="aiLessons" :today-text="aiToday" /></view>
+      <view class="ai-go"><view class="ai-go-b" hover-class="press" @tap="openDaily">{{aiTodayDone ? '今天已玩 · 再看看每日 AI' : '去玩今天的每日 AI'}}</view><view class="ai-go-b soft" hover-class="press" @tap="openLearning">去学 AI</view></view>
+      <view class="section-title">学 AI 徽章<text class="section-note">已获得 {{badgeCount}} / {{badges.length}} 枚</text></view>
+      <view class="badges">
+        <view v-for="b in badges" :key="b.id" class="bdg" :class="{got: b.got}">
+          <view class="bdg-ic"><view class="bdg-s1" /><view class="bdg-s2" /><view class="bdg-s3" /></view>
+          <text class="bdg-n">{{b.name}}</text><text class="bdg-d">{{b.got ? '已获得' : b.detail}}</text>
+        </view>
+      </view>
       <view class="section-title">继续学习</view>
       <view v-if="recent.length" class="list">
-        <view v-for="item in recent" :key="item.id" class="row" @tap="openResume(item.id)">
+        <view v-for="item in visibleRecent" :key="item.id" class="row" @tap="openResume(item.id)">
           <image v-if="item.cover" class="cover" :src="item.cover" mode="aspectFill" />
           <view class="copy"><text class="name">{{item.title}}</text><text class="meta">已完成 {{item.done}} / {{item.total}} 步</text><text class="action">继续学习 →</text></view>
         </view>
+        <button v-if="recent.length>1" class="expand" @tap="showAllRecent=!showAllRecent">{{showAllRecent?'收起学习记录':'查看更多学习记录（'+recent.length+'）'}}</button>
       </view>
       <view v-else class="empty"><text class="empty-title">从一件小事开始</text><text class="empty-text">完成的步骤会记录在这里，方便下次接着做。</text><button class="primary" @tap="openGuides">看看有哪些教程</button></view>
+      <view class="potential" @tap="openPotential">
+        <view class="potential-mark">✦</view><view class="potential-copy"><text class="potential-title">AI 潜力卡</text><text class="potential-desc">{{potential ? potential.card.name+' · '+potential.stage+' 级' : '做个小测试，找到你的 AI 学习方向'}}</text><text class="potential-link">{{potential?'查看我的潜力卡':'去测一测'}} →</text></view>
+      </view>
       <view class="section-title">我的收藏</view>
       <view v-if="favorites.length" class="list">
+        <view class="row collection-row" @tap="showFavorites=!showFavorites"><view class="copy"><text class="name">已收藏 {{favorites.length}} 篇教程</text><text class="meta">{{showFavorites?'收起收藏':'展开查看收藏'}}</text></view><text class="action">{{showFavorites?'收起':'查看'}} ›</text></view>
+        <template v-if="showFavorites">
         <view v-for="item in favorites" :key="item.id" class="row" @tap="open(item.id)">
           <image v-if="item.cover" class="cover" :src="item.cover" mode="aspectFill" />
           <view class="copy"><text class="name">{{item.title}}</text><text class="action">查看教程 →</text></view>
         </view>
+        </template>
       </view>
       <view v-else class="empty"><text class="empty-title">还没有收藏教程</text><text class="empty-text">看到想以后再做的内容，可以在教程里收藏。</text></view>
       <view class="section-title">帮助与反馈</view>
-      <view class="list"><view class="row feedback-row" @tap="openFeedback"><view class="copy"><text class="name">意见反馈</text><text class="meta">告诉我们哪些地方需要改进</text></view><text class="action">前往 →</text></view></view>
-      <view class="notice">记录和收藏保存在当前设备，不会自动与网站同步。</view>
+      <view class="list"><view class="row feedback-row" @tap="openFeedback"><view class="copy"><text class="name">提交想解决的问题</text><text class="meta">没找到合适内容？告诉我们你希望用 AI 做什么</text></view><text class="action">前往 →</text></view></view>
+      <view class="notice">等级、徽章、记录和收藏保存在当前设备，不会自动与网站同步。</view>
     </view>
     <MiniNav active="saved" />
   </view>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import MiniNav from '../../components/MiniNav.vue';
+import AiLevelCard from '../../components/AiLevelCard.vue';
+import mini from '../../data/mini-ai.json';
+import { loadStore as loadAi, streak as aiStreakOf, issueByDate, unitState, shortName, ymd } from '../../data/ai-core.js';
 import guides from '../../data/mini-guides.json';
-const recent=ref([]),favorites=ref([]);
+import zuoData from '../../data/mini-zuo.json';
+import { resolvePotentialProgress } from '../../data/mini-potential.js';
+const recent=ref([]),favorites=ref([]),potential=ref(null),showAllRecent=ref(false),showFavorites=ref(false);
+const visibleRecent=computed(()=>showAllRecent.value?recent.value:recent.value.slice(0,1));
 let top=0;try{top=Number((typeof wx!=='undefined'&&typeof wx.getWindowInfo==='function'?wx.getWindowInfo():uni.getSystemInfoSync()).statusBarHeight)||0}catch{}
 function read(key,fallback){try{return uni.getStorageSync(key)||fallback}catch{return fallback}}
+// AI 等级卡和学 AI 徽章（记录在 ainpe_mini_ai_level_v1，规则见 data/ai-core.js）
+const ai=ref(loadAi(uni)),aiProgress=ref({}),aiDay=ref(ymd(new Date()));
+const aiStreak=computed(()=>aiStreakOf(ai.value,mini.meiri.ISSUES,aiDay.value));
+const aiPlays=computed(()=>Object.keys(ai.value.daily).length);
+const aiLessons=computed(()=>Object.keys(ai.value.lessons).length);
+const aiTodayIssue=computed(()=>issueByDate(mini.meiri.ISSUES,aiDay.value));
+const aiTodayDone=computed(()=>!!(aiTodayIssue.value&&ai.value.daily[aiTodayIssue.value.id]));
+const aiToday=computed(()=>aiTodayIssue.value?(aiTodayDone.value?'今天的每日 AI 已完成':'今天的每日 AI 还没玩'):'今天这期还在准备');
+const badges=computed(()=>mini.xue.UNITS.map(u=>{const st=unitState(u,ai.value,guides,aiProgress.value);return {id:u.id,name:shortName(u),got:st.badge,detail:st.lessons+' / '+st.total+' 节'+((u.needProjects&&st.lessons===st.total&&!st.badge)?' · 差 1 件作品':'')}}));
+const badgeCount=computed(()=>badges.value.filter(b=>b.got).length);
+function openDaily(){uni.redirectTo({url:'/pages/learn/daily'})}
+function openLearning(){uni.redirectTo({url:'/pages/learn/learning'})}
 onShow(()=>{
   const progress=read('ainpe_mini_learning_v1',{}), saved=read('ainpe_mini_favorites_v1',[]);
+  ai.value=loadAi(uni);aiProgress.value=progress;aiDay.value=ymd(new Date());
   recent.value=guides.flatMap(g=>{const p=progress&&typeof progress==='object'?progress[g.id]:null;const total=(g.steps||[]).length;const done=Array.isArray(p?.completedSteps)?new Set(p.completedSteps.filter(i=>Number.isInteger(i)&&i>=0&&i<total)).size:0;return done?[{...g,done,total,updatedAt:p.updatedAt||''}]:[]}).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
   favorites.value=guides.filter(g=>Array.isArray(saved)&&saved.includes(g.id));
+  const card=read('ainpe_mini_potential_v1',{});
+  try{const result=resolvePotentialProgress(card?.answers,progress,guides);potential.value=result.status==='complete'?result:null}catch{potential.value=null}
 });
-function open(id){uni.navigateTo({url:'/pages/learn/guide?id='+encodeURIComponent(id)})}
+function open(id){uni.navigateTo({url:(zuoData.SCRIPTS[id]?'/pages/learn/zuo?id=':'/pages/learn/guide?id=')+encodeURIComponent(id)})}
 function openResume(id){uni.navigateTo({url:'/pages/learn/guide?id='+encodeURIComponent(id)+'&resume=1'})}
 function openFeedback(){uni.navigateTo({url:'/pages/learn/find?feedback=1'})}
+function openPotential(){uni.navigateTo({url:'/pages/learn/potential'})}
 function openGuides(){uni.redirectTo({url:'/pages/learn/guides'})}
 </script>
 <style scoped>
-.mine{min-height:100vh;box-sizing:border-box;background:#f3f4f6;color:#17202e;padding-bottom:calc(90px + env(safe-area-inset-bottom))}.head{height:48px;display:flex;align-items:center;gap:9px;padding:0 110px 0 16px;background:#fff;font-size:16px;font-weight:800}.brand-mark{width:30px;height:30px;border-radius:8px;background:#ffc83d;display:flex;align-items:center;justify-content:center;font-size:22px;color:#112d25}.content{padding:24px 16px}.title{font-size:27px;font-weight:800}.intro{font-size:13px;color:#758091;margin-top:5px}.section-title{font-size:19px;font-weight:800;margin:28px 0 12px}.list{background:#fff;border-radius:14px;overflow:hidden}.row{display:flex;gap:12px;padding:14px;border-bottom:1px solid #edf0f3}.row:last-child{border-bottom:0}.feedback-row{align-items:center}.cover{width:74px;height:74px;flex:none;border-radius:10px;background:#eef1f5}.copy{min-width:0;display:flex;flex-direction:column;gap:6px}.feedback-row .copy{flex:1}.name{font-weight:750;font-size:15px;line-height:1.4}.meta{color:#758091;font-size:12px}.action{color:#2849e9;font-size:13px;font-weight:700}.empty{background:#fff;border-radius:14px;padding:18px}.empty-title,.empty-text{display:block}.empty-title{font-size:15px;font-weight:750}.empty-text{font-size:13px;color:#758091;line-height:1.6;margin-top:6px}.primary{display:inline-block;margin:14px 0 0;background:#2849e9;color:#fff;font-size:13px;line-height:38px;padding:0 14px;border-radius:9px}.notice{color:#758091;font-size:12px;line-height:1.6;margin-top:24px}
+.mine{min-height:100vh;box-sizing:border-box;background:#f3f4f6;color:#17202e;padding-bottom:calc(90px + env(safe-area-inset-bottom))}.head{height:48px;display:flex;align-items:center;gap:9px;padding:0 110px 0 16px;background:#fff;font-size:16px;font-weight:800}.brand-mark{width:30px;height:30px;border-radius:8px;background:#ffc83d;display:flex;align-items:center;justify-content:center;font-size:22px;color:#112d25}.content{padding:24px 16px}.title{font-size:27px;font-weight:800}.intro{font-size:13px;color:#758091;margin-top:5px}.section-title{font-size:19px;font-weight:800;margin:28px 0 12px}.list{background:#fff;border-radius:14px;overflow:hidden}.row{display:flex;gap:12px;padding:14px;border-bottom:1px solid #edf0f3}.row:last-child{border-bottom:0}.feedback-row,.collection-row{align-items:center}.cover{width:74px;height:74px;flex:none;border-radius:10px;background:#eef1f5}.copy{min-width:0;display:flex;flex-direction:column;gap:6px}.feedback-row .copy,.collection-row .copy{flex:1}.name{font-weight:750;font-size:15px;line-height:1.4}.meta{color:#758091;font-size:12px}.action{color:#2849e9;font-size:13px;font-weight:700}.empty{background:#fff;border-radius:14px;padding:18px}.empty-title,.empty-text{display:block}.empty-title{font-size:15px;font-weight:750}.empty-text{font-size:13px;color:#758091;line-height:1.6;margin-top:6px}.primary{display:inline-block;margin:14px 0 0;background:#2849e9;color:#fff;font-size:13px;line-height:38px;padding:0 14px;border-radius:9px}.notice{color:#758091;font-size:12px;line-height:1.6;margin-top:24px}.expand{width:100%;margin:0;background:#fff;color:#2849e9;font-size:12px;line-height:42px;border-radius:0}.expand::after{border:0}.potential{display:flex;gap:14px;align-items:center;margin-top:24px;padding:18px;background:#eaf0ff;border:1px solid #dce6ff;border-radius:14px}.potential-mark{display:flex;align-items:center;justify-content:center;width:46px;height:46px;flex:none;border-radius:12px;background:#2849e9;color:#fff;font-size:24px}.potential-copy{display:flex;min-width:0;flex-direction:column;gap:5px}.potential-title{font-size:17px;font-weight:800;color:#172d61}.potential-desc{font-size:12px;color:#647791;line-height:1.5}.potential-link{font-size:13px;font-weight:700;color:#2849e9}
+.ai-lv{margin-top:16px}
+.ai-go{display:flex;gap:10px;margin-top:10px}.ai-go-b{flex:1;min-height:44px;line-height:44px;text-align:center;border-radius:12px;background:#2849e9;color:#fff;font-size:14px;font-weight:800}.ai-go-b.soft{background:#eaf0ff;color:#2849e9}
+.section-note{font-size:12px;font-weight:700;color:#758091;margin-left:8px}
+.badges{display:flex;flex-wrap:wrap;gap:8px}
+.bdg{width:calc((100% - 16px) / 3);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border-radius:14px;padding:12px 6px;text-align:center}
+.bdg-ic{width:44px;height:44px;border-radius:13px;background:#e6e8ec;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:10px;box-sizing:border-box}
+.bdg-s1,.bdg-s2,.bdg-s3{width:7px;border-radius:2px;background:#9aa0ac}.bdg-s1{height:8px}.bdg-s2{height:14px}.bdg-s3{height:20px}
+.bdg.got .bdg-ic{background:#ffc83d;animation:bdgPop .5s ease both}.bdg.got .bdg-s1,.bdg.got .bdg-s2,.bdg.got .bdg-s3{background:#161a23}
+.bdg-n{font-size:13px;font-weight:900;line-height:1.3}.bdg-d{font-size:11px;font-weight:700;color:#758091}
+.press{opacity:.75}
+@keyframes bdgPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 </style>
