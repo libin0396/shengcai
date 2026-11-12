@@ -16,7 +16,7 @@ MEDIA = {
 }
 PUBLIC_DATA = (
     'ai-core.js', 'ai-runner.js', 'case-display.mjs', 'case-studies.js',
-    'game-matching.js', 'learn-topics.js', 'mini-ai.json', 'mini-account.js', 'mini-welcome.js', 'mini-aids.js',
+    'game-matching.js', 'learn-topics.js', 'mini-ai.json', 'mini-account.js', 'mini-avatar.js', 'mini-welcome.js', 'mini-aids.js',
     'mini-course-practice.json', 'mini-guides.json', 'mini-potential.js',
     'mini-search-data.js', 'mini-zuo.json', 'offer.js', 'personas.json',
     'track.js', 'zuo-core.js',

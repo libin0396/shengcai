@@ -41,6 +41,7 @@ uni-app/src/data/*
 !uni-app/src/data/ai-runner.js
 !uni-app/src/data/mini-ai.json
 !uni-app/src/data/mini-account.js
+!uni-app/src/data/mini-avatar.js
 !uni-app/src/data/mini-welcome.js
 !uni-app/src/data/mini-zuo.json
 !uni-app/src/data/zuo-core.js

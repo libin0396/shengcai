@@ -1,5 +1,6 @@
 // 微信小程序账号：仅在用户主动登录后同步学习记录；不上传教程中输入的内容。
 import { ref } from 'vue';
+import { uploadMiniAvatar } from './mini-avatar.js';
 const BASE = 'https://ainpe.aisen.xin';
 const SESSION = 'ainpe_mini_account_session_v1', BASELINE = 'ainpe_mini_account_baseline_v1', OWNER = 'ainpe_mini_account_owner_v1';
 const DEVICE_KEYS = ['ainpe_mini_learning_v1','ainpe_mini_favorites_v1','ainpe_mini_ai_level_v1','ainpe_mini_potential_v1','ainpe_mini_zuo_v1','ainpe_mini_book_practice_v1','ainpe_mini_course_practice_v1'];
@@ -70,7 +71,7 @@ export async function syncAccount() {
 }
 export function scheduleSync() { if(!token)return;clearTimeout(timer);timer=setTimeout(syncAccount,1000); }
 export async function updateNickname(nickname) { const name=Array.from(String(nickname||'').trim()).slice(0,30).join(''),e=epoch,auth=token;if(!auth||!name)return false;try{const p=await request('/api/mini-user/profile','PUT',{nickname:name},auth);if(e!==epoch)return false;updateProfile(p.profile||p);return true}catch{return false} }
-export function updateAvatar(filePath) { return new Promise(resolve=>{ const auth=token,e=epoch;if(!auth||!filePath)return resolve(false);uni.uploadFile({url:BASE+'/api/mini-user/avatar',filePath,name:'image',header:{Authorization:'Bearer '+auth},success:r=>{if(e===epoch&&auth===token&&r.statusCode>=200&&r.statusCode<300){avatar();resolve(true)}else resolve(false)},fail:()=>resolve(false)}); }); }
+export function updateAvatar(filePath) { const auth=token,e=epoch;return uploadMiniAvatar({platform:uni,wxApi:typeof wx==='undefined'?null:wx,url:BASE+'/api/mini-user/avatar',auth,filePath,isCurrent:()=>e===epoch&&auth===token,onSaved:path=>{account.value={...account.value,avatar:path};try{avatar()}catch{}}}); }
 export async function logoutAccount(){conflictView.value=null;accountBackups.value=[];clearTimeout(timer);const auth=token;epoch++;token='';accountId='';revision=null;baseline=empty();try{uni.removeStorageSync(SESSION)}catch{} account.value={loggedIn:false,nickname:'',avatar:'',status:'已退出，记录保存在本机'};if(auth)try{await request('/api/mini-auth/logout','POST',{},auth)}catch{}}
 
 // 一旦两个设备的数据有冲突，不擅自计算经验；由用户比较后选择。
