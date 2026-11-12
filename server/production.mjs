@@ -78,10 +78,16 @@ function videoRange(header, size) {
   return {start:first, end:last === null ? size - 1 : Math.min(last, size - 1)};
 }
 
-export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null} = {}) {
+export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = path.join(root, 'dist', 'client'), reservation = null, statsPasswordFile = null, miniUser = null} = {}) {
   const assetsRoot = await realpath(staticRoot);
   const feed = createFeedMiddleware({root});
-  let reservations=null,tracking=null,board=null,stats=null,feedback=null,miniFeedback=null;
+  let reservations=null,tracking=null,board=null,stats=null,feedback=null,miniFeedback=null,miniUserApi=null;
+  if(miniUser){
+    const dbParent=await realpath(path.dirname(miniUser.dbPath));
+    if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('mini_user_db_inside_static_root');
+    const {createProductionMiniUserApi}=await import('./production-mini-user.mjs');
+    miniUserApi=createProductionMiniUserApi({root,...miniUser});
+  }
   if(reservation){
     const dbParent=await realpath(path.dirname(reservation.dbPath));
     if(dbParent===assetsRoot || inside(assetsRoot,dbParent))throw new Error('reservation_db_inside_static_root');
@@ -216,13 +222,14 @@ export async function createProductionServer({root = DEFAULT_ROOT, staticRoot = 
     const afterMiniFeedback = () => { if(tracking)tracking.middleware(req,res,afterTracking);else afterTracking(); };
     const afterStats = () => { if(miniFeedback)miniFeedback.middleware(req,res,afterMiniFeedback);else afterMiniFeedback(); };
     const afterReservation = () => { if(stats)stats.middleware(req,res,afterStats);else afterStats(); };
-    if(reservations){reservations.middleware(req,res,afterReservation);return;}
+    const afterUser=()=>{if(reservations){reservations.middleware(req,res,afterReservation);return;}
     void feed(req, res, fallback).catch(() => {
       if (!res.headersSent) send(res, 500, 'Internal Server Error', req.method);
       else res.destroy();
-    });
+    });};
+    if(miniUserApi)miniUserApi.middleware(req,res,afterUser);else afterUser();
   });
-  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();feedback?.close();miniFeedback?.close();});
+  server.once('close',()=>{reservations?.close();tracking?.close();board?.close();stats?.close();feedback?.close();miniFeedback?.close();miniUserApi?.close();});
   return server;
 }
 
@@ -241,7 +248,8 @@ if (isMainModule()) {
   } else {
     try {
       const reservation = process.env.AINPE_RESERVATION_DB && process.env.AINPE_PUBLIC_ORIGIN ? {dbPath:process.env.AINPE_RESERVATION_DB,publicOrigin:process.env.AINPE_PUBLIC_ORIGIN} : null;
-      const server = await createProductionServer({reservation,statsPasswordFile:process.env.AINPE_STATS_PASSWORD_FILE||null});
+      const miniUser = process.env.AINPE_MINI_USER_DB && process.env.AINPE_PUBLIC_ORIGIN && process.env.AINPE_WECHAT_SECRET_FILE ? {dbPath:process.env.AINPE_MINI_USER_DB,publicOrigin:process.env.AINPE_PUBLIC_ORIGIN,appId:'wx64bff577b112626f',secretFile:process.env.AINPE_WECHAT_SECRET_FILE} : null;
+      const server = await createProductionServer({reservation,statsPasswordFile:process.env.AINPE_STATS_PASSWORD_FILE||null,miniUser});
       server.on('error', () => { console.error('Unable to start AINPE server.'); process.exitCode = 1; });
       server.listen(port, host, () => console.log(`AINPE listening on ${host}:${port}`));
     } catch {
