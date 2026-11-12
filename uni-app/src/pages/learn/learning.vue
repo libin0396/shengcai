@@ -2,9 +2,20 @@
 <!-- #ifdef MP-WEIXIN -->
 
   <view class="page">
-    <view class="intro">
-      <view class="eyebrow">{{summary}}</view>
-      <view class="title">学 AI</view>
+    <!-- 页头：标题、徽章数，和一条按单元分组的进度（一格一节课，点一组跳到那个单元） -->
+    <view class="xhead">
+      <view class="xh-row">
+        <text class="title">学 AI</text>
+        <view class="xh-badge" :class="{ got: badgeCount > 0 }"><image class="xh-bi" :src="badgeCount > 0 ? BADGE_MINI.got : BADGE_MINI.off" mode="aspectFit" /><text>徽章 {{ badgeCount }} / {{ units.length }}</text></view>
+      </view>
+      <text class="xh-sub">从认识 AI 到做出作品，一共 6 个单元。</text>
+      <view class="xh-path">
+        <view v-for="(u, ui) in units" :key="u.id" class="xh-u" :class="{ got: u.badge, now: resume && resume.unitId === u.id }" :style="{ flexGrow: u.lessons.length }" @tap="jump(u.id)">
+          <view class="xh-ticks"><view v-for="l in u.lessons" :key="l.id" class="xh-t" :class="{ on: l.done, cur: resume && resume.id === l.id }" /></view>
+          <text class="xh-n">{{ ui + 1 }}</text>
+        </view>
+      </view>
+      <text class="xh-meta">{{ meta }}</text>
     </view>
     <view class="cast">
       <view class="faces"><image v-for="k in castKeys" :key="k" class="face" :src="roles[k].src" mode="aspectFill" /></view>
@@ -16,9 +27,10 @@
       <view class="btn">{{resume.go}}</view>
     </view>
 
-    <view v-for="u in units" :key="u.id" class="unit">
+    <view v-for="u in units" :id="'unit-' + u.id" :key="u.id" class="unit">
       <button class="unit-toggle" hover-class="press" :aria-expanded="isUnitOpen(u.id)" :aria-label="u.short + (isUnitOpen(u.id) ? '，已展开，点击收起' : '，已收起，点击展开')" @tap="toggleUnit(u.id)">
         <view class="unit-head">
+          <image class="u-bdg" :src="u.badgeImg" mode="aspectFit" />
           <view class="unit-name"><text class="lv-tag">{{u.level}}</text><text class="unit-t">{{u.short}}</text></view>
           <view class="unit-meta"><text class="count" :class="{got:u.badge}">{{u.badge ? '徽章 · ' : ''}}{{u.lessonsDone}} / {{u.total}}</text><text class="unit-toggle-hint">{{isUnitOpen(u.id) ? '收起 ▴' : '展开 ▾'}}</text></view>
         </view>
@@ -93,13 +105,13 @@
 // #ifdef MP-WEIXIN
 
 // 学 AI：六个单元按顺序学，每节是一段动画互动课（pages/learn/lesson）；学完的单元可以「跟着做」真实教程（pages/learn/guide）。
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import MiniNav from '../../components/MiniNav.vue';
 import mini from '../../data/mini-ai.json';
 import guides from '../../data/mini-guides.json';
 import zuo from '../../data/mini-zuo.json';
-import { ROLES, LEARNING_KEY, loadStore, unitState, resumeLesson, unitOf, shortName, unitNo } from '../../data/ai-core.js';
+import { ROLES, LEARNING_KEY, BADGE_MINI, loadStore, unitState, badgeImage, resumeLesson, unitOf, shortName, unitNo } from '../../data/ai-core.js';
 
 const X = mini.xue;
 const roles = ROLES;
@@ -117,18 +129,20 @@ const units = computed(() => X.UNITS.map((u) => {
   const st = unitState(u, store.value, guides, progress.value);
   return {
     id: u.id, level: u.level, short: shortName(u), no: unitNo(u), sub: u.sub, needProjects: u.needProjects || 0,
-    badge: st.badge, lessonsDone: st.lessons, total: st.total, projects: st.projects,
+    badge: st.badge, badgeImg: badgeImage(u, st), lessonsDone: st.lessons, total: st.total, projects: st.projects,
     lessons: u.lessons.map((id) => { const L = X.LESSONS[id]; return { id, title: L.title, mins: L.mins, who: ROLES[L.who].name, done: !!store.value.lessons[id] }; }),
   };
 }));
-const summary = computed(() => {
+const badgeCount = computed(() => units.value.filter((u) => u.badge).length);
+const meta = computed(() => {
   const done = X.ORDER.filter((id) => store.value.lessons[id]).length;
-  return '已学完 ' + done + ' / ' + X.ORDER.length + ' 节 · 徽章 ' + units.value.filter((u) => u.badge).length + ' 枚';
+  return resume.value ? '已学完 ' + done + ' / ' + X.ORDER.length + ' 节 · 现在在「' + resume.value.unitName + '」' : X.ORDER.length + ' 节全部学完了';
 });
+function jump(id) { if (!isUnitOpen(id)) openUnits.value = [...openUnits.value, id]; nextTick(() => uni.pageScrollTo({ selector: '#unit-' + id, duration: 300 })); }
 const resume = computed(() => {
   const id = resumeLesson(X.ORDER, store.value); if (!id) return null;
   const u = unitOf(X.UNITS, id), started = X.ORDER.some((x) => store.value.lessons[x]);
-  return { id, title: X.LESSONS[id].title, k: (started ? '接着学 · ' : '从这里开始 · ') + unitNo(u) + '第 ' + (u.lessons.indexOf(id) + 1) + ' 节', go: started ? '继续学' : '开始学' };
+  return { id, unitId: u.id, unitName: shortName(u), title: X.LESSONS[id].title, k: (started ? '接着学 · ' : '从这里开始 · ') + unitNo(u) + '第 ' + (u.lessons.indexOf(id) + 1) + ' 节', go: started ? '继续学' : '开始学' };
 });
 function openLesson(id) { uni.navigateTo({ url: '/pages/learn/lesson?id=' + encodeURIComponent(id) }); }
 // 有角色剧本的教程打开「跟着做 · 动画互动版」，其余打开图文教程
@@ -184,7 +198,29 @@ function openGuide(id) { uni.navigateTo({ url: (zuo.SCRIPTS[id] ? '/pages/learn/
 /* #ifdef MP-WEIXIN */
 
 .page{min-height:100vh;box-sizing:border-box;padding:24px 16px calc(96px + env(safe-area-inset-bottom));background:#f3f4f6;color:#161a23}
-.eyebrow{font-size:13px;font-weight:700;color:#5f6675}.title{font-size:28px;font-weight:900;margin-top:2px}
+.title{font-size:28px;font-weight:900;line-height:1.2}
+.xhead{display:flex;flex-direction:column;gap:8px}
+.xh-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.xh-badge{flex:none;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#5f6675;background:#fff;border-radius:999px;padding:5px 12px 5px 7px}
+.xh-bi{flex:none;width:22px;height:22px}
+.xh-badge.got{color:#161a23}
+.xh-badge.got .xh-bi{animation:pop .45s ease both}
+.xh-sub{font-size:14px;line-height:1.5;color:#5f6675;margin-top:-4px}
+.xh-path{display:flex;gap:8px;margin-top:2px}
+.xh-u{flex-basis:0;min-width:0;display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.xh-ticks{display:flex;gap:3px}
+.xh-t{flex:1;height:10px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 1px #e6e8ec;animation:tickin .45s ease both}
+.xh-t.on{background:#2b44e6;box-shadow:none}
+.xh-t.cur{box-shadow:inset 0 0 0 2px #2b44e6;animation:tickin .45s ease both,curring 1.8s ease-in-out .8s infinite}
+.xh-n{align-self:flex-start;font-size:11px;font-weight:800;line-height:1.5;color:#5f6675;padding:0 5px;margin-left:-5px;border-radius:6px}
+.xh-u.now .xh-n{color:#2b44e6}
+.xh-u.got .xh-n{background:#ffc83d;color:#161a23;margin-left:0}
+.xh-meta{font-size:13px;font-weight:700;color:#5f6675}
+@keyframes tickin{from{transform:scaleX(.2);opacity:0}to{transform:none;opacity:1}}
+@keyframes curring{0%,100%{box-shadow:inset 0 0 0 2px #2b44e6,0 0 0 0 #eceffe}50%{box-shadow:inset 0 0 0 2px #2b44e6,0 0 0 4px #eceffe}}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+.u-bdg{width:46px;height:46px;flex:none}.unit-head{align-items:center} .unit-name{flex:1}
 .cast{display:flex;align-items:center;gap:12px;margin-top:14px;background:#fff;border-radius:18px;padding:12px 14px}
 .faces{display:flex;flex:none}.face{width:40px;height:40px;border-radius:50%;border:3px solid #fff;margin-left:-12px}.face:first-child{margin-left:0}
 .cast-text{flex:1;font-size:13px;line-height:1.5;color:#5f6675}

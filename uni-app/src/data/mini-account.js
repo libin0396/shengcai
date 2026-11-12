@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { uploadMiniAvatar } from './mini-avatar.js';
 const BASE = 'https://ainpe.aisen.xin';
 const SESSION = 'ainpe_mini_account_session_v1', BASELINE = 'ainpe_mini_account_baseline_v1', OWNER = 'ainpe_mini_account_owner_v1';
-const DEVICE_KEYS = ['ainpe_mini_learning_v1','ainpe_mini_favorites_v1','ainpe_mini_ai_level_v1','ainpe_mini_potential_v1','ainpe_mini_zuo_v1','ainpe_mini_book_practice_v1','ainpe_mini_course_practice_v1'];
+const DEVICE_KEYS = ['ainpe_mini_learning_v1','ainpe_mini_favorites_v1','ainpe_mini_ai_level_v1','ainpe_mini_potential_v1','ainpe_mini_zuo_v1','ainpe_mini_book_practice_v1','ainpe_mini_course_practice_v1','ainpe_mini_badges_seen_v1'];
 const backupKey = id => 'ainpe_mini_account_backup_v1_' + id;
 const baselineKey = id => BASELINE + '_' + id;
 const pendingKey = id => 'ainpe_mini_account_pending_v1_' + id;

@@ -3,8 +3,7 @@
   'use strict';
   var P=window.AIPlay,X=window.AINPE_XUE||{UNITS:[],LESSONS:{},ORDER:[],PROJECT_PAGES:{}},M=window.AINPE_MEIRI||{ISSUES:[],XP:{today:10,makeup:5,streakBonus:5,streakFrom:3}};
   var $=P.$,el=P.el,R=P.ROLES,GUIDES=window.AINPE_GUIDES||[];
-  var TODAY=P.today();
-  var STEP_ICON='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h6v-5h6v-5h6"/></svg>';
+  var TODAY=P.today(),B=window.AINPE_BADGES;
 
   function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
   function byDate(d){return (M.ISSUES||[]).filter(function(x){return x.date===d})[0]||null}
@@ -35,7 +34,7 @@
   function unitBadge(u,store,made){
     var lessons=u.lessons.filter(function(id){return store.lessons[id]}).length;
     var doneProjects=(u.projects||[]).filter(function(id){return made[id]}).length;
-    return {lessons:lessons,total:u.lessons.length,got:lessons===u.lessons.length&&doneProjects>=(u.needProjects||0)};
+    return {lessons:lessons,total:u.lessons.length,made:doneProjects,got:lessons===u.lessons.length&&doneProjects>=(u.needProjects||0)};
   }
 
   function draw(){
@@ -55,15 +54,19 @@
     // 徽章
     var list=projects(),made={};
     list.forEach(function(p){var id=(p.href.match(/id=([a-z-]+)/)||[])[1]||p.href.split('.')[0];if(p.done)made[id]=true});
-    var box=$('#badges');box.innerHTML='';var got=0;
-    X.UNITS.forEach(function(u){
-      var b=unitBadge(u,store,made);if(b.got)got++;
-      var c=el('div','bdg'+(b.got?' got':''));var ic=el('span','ic');ic.innerHTML=STEP_ICON;c.appendChild(ic);
+    // 刚拿到、还没庆祝过的徽章（在别的页面拿到的，比如做完第 6 单元的作品）在这里弹出来，一枚接一枚
+    var box=$('#badges');box.innerHTML='';var got=0,fresh=0,seen=B.seen();
+    X.UNITS.forEach(function(u,ui){
+      var b=unitBadge(u,store,made),isNew=b.got&&!seen[u.id],sp=B.steps(u,b.lessons,b.made);if(b.got)got++;
+      var c=el('div','bdg'+(b.got?' got':'')+(isNew?' new':''));var ic=el('span','ic');
+      if(isNew){c.style.setProperty('--abg-d',(fresh*0.35)+'s');fresh++;B.markSeen(u.id)}
+      ic.innerHTML=B.svg(u.id,{got:b.got,done:sp.done,total:sp.total,no:ui+1,size:64,earn:isNew});c.appendChild(ic);
+      if(isNew)c.appendChild(el('i','nw','新'));
       c.appendChild(el('b','',u.name.replace(/^第 \d 单元 /,'')));
-      c.appendChild(el('small','',b.got?'已获得':(b.lessons+' / '+b.total+' 节'+((u.needProjects&&b.lessons===b.total)?' · 差 1 件作品':''))));
+      c.appendChild(el('small','',b.got?'已获得':(u.needProjects&&b.lessons===b.total)?'还差 1 件作品':b.lessons+' / '+b.total+' 节'));
       box.appendChild(c);
     });
-    $('#bdgSum').textContent='已获得 '+got+' / '+X.UNITS.length+' 枚';
+    $('#bdgSum').textContent='已获得 '+got+' / '+X.UNITS.length+' 枚'+(fresh?' · 新拿到 '+fresh+' 枚':'');
 
     // 学过的课：按课程顺序列出已学完的
     var lb=$('#lessons');lb.innerHTML='';

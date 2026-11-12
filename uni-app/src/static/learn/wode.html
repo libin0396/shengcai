@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#F3F4F6">
 <link rel="stylesheet" href="ai-play.css">
 <link rel="stylesheet" href="ai-nav.css">
+<link rel="stylesheet" href="ai-badges.css">
 <style>
 /* 布局：一列。最上面是 AI 等级卡（小A 在旁边打气），下面依次是徽章、学过的课、跟着做的作品、帮助与说明。 */
 .mine{display:flex;flex-direction:column;gap:14px}
@@ -31,11 +32,13 @@
 .blk-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .blk-h h2{margin:0;font-size:18px;font-weight:900}.blk-h small{font-size:12px;font-weight:700;color:var(--ink2)}
 .badges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
-.bdg{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:16px;padding:12px 6px;text-align:center}
-.bdg .ic{width:46px;height:46px;border-radius:14px;background:var(--line);color:var(--ink2);display:flex;align-items:center;justify-content:center}
+/* 徽章墙：没拿到的是白章 + 一圈进度，拿到的是金章；刚拿到、第一次来看的那枚会转着弹出来，角上标「新」 */
+.bdg{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--bg);border-radius:16px;padding:12px 6px 10px;text-align:center}
+.bdg .ic{display:flex;justify-content:center;margin-bottom:2px}
 .bdg b{font-size:13px;font-weight:900;line-height:1.3}.bdg small{font-size:11px;font-weight:700;color:var(--ink2)}
-.bdg.got .ic{background:var(--yellow);color:var(--on-yellow);animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
+.bdg.got:not(.new) .ic{animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
 .bdg.got:nth-child(2) .ic{animation-delay:.08s}.bdg.got:nth-child(3) .ic{animation-delay:.16s}.bdg.got:nth-child(4) .ic{animation-delay:.24s}.bdg.got:nth-child(5) .ic{animation-delay:.32s}.bdg.got:nth-child(6) .ic{animation-delay:.4s}
+.bdg .nw{position:absolute;top:8px;right:8px;font-style:normal;font-size:11px;font-weight:900;line-height:18px;color:var(--blue);background:var(--blue-soft);border-radius:7px;padding:0 6px;animation:pop .35s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--abg-d,0s) + .8s)}
 .list{display:flex;flex-direction:column;margin-top:6px}
 .li{display:flex;align-items:center;gap:12px;min-height:60px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink);padding:8px 0;background:transparent;border-left:0;border-right:0;border-bottom:0;width:100%;text-align:left;font:inherit}
 .li:first-child{border-top:0}
@@ -109,6 +112,7 @@
 <script src="../tracking.js"></script>
 <script src="ai-nav.js"></script>
 <script src="ai-play.js"></script>
+<script src="ai-badges.js"></script>
 <script src="guides-data.js"></script>
 <script src="xue-ai-data.js"></script>
 <script src="meiri-ai-data.js"></script>

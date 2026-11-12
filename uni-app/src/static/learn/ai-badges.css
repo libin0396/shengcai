@@ -1,0 +1,27 @@
+/* 学 AI 徽章（ai-badges.js 画的 SVG）。拿到的金色章在浅色、深色下都一样；没拿到的白章和进度圈跟着页面颜色走。 */
+:root{--abg-edge:#D9DCE2;--abg-mute:#A3A9B4}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--abg-edge:#3A4253;--abg-mute:#6E7688} }
+:root[data-theme="dark"]{--abg-edge:#3A4253;--abg-mute:#6E7688}
+
+.abg{display:block;flex:none;overflow:visible}
+.abg-off .abg-body{fill:var(--abg-fill,var(--surface));stroke:var(--abg-edge)}
+.abg-off .abg-dash{stroke:var(--line)}
+.abg-off .abg-ink{stroke:var(--abg-mute)}
+.abg-off .abg-f,.abg-off .abg-fill{fill:var(--abg-mute)}
+.abg-off .abg-pill{fill:var(--line)}
+.abg-off .abg-num{fill:var(--ink2)}
+.abg-got .abg-pill{fill:var(--blue)}
+.abg-got .abg-num{fill:var(--on-blue)}
+.abg-track{stroke:var(--line)}
+.abg-done{stroke:var(--blue)}
+
+/* 拿到时：章转着弹出来，闪一道光，四周冒六颗小星星；只放一次。--abg-d 可以让几枚依次出来 */
+.abg-earn .abg-seal{transform-box:fill-box;transform-origin:center;animation:abgIn .8s cubic-bezier(.3,1.5,.5,1) var(--abg-d,0s) both}
+.abg-earn .abg-tab{transform-box:fill-box;transform-origin:center;animation:abgTab .45s cubic-bezier(.3,1.6,.5,1) calc(var(--abg-d,0s) + .55s) both}
+.abg-earn .abg-shine{animation:abgShine .9s ease-in-out calc(var(--abg-d,0s) + .6s) both}
+.abg-earn .abg-spark{transform-box:fill-box;transform-origin:center;animation:abgSpark .9s ease-out calc(var(--abg-d,0s) + .35s) both}
+@keyframes abgIn{from{transform:scale(.55) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes abgTab{from{transform:scale(0)}to{transform:none}}
+@keyframes abgShine{from{transform:translateX(-62px)}to{transform:translateX(62px)}}
+@keyframes abgSpark{0%{transform:translateY(-30px) scale(.3);opacity:0}30%{opacity:1}100%{transform:translateY(-44px) scale(1);opacity:0}}
+@media (prefers-reduced-motion: reduce){.abg-earn .abg-seal,.abg-earn .abg-tab,.abg-earn .abg-shine,.abg-earn .abg-spark{animation:none}.abg-earn .abg-shine,.abg-earn .abg-spark{opacity:0}}

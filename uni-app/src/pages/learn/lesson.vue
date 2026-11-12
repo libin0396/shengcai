@@ -33,8 +33,18 @@
     </view>
 
     <view v-if="state.panel.kind === 'end'" class="end">
-      <view v-if="state.panel.badge" class="fb"><text class="tag">新徽章</text><text>{{state.panel.badge}}</text></view>
-      <view v-else-if="state.panel.hint" class="fb"><text>{{state.panel.hint}}</text></view>
+      <!-- 刚拿到徽章：金色徽章转着弹出来，闪一道光，四周冒小星星 -->
+      <view v-if="state.panel.badge" class="fb newbdg">
+        <view class="nb-art">
+          <image class="nb-img" :src="state.panel.badgeImg" mode="aspectFit" />
+          <view class="nb-shine-box"><view class="nb-shine" /></view>
+          <view v-for="i in 6" :key="i" class="nb-ray" :class="'k' + i"><view class="nb-spark" /></view>
+        </view>
+        <text class="tag">新徽章</text>
+        <text class="nb-name">{{state.panel.badge}}</text>
+        <text class="nb-sub">{{state.panel.badgeSub}}</text>
+      </view>
+      <view v-else-if="state.panel.hint" class="fb hintbdg"><image class="hint-img" :src="state.panel.hintImg" mode="aspectFit" /><text class="hint-t">{{state.panel.hint}}</text></view>
       <view class="two">
         <view v-if="state.panel.copy" class="btn soft" hover-class="press" @tap="copy(state.panel.copy)">复制去试试</view>
         <view v-else-if="state.panel.nextId" class="btn soft" hover-class="press" @tap="back">回到目录</view>
@@ -104,7 +114,7 @@ import { onLoad, onUnload, onHide } from '@dcloudio/uni-app';
 import AiPanel from '../../components/AiPanel.vue';
 import mini from '../../data/mini-ai.json';
 import guides from '../../data/mini-guides.json';
-import { ROLES, A_FACES, ART, LEARNING_KEY, loadStore, saveStore, finishLesson, unitOf, unitState, shortName, unitNo } from '../../data/ai-core.js';
+import { ROLES, A_FACES, ART, LEARNING_KEY, loadStore, saveStore, finishLesson, unitOf, unitState, shortName, unitNo, badgeImage, markSeen } from '../../data/ai-core.js';
 import { createLessonPlayer, lessonState } from '../../data/ai-runner.js';
 
 const X = mini.xue;
@@ -128,10 +138,16 @@ function onEnd() {
   const before = unitState(u, loadStore(uni), guides, progress).badge;
   const r = finishLesson(loadStore(uni), lessonId.value); saveStore(uni, r.store); scheduleSync();
   const after = unitState(u, r.store, guides, progress);
+  const fresh = r.first && after.badge && !before;
+  const hint = !after.badge && after.lessons === after.total && (u.needProjects || 0) > after.made ? '再跟着做完一件作品，就能拿到' + unitNo(u) + '的徽章。' : '';
+  if (fresh) markSeen(uni, u.id);
   return {
     nextId: nextLesson(lessonId.value),
-    badge: r.first && after.badge && !before ? '学完了「' + shortName(u) + '」' : '',
-    hint: after.lessons === after.total && !after.badge && (u.needProjects || 0) > after.made ? '再跟着做完一件作品，就能拿到' + unitNo(u) + '的徽章。' : '',
+    badge: fresh ? shortName(u) : '',
+    badgeImg: fresh ? badgeImage(u, after) : '',
+    badgeSub: fresh ? (u.needProjects ? '课学完了，作品也做好了' : '这个单元的 ' + after.total + ' 节课都学完了') : '',
+    hint,
+    hintImg: hint ? badgeImage(u, after) : '',
   };
 }
 function start(id) {
@@ -253,6 +269,25 @@ function copy(text) { uni.setClipboardData({ data: text, success: () => uni.show
 .end{display:flex;flex-direction:column;gap:10px}
 .fb{background:#fff;border-radius:16px;padding:12px 15px;font-size:15px;line-height:1.6}
 .tag{display:inline-block;background:#ffc83d;color:#161a23;font-size:13px;font-weight:900;border-radius:8px;padding:1px 9px;margin-right:8px}
+/* 新徽章：章转着弹出来（.8s），单元号的那块图一起出来；0.6s 后一道光扫过，六颗小星星往外飞 */
+.newbdg{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:14px 16px 16px}
+.newbdg .tag{margin-right:0}
+.nb-art{position:relative;width:112px;height:112px}
+.nb-img{display:block;width:112px;height:112px;animation:nbIn .8s cubic-bezier(.3,1.5,.5,1) both}
+.nb-shine-box{position:absolute;left:20px;top:20px;width:72px;height:72px;border-radius:50%;overflow:hidden}
+.nb-shine{position:absolute;top:-20px;left:0;width:14px;height:112px;background:rgba(255,255,255,.6);transform:translateX(-60px) rotate(20deg);animation:nbShine .9s ease-in-out .6s both}
+.nb-ray{position:absolute;left:56px;top:56px;width:0;height:0}
+.nb-ray.k1{transform:rotate(30deg)}.nb-ray.k2{transform:rotate(90deg)}.nb-ray.k3{transform:rotate(150deg)}.nb-ray.k4{transform:rotate(210deg)}.nb-ray.k5{transform:rotate(270deg)}.nb-ray.k6{transform:rotate(330deg)}
+.nb-spark{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#ffc83d;opacity:0;animation:nbSpark .9s ease-out .35s both}
+.nb-ray.k2 .nb-spark,.nb-ray.k4 .nb-spark,.nb-ray.k6 .nb-spark{left:-2.5px;top:-2.5px;width:5px;height:5px;background:#2b44e6}
+.nb-name{font-size:20px;font-weight:900;line-height:1.3}
+.nb-sub{font-size:13px;font-weight:700;color:#5f6675}
+.hintbdg{display:flex;align-items:center;gap:12px}
+.hint-img{flex:none;width:48px;height:48px}
+.hint-t{flex:1;min-width:0}
+@keyframes nbIn{from{opacity:0;transform:scale(.55) rotate(-25deg)}to{opacity:1;transform:none}}
+@keyframes nbShine{from{transform:translateX(-60px) rotate(20deg)}to{transform:translateX(90px) rotate(20deg)}}
+@keyframes nbSpark{0%{opacity:0;transform:translateY(-34px) scale(.3)}30%{opacity:1}100%{opacity:0;transform:translateY(-54px) scale(1)}}
 .two{display:flex;gap:10px}
 .btn{flex:1;display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:#2b44e6;color:#fff;font-size:16px;font-weight:800}
 .btn.soft{background:#eceffe;color:#2b44e6}

@@ -1,7 +1,7 @@
 /* 学 AI：目录 + 动画互动课。课程内容在 xue-ai-data.js，真实教程（跟着做）的标题和进度从 guides-data.js 和本机记录里读。 */
 (function(){
   'use strict';
-  var P=window.AIPlay,D=window.AINPE_XUE,ART=window.AIArt||{};
+  var P=window.AIPlay,D=window.AINPE_XUE,ART=window.AIArt||{},B=window.AINPE_BADGES;
   var $=P.$,el=P.el,btn=P.btn,clock=P.clock,R=P.ROLES;
   var GUIDES=window.AINPE_GUIDES||[];
   var cur=null,curId='',actIdx=0,pageToken={};
@@ -137,8 +137,8 @@
       store.lessons[curId]=1;P.save(store);
       var after=unitState(u,store);
       say('这节学完了。'+s.done);mood('happy');panel.innerHTML='';
-      if(first&&after.badge&&!before)panel.appendChild(badgeLine(u));
-      else if(after.lessons===after.total&&!after.badge&&(u.needProjects||0)>after.made)panel.appendChild(hintLine('再跟着做完一件作品，就能拿到这个单元的徽章。'));
+      if(first&&after.badge&&!before)panel.appendChild(badgeCard(u,after));
+      else if(after.lessons===after.total&&!after.badge&&(u.needProjects||0)>after.made)panel.appendChild(hintCard(u,after,'再跟着做完一件作品，就能拿到这个单元的徽章。'));
       var two=el('div','two'),nextId=nextLesson(curId);
       if(s.copy){var cp=btn('btn soft','复制去试试');cp.addEventListener('click',function(){P.copy(s.copy,'已复制，去你的 AI 里试试')});two.appendChild(cp)}
       else if(nextId){var home=btn('btn soft','回到目录');home.addEventListener('click',goHome);two.appendChild(home)}
@@ -149,8 +149,17 @@
       return new Promise(function(){});
     }
   };
-  function badgeLine(u){var f=el('div','fb');f.appendChild(el('b','tag','新徽章'));f.appendChild(document.createTextNode('学完了「'+shortName(u)+'」'));return f}
-  function hintLine(text){var f=el('div','fb');f.textContent=text;return f}
+  // 刚拿到徽章：金色徽章转着弹出来（记下已经庆祝过，「我的」页就不再弹一次）
+  function badgeCard(u,st){
+    var f=el('div','fb newbdg'),art=el('span','nb-art');
+    art.innerHTML=badgeSvg(u,st,112,true);f.appendChild(art);
+    var tx=el('div','nb-t');tx.appendChild(el('b','tag','新徽章'));tx.appendChild(el('b','nb-name',shortName(u)));
+    tx.appendChild(el('small','',u.needProjects?'课学完了，作品也做好了':'这个单元的 '+st.total+' 节课都学完了'));
+    f.appendChild(tx);B.markSeen(u.id);
+    return f;
+  }
+  function hintCard(u,st,text){var f=el('div','fb hintbdg'),art=el('span','');art.innerHTML=badgeSvg(u,st,48);f.appendChild(art);f.appendChild(el('span','',text));return f}
+  function badgeSvg(u,st,size,earn){var sp=B.steps(u,st.lessons,st.made);return B.svg(u.id,{got:st.badge,done:sp.done,total:sp.total,no:D.UNITS.indexOf(u)+1,size:size,earn:!!earn})}
   function shortName(u){return u.name.replace(/^第 \d 单元 /,'')}
 
   function unitOf(id){return D.UNITS.filter(function(x){return x.lessons.indexOf(id)>=0})[0]}
@@ -191,15 +200,31 @@
     if(inline){box.querySelector('img').src=inline;box.hidden=false}
     return box;
   }
+  // 页头进度：一组是一个单元，一格是一节课；学完的填满，下一节在呼吸；点一组跳到那个单元
+  function drawPath(store,next){
+    var path=$('#xhPath');if(!path)return;path.innerHTML='';var k=0,now=next?unitOf(next):null;
+    D.UNITS.forEach(function(u,ui){
+      var st=unitState(u,store),b=el('button','xh-u'+(st.badge?' got':'')+(now&&now.id===u.id?' now':''));b.type='button';
+      b.style.setProperty('--n',String(u.lessons.length));
+      b.setAttribute('aria-label','第 '+(ui+1)+' 单元「'+shortName(u)+'」，学完 '+st.lessons+' / '+st.total+' 节'+(st.badge?'，已拿到徽章':'')+'，跳到这个单元');
+      var ticks=el('span','xh-ticks');
+      u.lessons.forEach(function(id){var tk=el('i',lessonDone(id,store)?'on':id===next?'cur':'');tk.style.setProperty('--k',String(k++));ticks.appendChild(tk)});
+      b.appendChild(ticks);b.appendChild(el('small','',String(ui+1)));
+      b.addEventListener('click',function(){var c=document.getElementById('unit-'+u.id);if(c)c.scrollIntoView({behavior:P.reduce?'auto':'smooth',block:'start'})});
+      path.appendChild(b);
+    });
+  }
   function drawHome(){
     var store=P.load(),box=$('#units');box.innerHTML='';
     var total=0,done=0,badges=0,resume=null;
     D.UNITS.forEach(function(u){
-      var st=unitState(u,store),card=el('div','unit');
-      var head=el('div','unit-head');var txt=el('div');txt.appendChild(el('span','lv',u.level));txt.appendChild(el('h2','',shortName(u)));head.appendChild(txt);
-      head.appendChild(el('span','count',(st.badge?'徽章 · ':'')+st.lessons+' / '+st.total));
+      var st=unitState(u,store),card=el('div','unit');card.id='unit-'+u.id;
+      var head=el('div','unit-head'),art=el('span','ubdg');art.innerHTML=badgeSvg(u,st,48);head.appendChild(art);
+      var txt=el('div','uh-t'),nm=el('div');nm.appendChild(el('span','lv',u.level));nm.appendChild(el('h2','',shortName(u)));txt.appendChild(nm);
+      txt.appendChild(el('div','sub',u.name.match(/^第 \d 单元/)[0]+' · '+u.sub));head.appendChild(txt);
+      head.appendChild(el('span','count',st.badge?'拿到徽章':st.lessons+' / '+st.total+' 节'));
       if(st.badge){badges++;head.classList.add('got')}
-      card.appendChild(head);card.appendChild(el('div','sub',u.name.match(/^第 \d 单元/)[0]+' · '+u.sub));
+      card.appendChild(head);
       u.lessons.forEach(function(id,i){
         var L=D.LESSONS[id],d=lessonDone(id,store);total++;if(d)done++;else if(!resume)resume=id;
         var b=el('button','item'+(d?' done':''));b.type='button';b.setAttribute('data-lesson',id);
@@ -221,7 +246,12 @@
       }
       box.appendChild(card);
     });
-    $('#sum').textContent='已学完 '+done+' / '+total+' 节 · 徽章 '+badges+' 枚';
+    drawPath(store,resume);
+    var now=resume?unitOf(resume):null;
+    $('#sum').textContent=resume?'已学完 '+done+' / '+total+' 节 · 现在在「'+shortName(now)+'」':total+' 节全部学完了';
+    $('#xhBadgeT').textContent='徽章 '+badges+' / '+D.UNITS.length;
+    $('#xhBadgeI').innerHTML=B.mini(badges>0,{size:22});
+    $('#xhBadge').classList.toggle('got',badges>0);
     var rb=$('#resume');
     if(resume){var L=D.LESSONS[resume],u=unitOf(resume);rb.hidden=false;$('#rTitle').textContent=L.title;$('#rUnit').textContent=(done?'接着学 · ':'从这里开始 · ')+u.name.match(/^第 \d 单元/)[0]+'第 '+(u.lessons.indexOf(resume)+1)+' 节';
       $('#rGo').textContent=done?'继续学':'开始学';$('#rGo').onclick=function(){openLesson(resume)}}

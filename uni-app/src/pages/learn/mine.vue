@@ -31,10 +31,12 @@
       </view>
       <!-- #endif -->
       <view class="ai-go"><view class="ai-go-b" hover-class="press" @tap="openDaily">{{aiTodayDone ? '今天已玩 · 再看看每日 AI' : '去玩今天的每日 AI'}}</view><view class="ai-go-b soft" hover-class="press" @tap="openLearning">去学 AI</view></view>
-      <view class="section-title">学 AI 徽章<text class="section-note">已获得 {{badgeCount}} / {{badges.length}} 枚</text></view>
+      <view class="section-title">学 AI 徽章<text class="section-note">已获得 {{badgeCount}} / {{badges.length}} 枚{{freshIds.length ? ' · 新拿到 ' + freshIds.length + ' 枚' : ''}}</text></view>
+      <!-- 没拿到的是白章 + 一圈进度，拿到的是金章；刚拿到、第一次来看的那枚会转着弹出来，角上标「新」 -->
       <view class="badges">
-        <view v-for="b in badges" :key="b.id" class="bdg" :class="{got: b.got}">
-          <view class="bdg-ic"><view class="bdg-s1" /><view class="bdg-s2" /><view class="bdg-s3" /></view>
+        <view v-for="b in badges" :key="b.id" class="bdg" :class="{got: b.got, fresh: b.fresh}">
+          <view class="bdg-art"><image class="bdg-img" :src="b.img" mode="aspectFit" :style="b.fresh ? 'animation-delay:' + b.delay + 's' : ''" /></view>
+          <text v-if="b.fresh" class="bdg-new" :style="'animation-delay:' + (b.delay + 0.8) + 's'">新</text>
           <text class="bdg-n">{{b.name}}</text><text class="bdg-d">{{b.got ? '已获得' : b.detail}}</text>
         </view>
       </view>
@@ -126,7 +128,7 @@ import { onShow } from '@dcloudio/uni-app';
 import MiniNav from '../../components/MiniNav.vue';
 import AiLevelCard from '../../components/AiLevelCard.vue';
 import mini from '../../data/mini-ai.json';
-import { loadStore as loadAi, streak as aiStreakOf, issueByDate, unitState, shortName, ymd } from '../../data/ai-core.js';
+import { loadStore as loadAi, streak as aiStreakOf, issueByDate, unitState, shortName, ymd, badgeImage, loadSeen, markSeen } from '../../data/ai-core.js';
 import guides from '../../data/mini-guides.json';
 import zuoData from '../../data/mini-zuo.json';
 import { resolvePotentialProgress } from '../../data/mini-potential.js';
@@ -144,7 +146,8 @@ function onAccountTap(){if(account.value.loggedIn)accountOpen.value=!accountOpen
 async function doLogout(){await logoutAccount();accountOpen.value=false;showAccountTools.value=false;showBackups.value=false;nickname.value=''}
 async function chooseAvatar(e){const path=e.detail?.avatarUrl;if(!path||avatarSaving.value)return;avatarSaving.value=true;try{const result=await updateAvatar(path);if(result.ok||result.reason==='changed')return;uni.showModal({title:'头像未保存',content:avatarFailureText(result.reason),showCancel:false})}catch{uni.showModal({title:'头像未保存',content:avatarFailureText('upload'),showCancel:false})}finally{avatarSaving.value=false}}
 async function saveNickname(){if(!await updateNickname(nickname.value))uni.showToast({title:'昵称未能保存，请重试',icon:'none'});else uni.showToast({title:'昵称已保存',icon:'success'})}
-watch(()=>[account.value.status,account.value.loggedIn],()=>loadMine());
+watch(()=>account.value.status,()=>loadMine());
+watch(()=>account.value.loggedIn,()=>{freshIds.value=[];loadMine()});
 const recent=ref([]),favorites=ref([]),potential=ref(null),showAllRecent=ref(false),showFavorites=ref(false);
 const visibleRecent=computed(()=>showAllRecent.value?recent.value:recent.value.slice(0,1));
 let top=0;try{top=Number((typeof wx!=='undefined'&&typeof wx.getWindowInfo==='function'?wx.getWindowInfo():uni.getSystemInfoSync()).statusBarHeight)||0}catch{}
@@ -157,19 +160,22 @@ const aiLessons=computed(()=>Object.keys(ai.value.lessons).length);
 const aiTodayIssue=computed(()=>issueByDate(mini.meiri.ISSUES,aiDay.value));
 const aiTodayDone=computed(()=>!!(aiTodayIssue.value&&ai.value.daily[aiTodayIssue.value.id]));
 const aiToday=computed(()=>aiTodayIssue.value?(aiTodayDone.value?'今天的每日 AI 已完成':'今天的每日 AI 还没玩'):'今天这期还在准备');
-const badges=computed(()=>mini.xue.UNITS.map(u=>{const st=unitState(u,ai.value,guides,aiProgress.value);return {id:u.id,name:shortName(u),got:st.badge,detail:st.lessons+' / '+st.total+' 节'+((u.needProjects&&st.lessons===st.total&&!st.badge)?' · 差 1 件作品':'')}}));
+// freshIds：拿到了但还没庆祝过的徽章（比如做完第 6 单元的作品时拿到的），进页面时弹一次，一枚接一枚
+const freshIds=ref([]);
+const badges=computed(()=>mini.xue.UNITS.map(u=>{const st=unitState(u,ai.value,guides,aiProgress.value),k=freshIds.value.indexOf(u.id);return {id:u.id,name:shortName(u),got:st.badge,img:badgeImage(u,st),fresh:k>=0,delay:Math.max(k,0)*0.35,detail:(u.needProjects&&st.lessons===st.total&&!st.badge)?'还差 1 件作品':st.lessons+' / '+st.total+' 节'}}));
 const badgeCount=computed(()=>badges.value.filter(b=>b.got).length);
+function checkFresh(){const seen=loadSeen(uni);const earned=mini.xue.UNITS.filter(u=>unitState(u,ai.value,guides,aiProgress.value).badge).map(u=>u.id);const newlyEarned=earned.filter(id=>!seen[id]);freshIds.value=[...new Set([...freshIds.value.filter(id=>earned.includes(id)),...newlyEarned])];newlyEarned.forEach(id=>markSeen(uni,id))}
 function openDaily(){uni.redirectTo({url:'/pages/learn/daily'})}
 function openLearning(){uni.redirectTo({url:'/pages/learn/learning'})}
 function loadMine(){
   const progress=read('ainpe_mini_learning_v1',{}), saved=read('ainpe_mini_favorites_v1',[]);
-  ai.value=loadAi(uni);aiProgress.value=progress;aiDay.value=ymd(new Date());
+  ai.value=loadAi(uni);aiProgress.value=progress;aiDay.value=ymd(new Date());checkFresh();
   recent.value=guides.flatMap(g=>{const p=progress&&typeof progress==='object'?progress[g.id]:null;const total=(g.steps||[]).length;const done=Array.isArray(p?.completedSteps)?new Set(p.completedSteps.filter(i=>Number.isInteger(i)&&i>=0&&i<total)).size:0;return done?[{...g,done,total,updatedAt:p.updatedAt||''}]:[]}).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
   favorites.value=guides.filter(g=>Array.isArray(saved)&&saved.includes(g.id));
   const card=read('ainpe_mini_potential_v1',{});
   try{const result=resolvePotentialProgress(card?.answers,progress,guides);potential.value=result.status==='complete'?result:null}catch{potential.value=null}
 }
-onShow(()=>{loadMine(); if(account.value.loggedIn)syncAccount(); else restoreAccount()});
+onShow(()=>{freshIds.value=[];loadMine(); if(account.value.loggedIn)syncAccount(); else restoreAccount()});
 function open(id){uni.navigateTo({url:(zuoData.SCRIPTS[id]?'/pages/learn/zuo?id=':'/pages/learn/guide?id=')+encodeURIComponent(id)})}
 function openResume(id){uni.navigateTo({url:'/pages/learn/guide?id='+encodeURIComponent(id)+'&resume=1'})}
 function openFeedback(){uni.navigateTo({url:'/pages/learn/find?feedback=1'})}
@@ -228,13 +234,16 @@ function openGuides(){uni.redirectTo({url:'/pages/learn/guides'})}
 .ai-go{display:flex;gap:10px;margin-top:10px}.ai-go-b{flex:1;min-height:44px;line-height:44px;text-align:center;border-radius:14px;background:linear-gradient(155deg,#ffda68 0%,#ffc83d 65%,#f6bc30 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.58),inset 0 -1px 0 rgba(169,110,5,.12),0 5px 12px -8px rgba(120,80,7,.42);color:#112d25;font-size:14px;font-weight:800}.ai-go-b.soft{color:#112d25}
 .section-note{font-size:12px;font-weight:700;color:#758091;margin-left:8px}
 .badges{display:flex;flex-wrap:wrap;gap:8px}
-.bdg{width:calc((100% - 16px) / 3);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border-radius:14px;padding:12px 6px;text-align:center}
-.bdg-ic{width:44px;height:44px;border-radius:13px;background:#e6e8ec;display:flex;align-items:flex-end;justify-content:center;gap:3px;padding-bottom:10px;box-sizing:border-box}
-.bdg-s1,.bdg-s2,.bdg-s3{width:7px;border-radius:2px;background:#9aa0ac}.bdg-s1{height:8px}.bdg-s2{height:14px}.bdg-s3{height:20px}
-.bdg.got .bdg-ic{background:#ffc83d;animation:bdgPop .5s ease both}.bdg.got .bdg-s1,.bdg.got .bdg-s2,.bdg.got .bdg-s3{background:#161a23}
+.bdg{position:relative;width:calc((100% - 16px) / 3);box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;background:#fff;border-radius:14px;padding:12px 6px 10px;text-align:center}
+.bdg-art{width:64px;height:64px;margin-bottom:2px}
+.bdg-img{display:block;width:64px;height:64px}
+.bdg.got .bdg-img{animation:bdgPop .5s ease both}
+.bdg.fresh .bdg-img{animation:bdgIn .8s cubic-bezier(.3,1.5,.5,1) both}
+.bdg-new{position:absolute;top:8px;right:8px;font-size:11px;font-weight:900;line-height:18px;color:#2b44e6;background:#eceffe;border-radius:7px;padding:0 6px;animation:bdgPop .35s ease both}
 .bdg-n{font-size:13px;font-weight:900;line-height:1.3}.bdg-d{font-size:11px;font-weight:700;color:#758091}
 .press{opacity:.75}
 @keyframes bdgPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes bdgIn{from{transform:scale(.55) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
 
 /* #endif */
 /* #ifndef MP-WEIXIN */

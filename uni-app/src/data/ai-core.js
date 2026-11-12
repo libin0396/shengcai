@@ -111,6 +111,24 @@ export function unitState(unit, store, guides, progress) {
   const made = projects.filter((p) => p.done).length;
   return { lessons, total: unit.lessons.length, projects, made, badge: lessons === unit.lessons.length && made >= (unit.needProjects || 0) };
 }
+/* ---------- 学 AI 徽章的图 ----------
+   图由 scripts/build-badge-images.py 按网页版 static/learn/ai-badges.js 导出，放在网站上：
+   拿到的是金色章（u1-got.png）；没拿到的是白章 + 外圈进度，一节课一段，第 6 单元多一段作品（u1-0.png、u1-1.png…）。 */
+export const BADGE_SEEN_KEY = 'ainpe_mini_badges_seen_v1'; // 已经庆祝过的徽章，「我的」页不再弹第二次
+export const BADGE_MINI = { got: ASSET + 'badges/mini-got.png', off: ASSET + 'badges/mini-off.png' };
+export function badgeSteps(unit, st) {
+  const need = unit.needProjects || 0;
+  return { done: Math.min(st.lessons, unit.lessons.length) + Math.min(st.made || 0, need), total: unit.lessons.length + need };
+}
+export function badgeImage(unit, st) {
+  if (st.badge) return ASSET + 'badges/' + unit.id + '-got.png';
+  const s = badgeSteps(unit, st);
+  return ASSET + 'badges/' + unit.id + '-' + Math.max(0, Math.min(s.done, s.total - 1)) + '.png';
+}
+export function loadSeen(storage) {
+  try { const v = storage.getStorageSync(BADGE_SEEN_KEY); return v && typeof v === 'object' && !Array.isArray(v) ? { ...v } : {}; } catch { return {}; }
+}
+export function markSeen(storage, id) { try { const v = loadSeen(storage); v[id] = 1; storage.setStorageSync(BADGE_SEEN_KEY, v); } catch { /* 记不下来就下次再弹 */ } }
 export function resumeLesson(order, store) { return order.find((id) => !store.lessons[id]) || null; }
 export function unitOf(units, lessonId) { return units.find((u) => u.lessons.includes(lessonId)) || null; }
 export function shortName(unit) { return unit.name.replace(/^第 \d 单元 /, ''); }
