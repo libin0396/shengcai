@@ -4,7 +4,7 @@ import {createHash, randomBytes, randomUUID} from 'node:crypto';
 import {isIP} from 'node:net';
 import path from 'node:path';
 
-const KEYS=new Set(['learning','favorites','ai','potential']);
+const KEYS=new Set(['learning','favorites','ai','potential','growth']);
 const MAX_JSON=128*1024, MAX_AVATAR=512*1024, LIFETIME=30*86400000;
 const digest=x=>createHash('sha256').update(x).digest('hex');
 function send(res,status,data){res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data))}
@@ -13,12 +13,21 @@ const isObject = x => !!x && typeof x === 'object' && !Array.isArray(x);
 const idOk = x => typeof x==='string' && /^[A-Za-z0-9_-]{1,120}$/.test(x) && !['__proto__','constructor','prototype'].includes(x);
 const keysOnly = (x,allowed) => isObject(x) && Object.keys(x).every(k=>allowed.includes(k));
 const mapOk = (x,fn) => isObject(x) && Object.keys(x).length<=2000 && Object.entries(x).every(([k,v])=>idOk(k)&&fn(v));
+const dayOk = x => typeof x==='string' && /^\d{4}-\d\d-\d\d$/.test(x);
+function growthOk(g){
+ if(g===null)return true;
+ if(!keysOnly(g,['v','cards','log','guides','shares','shown','old','oldSeen'])||g.v!==1)return false;
+ if(!Array.isArray(g.cards)||g.cards.length>4||!g.cards.every(c=>keysOnly(c,['id','at','mark'])&&idOk(c.id)&&(c.at===''||dayOk(c.at))&&Number.isSafeInteger(c.mark)&&c.mark>=0&&c.mark<=2000))return false;
+ if(!Array.isArray(g.log)||g.log.length>2000||!g.log.every(x=>typeof x==='string'&&/^[ldgs]:/.test(x)&&idOk(x.slice(2)))||new Set(g.log).size!==g.log.length)return false;
+ return mapOk(g.guides,dayOk)&&mapOk(g.shares,dayOk)&&Number.isSafeInteger(g.shown)&&g.shown>=0&&g.shown<=4&&typeof g.old==='boolean'&&typeof g.oldSeen==='boolean';
+}
 function validState(s){
  if(!keysOnly(s,[...KEYS]))return false;
  if('learning' in s && !mapOk(s.learning,r=>keysOnly(r,['completedSteps','updatedAt']) && Array.isArray(r.completedSteps) && r.completedSteps.length<=500 && r.completedSteps.every(n=>Number.isInteger(n)&&n>=0&&n<500) && (r.updatedAt===undefined || r.updatedAt==='' || typeof r.updatedAt==='string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(r.updatedAt))))return false;
  if('favorites' in s && (!Array.isArray(s.favorites)||s.favorites.length>2000||!s.favorites.every(idOk)))return false;
  if('ai' in s && (!keysOnly(s.ai,['v','xp','daily','lessons'])||s.ai.v!==1||!Number.isSafeInteger(s.ai.xp)||s.ai.xp<0||s.ai.xp>1e9||!mapOk(s.ai.daily,v=>typeof v==='string'&&/^\d{4}-\d\d-\d\d$/.test(v))||!mapOk(s.ai.lessons,v=>v===1)))return false;
  if('potential' in s && (!keysOnly(s.potential,['answers'])||!mapOk(s.potential.answers,idOk)))return false;
+ if('growth' in s && !growthOk(s.growth))return false;
  return true;
 }
 function imageType(b){if(b.length>=24&&b.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))&&b.subarray(12,16).toString()==='IHDR'){const w=b.readUInt32BE(16),h=b.readUInt32BE(20);if(w&&h&&w<=4096&&h<=4096)return 'image/png'}if(b.length>4&&b[0]===0xff&&b[1]===0xd8&&b[b.length-2]===0xff&&b[b.length-1]===0xd9)return 'image/jpeg';if(b.length>16&&b.toString('ascii',0,4)==='RIFF'&&b.toString('ascii',8,12)==='WEBP'&&b.readUInt32LE(4)+8===b.length)return 'image/webp';return null}
@@ -60,7 +69,12 @@ export function createProductionMiniUserApi({root,dbPath,publicOrigin,appId,secr
   }catch(e){d.exec('ROLLBACK');throw e}
   const {status,...response}=result;return send(res,status,response)
  }
- if(route==='/api/mini-user/state'){if(Object.keys(input).length!==2||!Number.isSafeInteger(input.baseRevision)||input.baseRevision<0||!input.state||typeof input.state!=='object'||Array.isArray(input.state)||!validState(input.state))return send(res,400,{error:'invalid_state'});const change=d.prepare('UPDATE mini_users SET state=?,revision=revision+1 WHERE id=? AND revision=?').run(JSON.stringify(input.state),user.id,input.baseRevision);if(!change.changes)return send(res,409,{error:'revision_conflict'});return send(res,200,{revision:input.baseRevision+1})}
+ if(route==='/api/mini-user/state'){if(Object.keys(input).length!==2||!Number.isSafeInteger(input.baseRevision)||input.baseRevision<0||!input.state||typeof input.state!=='object'||Array.isArray(input.state)||!validState(input.state))return send(res,400,{error:'invalid_state'});
+  // Older mini-program versions do not know the growth field. Their writes
+  // must not erase a newer device's card lineage or achievement records.
+  const state=input.state;
+  if(!Object.hasOwn(state,'growth')){const current=d.prepare('SELECT revision,state FROM mini_users WHERE id=?').get(user.id);if(current.revision!==input.baseRevision)return send(res,409,{error:'revision_conflict'});const previous=JSON.parse(current.state);if(Object.hasOwn(previous,'growth'))state.growth=previous.growth;}
+  const change=d.prepare('UPDATE mini_users SET state=?,revision=revision+1 WHERE id=? AND revision=?').run(JSON.stringify(state),user.id,input.baseRevision);if(!change.changes)return send(res,409,{error:'revision_conflict'});return send(res,200,{revision:input.baseRevision+1})}
  return send(res,404,{error:'not_found'})}
  return {middleware(req,res,next){const p=String(req.url||'').split('?')[0];if(!p.startsWith('/api/mini-auth/')&&!p.startsWith('/api/mini-user/'))return next();void handle(req,res).catch(()=>{if(!res.headersSent)send(res,503,{error:'user_service_unavailable'});else res.destroy()})},close(){db?.close();rates.clear()}};
 }
