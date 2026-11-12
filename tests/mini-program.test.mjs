@@ -2,6 +2,10 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
+import {mkdtemp, rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {spawnSync} from 'node:child_process';
 
 test('mini tutorials retain the website steps and safe media origins', async()=>{
   const mini=JSON.parse(await readFile('uni-app/src/data/mini-guides.json','utf8'));
@@ -52,6 +56,25 @@ test('mini navigation targets are all compiled and private website pages are omi
     assert.ok((await readFile('uni-app/dist/build/mp-weixin/'+page+'.wxml','utf8')).length>0);
   }
   assert.doesNotMatch(await readFile('uni-app/dist/build/mp-weixin/app.js','utf8'),/api\/feed|refreshFeed/);
+});
+
+test('prepared WeChat build includes the scoped mine page stylesheet once in app.wxss', async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'ainpe-mini-package-test-'));
+  const output=join(dir,'package');
+  try{
+    const result=spawnSync('python3',['scripts/prepare-mini-program.py',output],{encoding:'utf8'});
+    assert.equal(result.status,0,result.stderr);
+    const app=await readFile(join(output,'app.wxss'),'utf8');
+    const mine=await readFile(join(output,'pages/learn/mine.wxss'),'utf8');
+    const wxml=await readFile(join(output,'pages/learn/mine.wxml'),'utf8');
+    assert.equal((app.match(/@import\s+["']\.\/pages\/learn\/mine\.wxss["']/g)||[]).length,1);
+    assert.match(app,/^@import\s+["']\.\/pages\/learn\/mine\.wxss["'];/);
+    assert.doesNotMatch(mine,/@import\s*[^;]*app\.wxss/);
+    const scope=mine.match(/\.mine\.(data-v-[\w-]+)/)?.[1];
+    assert.ok(scope);
+    assert.ok(wxml.includes(scope));
+    assert.ok(mine.includes('.bdg-img.'+scope));
+  }finally{await rm(dir,{recursive:true,force:true})}
 });
 
 test('course practice makes its example topic clear and avoids sales claims', async()=>{

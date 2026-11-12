@@ -29,6 +29,22 @@ for item in source.rglob('*'):
             raise SystemExit(f'local static reference must be packaged: {item.relative_to(source)}')
 
 shutil.copytree(source, target, ignore=shutil.ignore_patterns('static'))
+# Some WeChat clients do not apply this page's scoped stylesheet when it is
+# loaded only as a page stylesheet. Import that exact generated stylesheet in
+# the app stylesheet too; its data-v selectors keep it scoped to this page.
+app_style = target / 'app.wxss'
+mine_style = target / 'pages/learn/mine.wxss'
+if not app_style.is_file() or not mine_style.is_file():
+    raise SystemExit('missing app or mine stylesheet; cannot prepare WeChat build')
+app_text = app_style.read_text(encoding='utf-8')
+mine_text = mine_style.read_text(encoding='utf-8')
+if re.search(r'@import\s*[^;]*app\.wxss', mine_text):
+    raise SystemExit('mine stylesheet imports app stylesheet; refusing a circular import')
+if re.search(r'@import\s*[^;]*pages/learn/mine\.wxss', app_text):
+    raise SystemExit('app stylesheet already imports mine stylesheet')
+if not all(selector in mine_text for selector in ('.mine.data-v-', '.badges.data-v-', '.bdg-img.data-v-')):
+    raise SystemExit('mine stylesheet does not contain expected scoped selectors')
+app_style.write_text('@import "./pages/learn/mine.wxss";\n' + app_text, encoding='utf-8')
 config = target / 'project.config.json'
 data = json.loads(config.read_text(encoding='utf-8'))
 data['projectname'] = 'AINPE实战情报站'
