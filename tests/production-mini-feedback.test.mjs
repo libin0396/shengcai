@@ -58,6 +58,20 @@ test('rejects search text, extra fields, untrusted requests, invalid messages an
   }finally{await x.close()}
 });
 
+test('mini feedback accepts the actual WeChat developer frame while rejecting untrusted cross-site requests',async()=>{
+  const x=await setup();try{
+    const headers={'sec-fetch-site':'cross-site',referer:'https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html'};
+    assert.equal((await x.send({kind:'search',value:'miss'},headers)).status,202);
+    assert.equal((await x.send({kind:'search',value:'hit'},{...headers,referer:'https://servicewechat.com/wx64bff577b112626f/123/page-frame.html'})).status,202);
+    for(const referer of ['', 'https://servicewechat.com/wx0000000000000000/devtools/page-frame.html','https://servicewechat.com.evil.test/wx64bff577b112626f/devtools/page-frame.html','https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html/evil'])assert.equal((await x.send({kind:'search',value:'miss'},{...headers,referer})).status,403);
+    assert.equal((await x.send({kind:'search',value:'miss'},{...headers,origin:'https://attacker.example'})).status,403);
+    assert.equal((await x.send({kind:'search',value:'miss'},{...headers,host:'attacker.example'})).status,403);
+    assert.equal((await x.send({kind:'search',value:'miss'},{...headers,'x-forwarded-proto':'http'})).status,403);
+    assert.equal((await x.send({kind:'search',value:'miss'},{...headers,'x-real-ip':'bad'})).status,403);
+    assert.equal((await x.call('/api/mini-feedback',{headers:{...headers,'content-type':'text/plain'},body:'{"kind":"search","value":"miss"}'})).status,415);
+  }finally{await x.close()}
+});
+
 test('submissions are rate-limited and expired data is removed on restart',async()=>{
   const x=await setup();let restarted;try{
     for(let i=0;i<5;i++)assert.equal((await x.send({kind:'message',value:'建议 '+i})).status,202);
@@ -70,10 +84,18 @@ test('submissions are rate-limited and expired data is removed on restart',async
 });
 
 test('mini frontend sends fixed events and submitted feedback, never the search text',async()=>{
-  const {readFile}=await import('node:fs/promises'),source=await readFile('uni-app/src/pages/learn/find.vue','utf8');
-  assert.match(source,/sendEvent\('search',guideResults\.value\.length\|\|aidResults\.value\.length\?'hit':'miss'\)/);
-  assert.match(source,/data:\{kind,value\}/);
-  assert.match(source,/请不要填写姓名、电话等个人信息/);
-  assert.match(source,/r\.statusCode===202&&r\.data\?\.ok===true/);
-  assert.doesNotMatch(source,/data:\{[^}]*query/);
+  // Check the actual WeChat build: the source also contains the intentionally
+  // unchanged H5 version behind uni-app conditional compilation.
+  const {readFile}=await import('node:fs/promises');
+  const template=await readFile('uni-app/dist/build/mp-weixin/pages/learn/find.wxml','utf8');
+  const script=await readFile('uni-app/dist/build/mp-weixin/pages/learn/find.js','utf8');
+  assert.match(template,/问题的解法没找到？/);
+  assert.match(template,/<textarea\b[^>]*maxlength="30"[^>]*最多 30 字/);
+  assert.match(template,/告诉我们你想用 AI 解决什么，我们会筛选合适的问题补充内容。/);
+  assert.doesNotMatch(template,/搜索内容只在当前设备上匹配|请不要填写姓名、电话等个人信息|提交问题|最多 200 字/);
+  assert.match(script,/\?"提交中…":"提交"/);
+  assert.match(script,/\.length>30\?/);
+  assert.match(script,/"search",[^,]*\?"hit":"miss"/);
+  assert.match(script,/data:\{kind:[^,}]+,value:[^}]+\}/);
+  assert.doesNotMatch(script,/data:\{[^}]*query/);
 });

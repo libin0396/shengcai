@@ -12,10 +12,20 @@ test('WeChat identity isolation, persistent state, optimistic writes, avatar and
  const api=createProductionMiniUserApi({root,dbPath:path.join(dir,'users.db'),publicOrigin:'https://example.test',appId:'wx64bff577b112626f',now:()=>time,exchangeCode:async code=>code==='invalid'?{errcode:40029}:{openid:'openid-'+code}});
  const server=createServer((q,s)=>api.middleware(q,s,()=>{s.statusCode=404;s.end()}));await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const base=`http://127.0.0.1:${server.address().port}`;
- async function request(route,{method='GET',data,token,raw,contentType='application/json'}={}){return new Promise((resolve,reject)=>{const req=httpRequest(base+route,{method,headers:{host:'example.test','x-forwarded-proto':'https','x-real-ip':'127.0.0.1',...(token?{authorization:'Bearer '+token}:{}),...(data||raw?{'content-type':contentType}:{})}},res=>{const chunks=[];res.on('data',c=>chunks.push(c));res.on('end',()=>{const bytes=Buffer.concat(chunks);resolve({status:res.statusCode,body:String(res.headers['content-type']||'').includes('application/json')?JSON.parse(bytes):bytes})})});req.on('error',reject);req.end(raw??(data?JSON.stringify(data):undefined))})}
+ async function request(route,{method='GET',data,token,raw,contentType='application/json',headers={}}={}){return new Promise((resolve,reject)=>{const req=httpRequest(base+route,{method,headers:{host:'example.test','x-forwarded-proto':'https','x-real-ip':'127.0.0.1',...(token?{authorization:'Bearer '+token}:{}),...(data||raw?{'content-type':contentType}:{}),...headers}},res=>{const chunks=[];res.on('data',c=>chunks.push(c));res.on('end',()=>{const bytes=Buffer.concat(chunks);resolve({status:res.statusCode,body:String(res.headers['content-type']||'').includes('application/json')?JSON.parse(bytes):bytes})})});req.on('error',reject);req.end(raw??(data?JSON.stringify(data):undefined))})}
  try{
+  const trustedFrame='https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html';
+  const wechatHeaders={'sec-fetch-site':'cross-site',referer:trustedFrame};
+  assert.equal((await request('/api/mini-user/state',{headers:wechatHeaders})).status,401);
+  assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,referer:'https://servicewechat.com/wx64bff577b112626f/123/page-frame.html'}})).status,401);
+  for(const referer of ['', 'https://servicewechat.com/wx0000000000000000/devtools/page-frame.html','https://servicewechat.com.evil.test/wx64bff577b112626f/devtools/page-frame.html','https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html/evil'])assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,referer}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,origin:'https://evil.test'}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,host:'evil.test'}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,'x-forwarded-proto':'http'}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,'x-real-ip':'invalid'}})).status,403);
   assert.equal((await request('/api/mini-auth/login',{method:'POST',data:{code:'invalid'}})).status,401);
   const a=await request('/api/mini-auth/login',{method:'POST',data:{code:'personA'}}), b=await request('/api/mini-auth/login',{method:'POST',data:{code:'personB'}});assert.equal(a.status,200);assert.equal(b.status,200);assert.notEqual(a.body.accountId,b.body.accountId);
+  assert.equal((await request('/api/mini-user/state',{token:a.body.token,headers:wechatHeaders})).status,200);
   const state={'ai':{v:1,xp:10,daily:{day:'2026-11-11'},lessons:{}},'favorites':['drama']};
   assert.equal((await request('/api/mini-user/state',{method:'PUT',token:a.body.token,data:{baseRevision:0,state}})).status,200);
   assert.equal((await request('/api/mini-user/state',{method:'PUT',token:a.body.token,data:{baseRevision:0,state}})).status,409);

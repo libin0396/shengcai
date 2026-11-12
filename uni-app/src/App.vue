@@ -5,7 +5,9 @@ let feedTimer;
 export default {onShow(){refreshFeed();if(!feedTimer)feedTimer=setInterval(refreshFeed,300000)},onHide(){if(feedTimer)clearInterval(feedTimer);feedTimer=null}};
 // #endif
 // #ifdef MP-WEIXIN
-export default {};
+import { restoreAccount, syncAccount } from './data/mini-account.js';
+import { offerFirstWechatLogin } from './data/mini-welcome.js';
+export default { onLaunch(){restoreAccount();offerFirstWechatLogin()}, onShow(){syncAccount()} };
 // #endif
 </script>
 
@@ -16,5 +18,10 @@ button { font-family: inherit; }
 button::after { border: 0; }
 .page-shell { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; }
 .visually-muted { color: #718477; }
+/* #ifdef MP-WEIXIN */
+@media (max-width: 700px) { .page-shell { padding: 18px 16px 48px; } }
+/* #endif */
+/* #ifndef MP-WEIXIN */
 @media (max-width: 700px) { .page-shell { padding: 18px 16px 48px; } page, uni-page-body { padding-bottom: calc(52px + env(safe-area-inset-bottom)); } }
+/* #endif */
 </style>
