@@ -17,6 +17,13 @@ test('WeChat identity isolation, persistent state, optimistic writes, avatar and
   const trustedFrame='https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html';
   const wechatHeaders={'sec-fetch-site':'cross-site',referer:trustedFrame};
   assert.equal((await request('/api/mini-user/state',{headers:wechatHeaders})).status,401);
+  const androidHeaders={...wechatHeaders,origin:'https://servicewechat.com'};
+  assert.equal((await request('/api/mini-user/state',{headers:androidHeaders})).status,401);
+  assert.equal((await request('/api/mini-auth/login',{method:'POST',data:{code:'invalid'},headers:androidHeaders})).status,401);
+  assert.equal((await request('/api/mini-user/state',{headers:{...androidHeaders,referer:'https://servicewechat.com/wx64bff577b112626f/123/page-frame.html'}})).status,401);
+  for(const referer of ['', 'https://servicewechat.com/wx0000000000000000/devtools/page-frame.html','https://servicewechat.com.evil.test/wx64bff577b112626f/devtools/page-frame.html','https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html/evil'])assert.equal((await request('/api/mini-user/state',{headers:{...androidHeaders,referer}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...androidHeaders,origin:'https://evil.test'}})).status,403);
+  assert.equal((await request('/api/mini-user/state',{headers:{...androidHeaders,origin:'https://example.test'}})).status,403);
   assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,referer:'https://servicewechat.com/wx64bff577b112626f/123/page-frame.html'}})).status,401);
   for(const referer of ['', 'https://servicewechat.com/wx0000000000000000/devtools/page-frame.html','https://servicewechat.com.evil.test/wx64bff577b112626f/devtools/page-frame.html','https://servicewechat.com/wx64bff577b112626f/devtools/page-frame.html/evil'])assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,referer}})).status,403);
   assert.equal((await request('/api/mini-user/state',{headers:{...wechatHeaders,origin:'https://evil.test'}})).status,403);
