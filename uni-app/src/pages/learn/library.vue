@@ -40,17 +40,19 @@
 // #ifdef MP-WEIXIN
 
 import {computed,ref} from 'vue';
-import {onLoad,onReady} from '@dcloudio/uni-app';
+import {onLoad,onReady,onShow} from '@dcloudio/uni-app';
 import MiniNav from '../../components/MiniNav.vue';
 import {miniAids} from '../../data/mini-aids.js';
 import {aidTopics,topics,normalized} from '../../data/mini-search-data.js';
 const query=ref(''),category=ref('全部'),expanded=ref('');
+let directAidId='';
 const filtered=computed(()=>{const q=normalized(query.value);return miniAids.filter(a=>(category.value==='全部'||(aidTopics[a.id]||[]).includes(category.value))&&(!q||normalized([a.title,a.when,a.prompt,a.example,...(a.tags||[]),...(aidTopics[a.id]||[])].join(' ')).includes(q)))});
-onLoad(options=>{const id=String(options?.id||'');if(miniAids.some(a=>a.id===id))expanded.value=id});
-onReady(()=>{if(expanded.value)uni.pageScrollTo({selector:'#aid-'+expanded.value,duration:0})});
+onLoad(options=>{const id=String(options?.id||'');if(miniAids.some(a=>a.id===id))directAidId=id});
+onShow(()=>{expanded.value='' });
+onReady(()=>{if(directAidId)uni.pageScrollTo({selector:'#aid-'+directAidId,duration:0})});
 function toggle(id){expanded.value=expanded.value===id?'':id}
 function copy(text){uni.setClipboardData({data:text,success(){uni.showToast({title:'已复制',icon:'success'})}})}
-function goGuides(){uni.navigateTo({url:'/pages/learn/guides'})}
+function goGuides(){const url='/pages/learn/guides?complete=1';uni.navigateTo({url,fail:()=>uni.redirectTo({url})})}
 
 // #endif
 // #ifndef MP-WEIXIN

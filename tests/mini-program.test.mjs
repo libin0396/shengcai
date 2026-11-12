@@ -30,16 +30,26 @@ test('mini tutorials retain the website steps and safe media origins', async()=>
   assert.match(mini.find(g=>g.id==='short-drama').video.caption,/没有音轨/);
 });
 
-test('mini four difficulty levels point to available content or a clearly pending challenge', async()=>{
+test('mini home recommends real step-by-step guides and keeps future challenges clear', async()=>{
   const guides=JSON.parse(await readFile('uni-app/src/data/mini-guides.json','utf8'));
+  const scripts=JSON.parse(await readFile('uni-app/src/data/mini-zuo.json','utf8')).SCRIPTS;
   const home=await readFile('uni-app/src/components/MiniHome.vue','utf8');
   const list=await readFile('uni-app/src/pages/learn/guides.vue','utf8');
   for(const level of ['简单','一般','困难','超级挑战']){
-    assert.ok(home.includes(level));
     assert.ok(list.includes(level));
   }
   assert.ok(guides.every(g=>['一般','困难'].includes(g.level)));
-  assert.match(home,/@tap="openGuide\('short-drama'\)"/);
+  const ids=home.match(/const homeGuides=\[([^\]]+)\]/)?.[1].match(/'([^']+)'/g).map(s=>s.slice(1,-1));
+  assert.deepEqual(ids,['meeting-notes','video-script','short-drama']);
+  for(const id of ids){
+    const guide=guides.find(g=>g.id===id);
+    assert.ok(guide?.steps?.length && guide.cover && scripts[id],`home guide ${id} must be a real guide with a matching cover and guided steps`);
+  }
+  assert.match(home,/@tap="openGuides">开始做第一件事/);
+  assert.match(home,/@tap="openGuide\(guide\.id\)"/);
+  assert.match(home,/:src="guide\.cover"/);
+  assert.doesNotMatch(home,/@tap="openPrompt/);
+  assert.match(home,/class="prompt-entry" @tap="openLibrary"/);
   assert.match(home,/超级挑战[\s\S]*?筹备中/);
   assert.match(list,/guide\.kind==='future'\)return/);
   assert.match(list,/level\.value==='全部等级'/);

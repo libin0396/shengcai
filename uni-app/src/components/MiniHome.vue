@@ -19,7 +19,7 @@
         <view v-if="lines[who].go" class="meet-go" hover-class="press" @tap="goLine"><text>{{lines[who].go}}</text><text>›</text></view>
       </view>
       <view class="search-entry" @tap="openSearch"><text>⌕　你遇到了什么事？说一句就行</text><text class="search-action">找用法 ›</text></view>
-      <view class="hero-actions"><button class="primary" @tap="openPrompt('reply')">开始做第一件事 ↗</button><button class="text-link" @tap="showHelp">第一次来？看看怎么用 ›</button></view>
+      <view class="hero-actions"><button class="primary" @tap="openGuides">开始做第一件事 ↗</button><button class="text-link" @tap="showHelp">第一次来？看看怎么用 ›</button></view>
 
       <!-- 今天的每日 AI -->
       <view v-if="daily" class="daily" hover-class="press" @tap="openDaily">
@@ -47,17 +47,9 @@
       </view>
 
       <view class="section-head"><view><view class="section-title">选一件事，开始做</view><view class="section-sub">从适合自己的地方出发，不用按顺序。</view></view><text class="more" @tap="openGuides">全部教程 ↗</text></view>
-      <view class="level-card first" @tap="openPrompt('reply')">
-        <view class="cover-wrap"><image class="cover-image" src="https://ainpe.aisen.xin/static/design/write-message-illustration.jpg" mode="aspectFill"/><text class="cover-label">配图示意</text></view>
-        <view class="level-content"><view class="card-top"><text class="badge beginner">简单</text><text class="minor">第一次来推荐</text></view><view class="card-title">写一条不好开口的消息</view><view class="card-description">告诉 AI 你的情况，试着写一条合适的消息。</view><view class="card-link">开始尝试 <text class="card-arrow">↗</text></view></view>
-      </view>
-      <view class="level-card" @tap="openPrompt('homework')">
-        <view class="cover-wrap"><image class="cover-image" src="https://ainpe.aisen.xin/static/design/kids.jpg" mode="aspectFill"/><text class="cover-label">配图示意</text></view>
-        <view class="level-content"><view class="card-top"><text class="badge middle">一般</text></view><view class="card-title">陪孩子讲懂一道题</view><view class="card-description">补充孩子的情况，让 AI 帮你理清讲题思路。</view><view class="card-link">看看怎么用 <text class="card-arrow">↗</text></view></view>
-      </view>
-      <view class="level-card" @tap="openGuide('short-drama')">
-        <view class="cover-wrap"><image class="cover-image" src="https://ainpe.aisen.xin/static/learn/media/covers/short-drama.jpg" mode="aspectFill"/><text class="cover-label">AI 角色参考图</text></view>
-        <view class="level-content"><view class="card-top"><text class="badge advanced">困难</text></view><view class="card-title">从零做一条 AI 短剧</view><view class="card-description">从故事、分镜到剪成一条短片。</view><view class="card-link">跟着步骤做 <text class="card-arrow">↗</text></view></view>
+      <view v-for="(guide, index) in homeGuides" :key="guide.id" class="level-card" :class="{first: index === 0}" @tap="openGuide(guide.id)">
+        <view class="cover-wrap"><image class="cover-image" :src="guide.cover" mode="aspectFill"/><text class="cover-label">{{guide.coverLabel}}</text></view>
+        <view class="level-content"><view class="card-top"><text class="badge" :class="guideBadge(guide.level)">{{guide.level}}</text><text v-if="index === 0" class="minor">第一次来推荐</text></view><view class="card-title">{{guide.title}}</view><view class="card-description">{{guide.intro}}</view><view class="card-link">跟着步骤做 <text class="card-arrow">↗</text></view></view>
       </view>
       <view class="level-card future">
         <view class="cover-wrap"><image class="cover-image" src="https://ainpe.aisen.xin/static/design/ai-assistant-illustration.jpg" mode="aspectFill"/><text class="cover-label">配图示意</text></view>
@@ -73,7 +65,10 @@
 
 <script setup>
 import zuoData from '../data/mini-zuo.json';
+import guides from '../data/mini-guides.json';
 const zuoScripts=zuoData.SCRIPTS||{};
+const homeGuides=['meeting-notes','video-script','short-drama'].map(id=>guides.find(guide=>guide.id===id)).filter(Boolean);
+function guideBadge(level){return level==='简单'?'beginner':level==='一般'?'middle':'advanced';}
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import MiniNav from './MiniNav.vue';
 import mini from '../data/mini-ai.json';
@@ -85,7 +80,6 @@ try { const info = typeof wx !== 'undefined' && typeof wx.getWindowInfo === 'fun
 function openGuides(){uni.navigateTo({url:'/pages/learn/guides'});}
 function openSearch(){uni.navigateTo({url:'/pages/learn/find'});}
 function openLibrary(){uni.navigateTo({url:'/pages/learn/library'});}
-function openPrompt(id){uni.navigateTo({url:'/pages/learn/library?id='+encodeURIComponent(id)});}
 function openGuide(id){uni.navigateTo({url:(zuoScripts[id]?'/pages/learn/zuo?id=':'/pages/learn/guide?id=')+encodeURIComponent(id)});}
 function showHelp(){uni.showModal({title:'第一次来？小A 带你看看',content:'底部五个入口：「每日 AI」每天一期 3 分钟的小互动，做完能涨经验；「学 AI」六个单元按顺序学；中间的小A 是「找用法」，说一句你遇到的事就行；「我的」里看等级和徽章。提示词要复制到你常用的 AI 工具里用，用完记得检查结果。',showCancel:false,confirmText:'知道了'});}
 

@@ -51,7 +51,7 @@
         <view class="btn" hover-class="press" @tap="finish">{{state.panel.nextId ? '学下一节' : '回到目录'}}</view>
       </view>
     </view>
-    <AiPanel v-else :panel="state.panel" @next="onNext" @choose="onChoose" @sort="onSort" @order="onOrder" @chip="onChip" />
+    <AiPanel v-if="state.panel.kind !== 'end'" :panel="state.panel" @next="onNext" @choose="onChoose" @sort="onSort" @order="onOrder" @chip="onChip" />
     <view v-if="lesson && state.panel.kind !== 'end'" class="replay" hover-class="press" @tap="replay">重看这一幕</view>
   </view>
 
